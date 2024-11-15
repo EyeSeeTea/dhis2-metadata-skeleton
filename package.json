@@ -1,0 +1,18 @@
+{
+  "name": "metadata-skeleton-offline-2",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "author": "EyeSeeTea",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "ts-node ./src/index.ts",
+    "validate": "ts-node ./src/validateSchema.ts",
+    "metadata-build" : "ts-node ./src/index.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
+  }
+}
