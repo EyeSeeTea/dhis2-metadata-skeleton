@@ -1,8 +1,9 @@
-import { BaseMetadata } from './common';
+import { BaseMetadata } from "./common";
+import { Ref } from "./Ref";
 
 export interface Section extends BaseMetadata {
-    dataElements: { id: string }[];
-    indicators: any[];
+    dataElements: Ref[];
+    indicators: unknown[];
     dataSet: {
         id: string;
     };

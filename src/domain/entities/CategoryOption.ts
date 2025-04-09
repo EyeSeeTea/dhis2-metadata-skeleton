@@ -1,9 +1,9 @@
-import { BaseMetadata } from './common';
+import { BaseMetadata } from "./common";
 
 export interface CategoryOption extends BaseMetadata {
     startDate?: string;
     endDate?: string;
-    organisationUnits: any[];
+    organisationUnits: unknown[];
     access: {
         read: boolean;
         write: boolean;

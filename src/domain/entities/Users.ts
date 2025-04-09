@@ -1,4 +1,5 @@
 import { BaseMetadata } from "./common";
+import { Ref } from "./Ref";
 
 interface UserAccess {
     manage: boolean;
@@ -15,9 +16,9 @@ interface UserCredentials {
     externalAuth: boolean;
     twoFA: boolean;
     passwordLastUpdated: string;
-    cogsDimensionConstraints: any[];
-    catDimensionConstraints: any[];
-    previousPasswords: any[];
+    cogsDimensionConstraints: unknown[];
+    catDimensionConstraints: unknown[];
+    previousPasswords: unknown[];
     lastLogin: string;
     selfRegistered: boolean;
     invitation: boolean;
@@ -28,19 +29,20 @@ interface UserCredentials {
         users: Record<string, any>;
         userGroups: Record<string, any>;
     };
-    userRoles: { id: string }[];
+    userRoles: Ref[];
 }
 
 interface UserRef {
     id: string;
 }
 
-export interface User extends Omit<BaseMetadata, "shortName" | "displayShortName" | "displayDescription"> {
+export interface User
+    extends Omit<BaseMetadata, "shortName" | "displayShortName" | "displayDescription"> {
     username: string;
     externalAuth: boolean;
     passwordLastUpdated: string;
-    cogsDimensionConstraints: any[];
-    catDimensionConstraints: any[];
+    cogsDimensionConstraints: unknown[];
+    catDimensionConstraints: unknown[];
     lastLogin: string;
     selfRegistered: boolean;
     invitation: boolean;
@@ -48,13 +50,13 @@ export interface User extends Omit<BaseMetadata, "shortName" | "displayShortName
     surname: string;
     firstName: string;
     email: string;
-    organisationUnits: any[];
-    dataViewOrganisationUnits: any[];
-    teiSearchOrganisationUnits: any[];
+    organisationUnits: unknown[];
+    dataViewOrganisationUnits: unknown[];
+    teiSearchOrganisationUnits: unknown[];
     twoFactorEnabled: boolean;
     userCredentials: UserCredentials;
     userRoles: UserRef[];
     userGroups: UserRef[];
-    userGroupAccesses: any[];
-    userAccesses: any[];
+    userGroupAccesses: unknown[];
+    userAccesses: unknown[];
 }

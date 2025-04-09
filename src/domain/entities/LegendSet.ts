@@ -1,12 +1,11 @@
-
-import { BaseMetadata } from './common';
+import { BaseMetadata } from "./common";
 
 export interface Legend {
     name: string;
     created: string;
     lastUpdated: string;
-    translations: any[];
-    favorites: any[];
+    translations: unknown[];
+    favorites: unknown[];
     sharing: {
         external: boolean;
         users: Record<string, any>;
@@ -26,7 +25,7 @@ export interface Legend {
     };
     favorite: boolean;
     id: string;
-    attributeValues: any[];
+    attributeValues: unknown[];
 }
 
 export interface LegendSet extends BaseMetadata {

@@ -1,9 +1,10 @@
-import { BaseMetadata } from './common';
+import { BaseMetadata } from "./common";
+import { Ref } from "./Ref";
 
 export interface DataElement extends BaseMetadata {
     formName: string;
     dimensionItemType: string;
-    legendSets: { id: string }[];
+    legendSets: Ref[];
     aggregationType: string;
     valueType: string;
     domainType: string;
@@ -15,7 +16,7 @@ export interface DataElement extends BaseMetadata {
             id: string;
         };
     }[];
-    aggregationLevels: any[];
+    aggregationLevels: unknown[];
     zeroIsSignificant: boolean;
     optionSetValue: boolean;
     dimensionItem: string;
@@ -23,5 +24,5 @@ export interface DataElement extends BaseMetadata {
     categoryCombo?: {
         id: string;
     };
-    dataElementGroups: any[];
+    dataElementGroups: unknown[];
 }

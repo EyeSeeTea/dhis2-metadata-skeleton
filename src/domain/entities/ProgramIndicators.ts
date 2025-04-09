@@ -11,12 +11,14 @@ interface Access {
 
 interface AnalyticsPeriodBoundary {
     access: Access;
-    analyticsPeriodBoundaryType: "AFTER_START_OF_REPORTING_PERIOD" | "BEFORE_END_OF_REPORTING_PERIOD";
-    attributeValues: any[];
+    analyticsPeriodBoundaryType:
+        | "AFTER_START_OF_REPORTING_PERIOD"
+        | "BEFORE_END_OF_REPORTING_PERIOD";
+    attributeValues: unknown[];
     boundaryTarget: string;
     created: string;
     favorite: boolean;
-    favorites: any[];
+    favorites: unknown[];
     id: string;
     lastUpdated: string;
     sharing: {
@@ -24,7 +26,7 @@ interface AnalyticsPeriodBoundary {
         userGroups: Record<string, any>;
         users: Record<string, any>;
     };
-    translations: any[];
+    translations: unknown[];
 }
 
 interface ProgramReference {
@@ -40,7 +42,7 @@ export interface ProgramIndicator extends BaseMetadata {
     displayFormName: string;
     expression: string;
     filter: string;
-    legendSets: any[];
+    legendSets: unknown[];
     program: ProgramReference;
-    programIndicatorGroups: any[];
+    programIndicatorGroups: unknown[];
 }

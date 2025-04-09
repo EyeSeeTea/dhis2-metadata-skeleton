@@ -1,18 +1,16 @@
 import { BaseMetadata } from "./common";
 
 interface ProgramReference {
-    id: string;
+  id: string;
 }
 
 interface ProgramRuleActionReference {
-    id: string;
+  id: string;
 }
 
-export interface ProgramRule extends Omit<BaseMetadata, 
-    'shortName' | 
-    'displayShortName'
-> {
-    condition: string;
-    program: ProgramReference;
-    programRuleActions: ProgramRuleActionReference[];
+export interface ProgramRule
+  extends Omit<BaseMetadata, "shortName" | "displayShortName"> {
+  condition: string;
+  program: ProgramReference;
+  programRuleActions: ProgramRuleActionReference[];
 }

@@ -34,13 +34,13 @@ interface ProgramStageDataElement {
     access: Access;
     allowFutureDate: boolean;
     allowProvidedElsewhere: boolean;
-    attributeValues: any[];
+    attributeValues: unknown[];
     compulsory: boolean;
     created: string;
     dataElement: DataElementReference;
     displayInReports: boolean;
     favorite: boolean;
-    favorites: any[];
+    favorites: unknown[];
     id: string;
     lastUpdated: string;
     programStage: ProgramStageReference;
@@ -54,7 +54,7 @@ interface ProgramStageDataElement {
     skipAnalytics: boolean;
     skipSynchronization: boolean;
     sortOrder: number;
-    translations: any[];
+    translations: unknown[];
 }
 
 export interface ProgramStage extends BaseMetadata {
@@ -69,15 +69,14 @@ export interface ProgramStage extends BaseMetadata {
     generatedByEnrollmentDate: boolean;
     hideDueDate: boolean;
     minDaysFromStart: number;
-    notificationTemplates: any[];
+    notificationTemplates: unknown[];
     openAfterEnrollment: boolean;
     preGenerateUID: boolean;
     program: ProgramReference;
     programStageDataElements: ProgramStageDataElement[];
-    programStageSections: any[];
+    programStageSections: unknown[];
     referral: boolean;
     remindCompleted: boolean;
     repeatable: boolean;
     validationStrategy: string;
 }
-

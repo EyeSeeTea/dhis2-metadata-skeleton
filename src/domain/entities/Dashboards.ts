@@ -15,13 +15,13 @@ interface DashboardItem {
     interpretationLikeCount: number;
     contentCount: number;
     favorite: boolean;
-    attributeValues: any[];
-    reports: any[];
-    resources: any[];
+    attributeValues: unknown[];
+    reports: unknown[];
+    resources: unknown[];
 }
 
 interface DashboardLayout {
-    columns: any[];
+    columns: unknown[];
 }
 
 interface DashboardItemConfig {
@@ -30,7 +30,7 @@ interface DashboardItemConfig {
 
 export interface Dashboard extends BaseMetadata {
     restrictFilters: boolean;
-    allowedFilters: any[];
+    allowedFilters: unknown[];
     itemCount: number;
     layout: DashboardLayout;
     itemConfig: DashboardItemConfig;

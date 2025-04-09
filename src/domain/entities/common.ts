@@ -1,5 +1,3 @@
-
-
 export interface NamedRef {
     id: string;
     code?: string;
@@ -12,11 +10,14 @@ export interface Sharing {
     owner: string;
     external: boolean;
     users: Record<string, any>;
-    userGroups: Record<string, {
-        displayName: string;
-        access: string;
-        id: string;
-    }>;
+    userGroups: Record<
+        string,
+        {
+            displayName: string;
+            access: string;
+            id: string;
+        }
+    >;
     public: string;
 }
 
@@ -28,15 +29,15 @@ export interface BaseMetadata {
     lastUpdated: string;
     shortName: string;
     description?: string;
-    translations: any[];
+    translations: unknown[];
     createdBy: NamedRef;
     lastUpdatedBy: NamedRef;
-    favorites: any[];
+    favorites: unknown[];
     sharing: Sharing;
     displayName: string;
     displayShortName: string;
     displayDescription?: string;
     favorite: boolean;
     user: NamedRef;
-    attributeValues: any[];
+    attributeValues: unknown[];
 }

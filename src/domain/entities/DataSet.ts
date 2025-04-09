@@ -1,4 +1,5 @@
-import { BaseMetadata } from './common';
+import { BaseMetadata } from "./common";
+import { Ref } from "./Ref";
 
 export interface DataSetElement {
     dataSet: {
@@ -14,16 +15,16 @@ export interface DataSet extends BaseMetadata {
     periodType: string;
     dimensionItemType: string;
     formType: string;
-    
+
     // Collections
     dataSetElements: DataSetElement[];
-    sections: { id: string }[];
-    legendSets: any[];
-    dataInputPeriods: any[];
-    indicators: any[];
-    compulsoryDataElementOperands: any[];
-    interpretations: any[];
-    
+    sections: Ref[];
+    legendSets: unknown[];
+    dataInputPeriods: unknown[];
+    indicators: unknown[];
+    compulsoryDataElementOperands: unknown[];
+    interpretations: unknown[];
+
     // Configuration flags
     mobile: boolean;
     version: number;
@@ -40,7 +41,7 @@ export interface DataSet extends BaseMetadata {
     renderAsTabs: boolean;
     renderHorizontally: boolean;
     compulsoryFieldsCompleteOnly: boolean;
-    
+
     // Display properties
     dimensionItem: string;
     displayFormName: string;

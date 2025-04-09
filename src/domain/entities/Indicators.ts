@@ -22,6 +22,5 @@ export interface Indicator extends BaseMetadata {
     displayDenominatorDescription: string;
     dimensionItem: string;
     legendSet?: LegendSetRef;
-    indicatorGroups: any[];
+    indicatorGroups: unknown[];
 }
-
