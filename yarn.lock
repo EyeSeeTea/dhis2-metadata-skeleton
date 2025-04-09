@@ -105,6 +105,11 @@ ts-node@^10.9.2:
     v8-compile-cache-lib "^3.0.1"
     yn "3.1.1"
 
+typed-immutable-map@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/typed-immutable-map/-/typed-immutable-map-0.2.0.tgz#42c16f261fc0a75da0358298a2aae248a0c0b7d5"
+  integrity sha512-eraiB5BugF8ZjfpcQWcBArZUPYBUQ5ziy8w/BDvdb7uKBTb5aUyd+jWkiNn+ADvH/Wtl7w2ppVNDSoIGaMWWeg==
+
 typescript@^5.6.3:
   version "5.6.3"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.6.3.tgz#5f3449e31c9d94febb17de03cc081dd56d81db5b"

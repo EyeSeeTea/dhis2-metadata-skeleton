@@ -5,17 +5,22 @@ This project processes metadata for datasets, programs, permissions, and visuali
 ## Prerequisites
 
 - Node.js (>=14.x)
-- npm (>=6.x) or yarn (>=1.x)
 
 ## Installation
 
 1. Clone the repository:
 
+    ```sh
     git clone https://github.com/yourusername/metadata-skeleton-offline-2.git
-    cd metadata-skeleton-offline-2
 
+    cd metadata-skeleton-offline-2
+    ```
 
 2. Install the dependencies:
+
+    ```sh
+    nvm use
+    ```
 
     ```sh
     npm install
@@ -39,4 +44,9 @@ This project processes metadata for datasets, programs, permissions, and visuali
 
 To start the project, run the following command:
 
-yarn start
+1. 
+
+    ```sh
+    yarn start
+    ```
+
