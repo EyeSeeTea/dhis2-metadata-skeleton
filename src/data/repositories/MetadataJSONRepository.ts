@@ -1,6 +1,8 @@
 import path from "path";
 import fs from "fs/promises";
 import { MetadataRepository } from "../../domain/repositories/MetadataRepository";
+import { MetadataPackage } from "../../domain/entities/MetadataPackage";
+
 
 //TODO: allow different names per output file
 const FILE_NAME = "output.json";
@@ -10,7 +12,7 @@ export class MetadataJSONRepository implements MetadataRepository {
     constructor(private capturePath: string, private outputPath: string) {
         this.folderName = path.basename(capturePath);
     }
-    async get(): Promise<any[]> {
+    async get<T>(): Promise<MetadataPackage<T>[]> {
         const fileNames = await this.getJsonFileNames();
 
         const allData = await Promise.all(
@@ -21,7 +23,7 @@ export class MetadataJSONRepository implements MetadataRepository {
 
         return allData;
     }
-    async save(data: any): Promise<void> {
+    async save<T>(data: MetadataPackage<T>): Promise<void> {
         const outputFile = path.join(this.outputPath, FILE_NAME);
         await fs.writeFile(outputFile, JSON.stringify(data, null, 2));
     }

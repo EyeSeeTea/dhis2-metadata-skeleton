@@ -1,5 +1,5 @@
 import path from "path";
-import { DataSetProgramRemoveDuplicatesUseCase } from "./domain/usecases/DataSetProgramRemoveDuplicatesUseCase";
+import { DataSetProgramCombineAndRemoveDuplicatesUseCase } from "./domain/usecases/DataSetProgramCombineAndRemoveDuplicatesUseCase";
 //import { ProgramRemoveDuplicatesUseCase } from './domain/usecases/ProgramRemoveDuplicatesUseCase';
 import { PermissionRemoveDuplicatesUseCase } from "./domain/usecases/PermissionRemoveDuplicatesUseCase";
 import { VisualizationRemoveDuplicatesUseCase } from "./domain/usecases/VisualizationRemoveDuplicatesUseCase";
@@ -32,12 +32,8 @@ async function main() {
     //}
 
     // Process datasets & program
-    const dataSetProgramProcessor = new DataSetProgramRemoveDuplicatesUseCase(captureRepository);
+    const dataSetProgramProcessor = new DataSetProgramCombineAndRemoveDuplicatesUseCase(captureRepository);
     await dataSetProgramProcessor.execute();
-
-    // Process programss
-    // const programProcessor = new ProgramRemoveDuplicatesUseCase(captureRepository);
-    // await programProcessor.execute();
 
     // Process permissions
     const permissionProcessor = new PermissionRemoveDuplicatesUseCase(permissionRepository);

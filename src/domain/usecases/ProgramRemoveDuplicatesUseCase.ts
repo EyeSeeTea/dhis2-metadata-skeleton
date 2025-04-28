@@ -1,5 +1,6 @@
 import { ProcessedPrograms } from "../entities/ProcessProgram";
 import { MetadataRepository } from "../repositories/MetadataRepository";
+import { appendUnique } from "./helpers/appendUnique";
 
 export class ProgramRemoveDuplicatesUseCase {
     constructor(private metadataRepository: MetadataRepository) {}
@@ -17,8 +18,8 @@ export class ProgramRemoveDuplicatesUseCase {
         }
     }
 
-    private removeDuplicatesById(allMetadata: any[]) {
-        let processedData: ProcessedPrograms = {
+    private removeDuplicatesById(parsedData: any[]) {
+        const initData: ProcessedPrograms = {
             dataElements: [],
             optionSets: [],
             options: [],
@@ -30,41 +31,25 @@ export class ProgramRemoveDuplicatesUseCase {
             programIndicators: [],
         };
 
-        for (const metadata of allMetadata) {
-            this.combineData(processedData, metadata);
-        }
+        const processedData = parsedData.reduce((acc, data) => {
+            return {
+                ...acc,
+                dataElements: appendUnique(acc.userGroups, data.userGroups),
+                optionSets: appendUnique(acc.optionSets, data.optionSets),
+                options: appendUnique(acc.options, data.options),
+                programs: appendUnique(acc.programs, data.programs),
+                programStages: appendUnique(acc.programStages, data.programStages),
+                programRules: appendUnique(acc.programRules, data.programRules),
+                programRuleActions: appendUnique(acc.programRuleActions, data.programRuleActions),
+                programRuleVariables: appendUnique(
+                    acc.programRuleVariables,
+                    data.programRuleVariables
+                ),
+                programIndicators: appendUnique(acc.programIndicators, data.programIndicators),
+            };
+        }, initData);
 
         console.log(`Processed files successfully!`);
         return processedData;
-    }
-
-    private combineData(processedData: ProcessedPrograms, parsedData: any): void {
-        const addUniqueItems = (target: any[], source: any[]) => {
-            source.forEach(item => {
-                const exists = target.some(existing => existing.id === item.id);
-                if (!exists) {
-                    target.push(item);
-                }
-            });
-        };
-
-        if (Array.isArray(parsedData.dataElements))
-            addUniqueItems(processedData.dataElements, parsedData.dataElements);
-        if (Array.isArray(parsedData.optionSets))
-            addUniqueItems(processedData.optionSets, parsedData.optionSets);
-        if (Array.isArray(parsedData.options))
-            addUniqueItems(processedData.options, parsedData.options);
-        if (Array.isArray(parsedData.programs))
-            addUniqueItems(processedData.programs, parsedData.programs);
-        if (Array.isArray(parsedData.programStages))
-            addUniqueItems(processedData.programStages, parsedData.programStages);
-        if (Array.isArray(parsedData.programRules))
-            addUniqueItems(processedData.programRules, parsedData.programRules);
-        if (Array.isArray(parsedData.programRuleActions))
-            addUniqueItems(processedData.programRuleActions, parsedData.programRuleActions);
-        if (Array.isArray(parsedData.programRuleVariables))
-            addUniqueItems(processedData.programRuleVariables, parsedData.programRuleVariables);
-        if (Array.isArray(parsedData.programIndicators))
-            addUniqueItems(processedData.programIndicators, parsedData.programIndicators);
     }
 }

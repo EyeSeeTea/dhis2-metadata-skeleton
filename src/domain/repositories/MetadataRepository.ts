@@ -1,4 +1,7 @@
+import { MetadataPackage } from "../entities/MetadataPackage";
+
 export interface MetadataRepository {
-    get(): Promise<any[]>;
-    save(data: any): Promise<void>;
+    get<T>(): Promise<MetadataPackage<T>[]>;
+    save<T>(data: MetadataPackage<T>): Promise<void>;
 }
+

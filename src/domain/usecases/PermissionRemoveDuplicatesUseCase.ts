@@ -1,12 +1,20 @@
 import { ProcessPermissions } from "../entities/ProcessPermissions";
 import { Ref } from "../entities/Ref";
 import { MetadataRepository } from "../repositories/MetadataRepository";
+import _ from "../entities/generic/Collection";
+import { appendUnique } from "./helpers/appendUnique";
 
+//Cambiar nombres de variables (allMetadata)
+
+//Cambiar nombres en el index
+
+//Cambiar nombre del file
 export class PermissionRemoveDuplicatesUseCase {
     constructor(private metadataRepository: MetadataRepository) {}
 
     async execute(): Promise<void> {
-        try {
+        try { 
+            //Añadir tipo al get y al save
             const allMetadata = await this.metadataRepository.get();
 
             const allMetadataWithoutDuplicates = this.removeDuplicatesById(allMetadata);
@@ -18,30 +26,22 @@ export class PermissionRemoveDuplicatesUseCase {
         }
     }
 
-    private removeDuplicatesById(allMetadata: any[]) {
-        let processedData: ProcessPermissions = {
+    //Cambiar nombre y el tipo que devuelve y el any
+    private removeDuplicatesById(parsedData: any[]) {
+        const initData: ProcessPermissions = {
             userGroups: [],
             users: [],
         };
-        for (const metadata of allMetadata) {
-            this.combineData(processedData, metadata);
-        }
+
+        const processedData = parsedData.reduce((acc, data) => {
+            return {
+                ...acc,
+                userGroups: appendUnique(acc.userGroups, data.userGroups),
+                users: appendUnique(acc.users, data.users),
+            };
+        }, initData);
 
         console.log(`Processed files successfully!`);
         return processedData;
-    }
-
-    private combineData(processedData: ProcessPermissions, parsedData: any): void {
-        const addUniqueItems = (target: any[], source: any[]) => {
-            source.forEach(item => {
-                const exists = target.some(existing => existing.id === item.id);
-                if (!exists) {
-                    target.push(item);
-                }
-            });
-        };
-        if (Array.isArray(parsedData.userGroups))
-            addUniqueItems(processedData.userGroups, parsedData.userGroups);
-        if (Array.isArray(parsedData.users)) addUniqueItems(processedData.users, parsedData.users);
     }
 }

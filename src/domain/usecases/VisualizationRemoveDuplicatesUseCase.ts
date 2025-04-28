@@ -1,5 +1,6 @@
 import { ProcessVisualization } from "../entities/ProcessVisualization";
 import { MetadataRepository } from "../repositories/MetadataRepository";
+import { appendUnique } from "./helpers/appendUnique";
 
 export class VisualizationRemoveDuplicatesUseCase {
     constructor(private metadataRepository: MetadataRepository) {}
@@ -17,8 +18,8 @@ export class VisualizationRemoveDuplicatesUseCase {
         }
     }
 
-    private removeDuplicatesById(allMetadata: any[]) {
-        let processedData: ProcessVisualization = {
+    private removeDuplicatesById(parsedData: any[]) {
+        const initData: ProcessVisualization = {
             dashboards: [],
             indicators: [],
             legendSets: [],
@@ -26,33 +27,18 @@ export class VisualizationRemoveDuplicatesUseCase {
             indicatorTypes: [],
         };
 
-        for (const metadata of allMetadata) {
-            this.combineData(processedData, metadata);
-        }
+        const processedData = parsedData.reduce((acc, data) => {
+            return {
+                ...acc,
+                dashboards: appendUnique(acc.dashboards, data.dashboards),
+                indicators: appendUnique(acc.indicators, data.indicators),
+                legendSets: appendUnique(acc.legendSets, data.legendSets),
+                visualizations: appendUnique(acc.visualizations, data.visualizations),
+                indicatorTypes: appendUnique(acc.indicatorTypes, data.indicatorTypes),
+            };
+        }, initData);
 
         console.log(`Processed files successfully!`);
         return processedData;
-    }
-
-    private combineData(processedData: ProcessVisualization, parsedData: any): void {
-        const addUniqueItems = (target: any[], source: any[]) => {
-            source.forEach(item => {
-                const exists = target.some(existing => existing.id === item.id);
-                if (!exists) {
-                    target.push(item);
-                }
-            });
-        };
-
-        if (Array.isArray(parsedData.indicators))
-            addUniqueItems(processedData.indicators, parsedData.indicators);
-        if (Array.isArray(parsedData.legendSets))
-            addUniqueItems(processedData.legendSets, parsedData.legendSets);
-        if (Array.isArray(parsedData.visualizations))
-            addUniqueItems(processedData.visualizations, parsedData.visualizations);
-        if (Array.isArray(parsedData.indicatorTypes))
-            addUniqueItems(processedData.indicatorTypes, parsedData.indicatorTypes);
-        if (Array.isArray(parsedData.dashboards))
-            addUniqueItems(processedData.dashboards, parsedData.dashboards);
     }
 }
