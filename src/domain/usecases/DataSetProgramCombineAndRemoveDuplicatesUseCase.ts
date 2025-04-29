@@ -1,6 +1,4 @@
-import { MetadataPackage } from "../entities/MetadataPackage";
-import { ProcessedDataSet } from "../entities/ProcessDataSetProgram";
-import { Ref } from "../entities/Ref";
+import { ProcessedDataSetProgram } from "../entities/ProcessedDataSetProgram";
 import { MetadataRepository } from "../repositories/MetadataRepository";
 import { appendUnique } from "./helpers/appendUnique";
 
@@ -9,20 +7,20 @@ export class DataSetProgramCombineAndRemoveDuplicatesUseCase {
 
     async execute(): Promise<void> {
         try {
-            const metadataPackages = await this.metadataRepository.get<ProcessedDataSet>();
+            const metadataPackages = await this.metadataRepository.get<ProcessedDataSetProgram>();
 
             const metadataPackagesWithoutDuplicates =
                 this.combineAndRemoveDuplicatesById(metadataPackages);
 
-            await this.metadataRepository.save<ProcessedDataSet>(metadataPackagesWithoutDuplicates);
+            await this.metadataRepository.save<ProcessedDataSetProgram>(metadataPackagesWithoutDuplicates);
         } catch (error) {
             console.error("Error processing datasets:", error);
             throw error;
         }
     }
 
-    private combineAndRemoveDuplicatesById(metadataPackages: ProcessedDataSet[]): ProcessedDataSet {
-        const initProcessedDataSet: ProcessedDataSet = {
+    private combineAndRemoveDuplicatesById(metadataPackages: ProcessedDataSetProgram[]): ProcessedDataSetProgram {
+        const initProcessedDataSet: ProcessedDataSetProgram = {
             dataSets: [],
             dataElements: [],
             categories: [],

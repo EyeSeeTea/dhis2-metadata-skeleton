@@ -15,7 +15,7 @@ import { ProgramIndicator } from './ProgramIndicators';
 import { OptionSet } from './OptionSets';
 import { Option } from './Option';
 
-export interface ProcessedDataSet {
+export interface ProcessedDataSetProgram {
     dataSets: DataSet[];
     dataElements: DataElement[];
     categories: Category[];

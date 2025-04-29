@@ -1,8 +1,7 @@
 import path from "path";
 import { DataSetProgramCombineAndRemoveDuplicatesUseCase } from "./domain/usecases/DataSetProgramCombineAndRemoveDuplicatesUseCase";
-//import { ProgramRemoveDuplicatesUseCase } from './domain/usecases/ProgramRemoveDuplicatesUseCase';
-import { PermissionRemoveDuplicatesUseCase } from "./domain/usecases/PermissionRemoveDuplicatesUseCase";
-import { VisualizationRemoveDuplicatesUseCase } from "./domain/usecases/VisualizationRemoveDuplicatesUseCase";
+import { PermissionCombineAndRemoveDuplicatesUseCase } from "./domain/usecases/PermissionCombineAndRemoveDuplicatesUseCase";
+import { VisualizationCombineAndRemoveDuplicatesUseCase } from "./domain/usecases/VisualizationCombineAndRemoveDuplicatesUseCase";
 import { MetadataJSONRepository } from "./data/repositories/MetadataJSONRepository";
 
 async function main() {
@@ -36,11 +35,11 @@ async function main() {
     await dataSetProgramProcessor.execute();
 
     // Process permissions
-    const permissionProcessor = new PermissionRemoveDuplicatesUseCase(permissionRepository);
-    await permissionProcessor.execute();
+    const dataSetpermissionProcessor = new PermissionCombineAndRemoveDuplicatesUseCase(permissionRepository);
+    await dataSetpermissionProcessor.execute();
 
     // Process visualizations
-    const visualizationProcessor = new VisualizationRemoveDuplicatesUseCase(
+    const visualizationProcessor = new VisualizationCombineAndRemoveDuplicatesUseCase(
         visualizationRepository
     );
     await visualizationProcessor.execute();
