@@ -6,6 +6,7 @@
     "license": "MIT",
     "scripts": {
         "build": "tsc -p tsconfig.json",
+        "lint": "eslint src/{data,domain,scripts,types,utils}/**/*.ts --ext .ts",
         "start": "ts-node ./src/index.ts",
         "validate": "ts-node ./src/validateSchema.ts",
         "prettify": "prettier \"./**/*.{js,jsx,json,css,ts,tsx}\" --write",
@@ -14,6 +15,10 @@
     },
     "devDependencies": {
         "@types/node": "^22.9.0",
+        "@typescript-eslint/eslint-plugin": "^8.32.0",
+        "@typescript-eslint/parser": "^8.32.0",
+        "eslint": "^9.26.0",
+        "eslint-config-standard": "^17.1.0",
         "ts-node": "^10.9.2",
         "typescript": "^5.8.3"
     },
