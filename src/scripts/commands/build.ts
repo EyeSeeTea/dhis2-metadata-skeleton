@@ -4,14 +4,17 @@ import { MetadataJSONRepository } from "../../data/repositories/MetadataJSONRepo
 import { DataSetProgramCombineAndRemoveDuplicatesUseCase } from "../../domain/usecases/DataSetProgramCombineAndRemoveDuplicatesUseCase";
 import { PermissionCombineAndRemoveDuplicatesUseCase } from "../../domain/usecases/PermissionCombineAndRemoveDuplicatesUseCase";
 import { VisualizationCombineAndRemoveDuplicatesUseCase } from "../../domain/usecases/VisualizationCombineAndRemoveDuplicatesUseCase";
-
+import { validateFiles } from "../../helpers/files";
 
 export const build = command({
     name: "metadata build",
     description: "Build metadata from JSON files",
     args: {},
     handler: async () => {
-        console.log("Building metadata...");
+
+        try {
+
+            console.log("Building metadata...");
         
         const capturePath = path.join(__dirname, "../capture");
         const visualizationPath = path.join(__dirname, "../visualizations");
@@ -25,21 +28,21 @@ export const build = command({
             outputPath
         );
         const permissionRepository = new MetadataJSONRepository(permissionPath, outputPath);
+        
+        const validationResults = await Promise.all([
+        validateFiles(capturePath),
+        validateFiles(visualizationPath),
+        validateFiles(permissionPath),
+        ]);
 
-        //const validationResults = await Promise.all([
-        //captureRepository.validateFiles(),
-        //visualizationRepository.validateFiles(),
-        //permissionRepository.validateFiles(),
-        //]);
+        const errors = validationResults.filter(result => result !== null);
 
-        //const errors = validationResults.filter(result => result !== null);
-
-        //if (errors.length > 0) {
-        //   console.log("\n----------------------------------------");
-        //   errors.forEach(error => console.log("  Validation Message:", error));
-        //   console.log("----------------------------------------\n");
-        //  process.exit(1);
-        //}
+        if (errors.length > 0) {
+           console.log("\n----------------------------------------");
+           errors.forEach(error => console.log("  Validation Message:", error));
+           console.log("----------------------------------------\n");
+         throw new Error("Validation failed. Please check the errors above.");
+        }
 
         // Process datasets & program
         const dataSetProgramProcessor = new DataSetProgramCombineAndRemoveDuplicatesUseCase(
@@ -58,5 +61,13 @@ export const build = command({
             visualizationRepository
         );
         await visualizationProcessor.execute();
+            
+        } catch (error) {
+            console.error("Error building metadata:", error);
+            process.exit(1);
+        }
+        
     },
 });
+
+
