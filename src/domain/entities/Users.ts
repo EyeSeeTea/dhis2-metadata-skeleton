@@ -26,8 +26,8 @@ interface UserCredentials {
     access: UserAccess;
     sharing: {
         external: boolean;
-        users: Record<string, any>;
-        userGroups: Record<string, any>;
+        users: Record<string, unknown>;
+        userGroups: Record<string, unknown>;
     };
     userRoles: Ref[];
 }

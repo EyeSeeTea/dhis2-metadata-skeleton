@@ -1,7 +1,7 @@
 import { ProcessedPermissions } from "../entities/ProcessedPermissions";
 import { MetadataRepository } from "../repositories/MetadataRepository";
 import _ from "../entities/generic/Collection";
-import { appendUnique } from "./helpers/appendUnique";
+import { concatUnique } from "./helpers/concatUnique";
 
 export class PermissionCombineAndRemoveDuplicatesUseCase {
     constructor(private metadataRepository: MetadataRepository) {}
@@ -33,8 +33,8 @@ export class PermissionCombineAndRemoveDuplicatesUseCase {
         const processedPermissions = metadataPackages.reduce((acc, data) => {
             return {
                 ...acc,
-                userGroups: appendUnique(acc.userGroups, data.userGroups),
-                users: appendUnique(acc.users, data.users),
+                userGroups: concatUnique(acc.userGroups, data.userGroups),
+                users: concatUnique(acc.users, data.users),
             };
         }, initProcessedPermissions);
 

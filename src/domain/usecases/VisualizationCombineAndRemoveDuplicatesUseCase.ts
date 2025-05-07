@@ -1,7 +1,7 @@
 import { ProcessedDataSetProgram } from "../entities/ProcessedDataSetProgram";
 import { ProcessedVisualization } from "../entities/ProcessedVisualization";
 import { MetadataRepository } from "../repositories/MetadataRepository";
-import { appendUnique } from "./helpers/appendUnique";
+import { concatUnique } from "./helpers/concatUnique";
 
 export class VisualizationCombineAndRemoveDuplicatesUseCase {
     constructor(private metadataRepository: MetadataRepository) {}
@@ -36,11 +36,11 @@ export class VisualizationCombineAndRemoveDuplicatesUseCase {
         const processedVisualization = metadataPackages.reduce((acc, data) => {
             return {
                 ...acc,
-                dashboards: appendUnique(acc.dashboards, data.dashboards),
-                indicators: appendUnique(acc.indicators, data.indicators),
-                legendSets: appendUnique(acc.legendSets, data.legendSets),
-                visualizations: appendUnique(acc.visualizations, data.visualizations),
-                indicatorTypes: appendUnique(acc.indicatorTypes, data.indicatorTypes),
+                dashboards: concatUnique(acc.dashboards, data.dashboards),
+                indicators: concatUnique(acc.indicators, data.indicators),
+                legendSets: concatUnique(acc.legendSets, data.legendSets),
+                visualizations: concatUnique(acc.visualizations, data.visualizations),
+                indicatorTypes: concatUnique(acc.indicatorTypes, data.indicatorTypes),
             };
         }, initProcessedVisualization);
 

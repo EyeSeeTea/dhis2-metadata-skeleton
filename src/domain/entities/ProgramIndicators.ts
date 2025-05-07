@@ -23,8 +23,8 @@ interface AnalyticsPeriodBoundary {
     lastUpdated: string;
     sharing: {
         external: boolean;
-        userGroups: Record<string, any>;
-        users: Record<string, any>;
+        userGroups: Record<string, unknown>;
+        users: Record<string, unknown>;
     };
     translations: unknown[];
 }

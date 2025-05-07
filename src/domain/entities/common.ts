@@ -9,7 +9,7 @@ export interface NamedRef {
 export interface Sharing {
     owner: string;
     external: boolean;
-    users: Record<string, any>;
+    users: Record<string, unknown>;
     userGroups: Record<
         string,
         {

@@ -1,6 +1,6 @@
 import { ProcessedDataSetProgram } from "../entities/ProcessedDataSetProgram";
 import { MetadataRepository } from "../repositories/MetadataRepository";
-import { appendUnique } from "./helpers/appendUnique";
+import { concatUnique } from "./helpers/concatUnique";
 
 export class DataSetProgramCombineAndRemoveDuplicatesUseCase {
     constructor(private metadataRepository: MetadataRepository) {}
@@ -12,14 +12,18 @@ export class DataSetProgramCombineAndRemoveDuplicatesUseCase {
             const metadataPackagesWithoutDuplicates =
                 this.combineAndRemoveDuplicatesById(metadataPackages);
 
-            await this.metadataRepository.save<ProcessedDataSetProgram>(metadataPackagesWithoutDuplicates);
+            await this.metadataRepository.save<ProcessedDataSetProgram>(
+                metadataPackagesWithoutDuplicates
+            );
         } catch (error) {
             console.error("Error processing datasets:", error);
             throw error;
         }
     }
 
-    private combineAndRemoveDuplicatesById(metadataPackages: ProcessedDataSetProgram[]): ProcessedDataSetProgram {
+    private combineAndRemoveDuplicatesById(
+        metadataPackages: ProcessedDataSetProgram[]
+    ): ProcessedDataSetProgram {
         const initProcessedDataSet: ProcessedDataSetProgram = {
             dataSets: [],
             dataElements: [],
@@ -42,28 +46,28 @@ export class DataSetProgramCombineAndRemoveDuplicatesUseCase {
         const processedDataSet = metadataPackages.reduce((acc, data) => {
             return {
                 ...acc,
-                dataSets: appendUnique(acc.dataSets, data.dataSets),
-                dataElements: appendUnique(acc.dataElements, data.dataElements),
-                categories: appendUnique(acc.categories, data.categories),
-                categoryOptions: appendUnique(acc.categoryOptions, data.categoryOptions),
-                categoryOptionCombos: appendUnique(
+                dataSets: concatUnique(acc.dataSets, data.dataSets),
+                dataElements: concatUnique(acc.dataElements, data.dataElements),
+                categories: concatUnique(acc.categories, data.categories),
+                categoryOptions: concatUnique(acc.categoryOptions, data.categoryOptions),
+                categoryOptionCombos: concatUnique(
                     acc.categoryOptionCombos,
                     data.categoryOptionCombos
                 ),
-                legendSets: appendUnique(acc.legendSets, data.legendSets),
-                sections: appendUnique(acc.sections, data.sections),
-                categoryCombos: appendUnique(acc.categoryCombos, data.categoryCombos),
-                optionSets: appendUnique(acc.optionSets, data.optionSets),
-                options: appendUnique(acc.options, data.options),
-                programs: appendUnique(acc.programs, data.programs),
-                programStages: appendUnique(acc.programStages, data.programStages),
-                programRules: appendUnique(acc.programRules, data.programRules),
-                programRuleActions: appendUnique(acc.programRuleActions, data.programRuleActions),
-                programRuleVariables: appendUnique(
+                legendSets: concatUnique(acc.legendSets, data.legendSets),
+                sections: concatUnique(acc.sections, data.sections),
+                categoryCombos: concatUnique(acc.categoryCombos, data.categoryCombos),
+                optionSets: concatUnique(acc.optionSets, data.optionSets),
+                options: concatUnique(acc.options, data.options),
+                programs: concatUnique(acc.programs, data.programs),
+                programStages: concatUnique(acc.programStages, data.programStages),
+                programRules: concatUnique(acc.programRules, data.programRules),
+                programRuleActions: concatUnique(acc.programRuleActions, data.programRuleActions),
+                programRuleVariables: concatUnique(
                     acc.programRuleVariables,
                     data.programRuleVariables
                 ),
-                programIndicators: appendUnique(acc.programIndicators, data.programIndicators),
+                programIndicators: concatUnique(acc.programIndicators, data.programIndicators),
             };
         }, initProcessedDataSet);
 

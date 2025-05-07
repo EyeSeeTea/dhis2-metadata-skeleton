@@ -88,6 +88,10 @@ export class Collection<T> {
         return _c(this.xs.concat([x]));
     }
 
+    concat(xs: Collection<T>): Collection<T> {
+        return _c(this.xs.concat(xs.toArray()));
+    }
+
     includes(x: T): boolean {
         return this.xs.includes(x);
     }

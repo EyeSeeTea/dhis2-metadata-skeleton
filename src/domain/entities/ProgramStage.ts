@@ -48,8 +48,8 @@ interface ProgramStageDataElement {
     renderType?: RenderType;
     sharing: {
         external: boolean;
-        userGroups: Record<string, any>;
-        users: Record<string, any>;
+        userGroups: Record<string, unknown>;
+        users: Record<string, unknown>;
     };
     skipAnalytics: boolean;
     skipSynchronization: boolean;
