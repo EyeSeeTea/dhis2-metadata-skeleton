@@ -9,10 +9,10 @@ import { getJsonFileNames } from "../../helpers/files";
 const FILE_NAME = "output.json";
 
 export class MetadataJSONRepository implements MetadataRepository {
-    constructor(private capturePath: string, private outputPath: string) {}
+    constructor(private inputPath: string, private outputPath: string) {}
 
     async get<T>(): Promise<MetadataPackage<T>[]> {
-        const fileNames = await getJsonFileNames(this.capturePath);
+        const fileNames = await getJsonFileNames(this.inputPath);
 
         const allData = await Promise.all(
             fileNames.map(fileName => {
@@ -29,7 +29,7 @@ export class MetadataJSONRepository implements MetadataRepository {
     }
 
     private async readJsonFile(fileName: string) {
-        const filePath = path.join(this.capturePath, fileName);
+        const filePath = path.join(this.inputPath, fileName);
         const data = await fs.readFile(filePath, "utf-8");
         const parsedData = JSON.parse(data);
 
