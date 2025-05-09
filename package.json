@@ -10,8 +10,7 @@
         "start": "ts-node ./src/index.ts",
         "validate": "ts-node ./src/validateSchema.ts",
         "prettify": "prettier \"./**/*.{js,jsx,json,css,ts,tsx}\" --write",
-        "metadata-build": "ts-node ./src/index.ts metadata build",
-        "metadata-compare": "ts-node ./src/index.ts metadata compare"
+        "metadata-build": "ts-node ./src/index.ts metadata build"
     },
     "devDependencies": {
         "@types/node": "^22.9.0",
