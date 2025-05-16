@@ -1,8 +1,8 @@
 import path from "path";
 import fs from "fs/promises";
-import { MetadataRepository } from "../../domain/repositories/MetadataRepository";
-import { MetadataPackage } from "../../domain/entities/MetadataPackage";
-import { getJsonFileNames } from "../../helpers/files";
+import { MetadataRepository } from "$/domain/repositories/MetadataRepository";
+import { MetadataPackage } from "$/domain/entities/MetadataPackage";
+import { getJsonFileNames } from "$/helpers/files";
 
 //TODO: allow different names per output file
 

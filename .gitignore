@@ -3,6 +3,13 @@
 # dependencies
 /node_modules
 
+# testing
+/coverage
+
+# production
+manifest.webapp
+/build
+
 # misc
 .DS_Store
 .env.local
@@ -18,7 +25,16 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+src/locales/
+src/react-app.d.ts
+src/react-app-env.d.ts
+bak
 .eslintcache
+
+# cypress
+cypress/screenshots/
+cypress/videos/
+cypress/fixtures/
 
 # IntelliJ
 .idea/*

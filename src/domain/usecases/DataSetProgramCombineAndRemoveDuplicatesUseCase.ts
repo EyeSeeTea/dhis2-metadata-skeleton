@@ -71,7 +71,7 @@ export class DataSetProgramCombineAndRemoveDuplicatesUseCase {
             };
         }, initProcessedDataSet);
 
-        console.log(`Processed files successfully!`);
+        console.debug(`Processed files successfully!`);
         return processedDataSet;
     }
 }

@@ -1,10 +1,10 @@
 import { command } from "cmd-ts";
 import path from "path";
-import { MetadataJSONRepository } from "../../data/repositories/MetadataJSONRepository";
-import { DataSetProgramCombineAndRemoveDuplicatesUseCase } from "../../domain/usecases/DataSetProgramCombineAndRemoveDuplicatesUseCase";
-import { PermissionCombineAndRemoveDuplicatesUseCase } from "../../domain/usecases/PermissionCombineAndRemoveDuplicatesUseCase";
-import { VisualizationCombineAndRemoveDuplicatesUseCase } from "../../domain/usecases/VisualizationCombineAndRemoveDuplicatesUseCase";
-import { validateFiles } from "../../helpers/files";
+import { MetadataJSONRepository } from "$/data/repositories/MetadataJSONRepository";
+import { DataSetProgramCombineAndRemoveDuplicatesUseCase } from "$/domain/usecases/DataSetProgramCombineAndRemoveDuplicatesUseCase";
+import { PermissionCombineAndRemoveDuplicatesUseCase } from "$/domain/usecases/PermissionCombineAndRemoveDuplicatesUseCase";
+import { VisualizationCombineAndRemoveDuplicatesUseCase } from "$/domain/usecases/VisualizationCombineAndRemoveDuplicatesUseCase";
+import { validateFiles } from "$/helpers/files";
 
 export const build = command({
     name: "metadata build",
@@ -14,7 +14,7 @@ export const build = command({
 
         try {
 
-            console.log("Building metadata...");
+            console.debug("Building metadata...");
         
         const capturePath = path.join(__dirname, "../capture");
         const visualizationPath = path.join(__dirname, "../visualizations");
@@ -38,9 +38,9 @@ export const build = command({
         const errors = validationResults.filter(result => result !== null);
 
         if (errors.length > 0) {
-           console.log("\n----------------------------------------");
-           errors.forEach(error => console.log("  Validation Message:", error));
-           console.log("----------------------------------------\n");
+           console.debug("\n----------------------------------------");
+           errors.forEach(error => console.debug("  Validation Message:", error));
+           console.debug("----------------------------------------\n");
          throw new Error("Validation failed. Please check the errors above.");
         }
 
