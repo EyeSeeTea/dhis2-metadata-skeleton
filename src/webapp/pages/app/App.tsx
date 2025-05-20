@@ -2,17 +2,14 @@ import styled from "styled-components";
 import { HeaderBar } from "@dhis2/ui";
 
 import { MuiThemeProvider } from "@material-ui/core/styles";
-//@ts-ignore
-import OldMuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import React, { useEffect, useState } from "react";
 import { appConfig } from "$/app-config";
 import { CompositionRoot } from "$/CompositionRoot";
 import Share from "$/webapp/components/share/Share";
 import { AppContext, AppContextState } from "$/webapp/contexts/app-context";
 import "./App.css";
-import muiThemeLegacy from "./themes/dhis2-legacy.theme";
 import { muiTheme } from "./themes/dhis2.theme";
-import { Router } from "@material-ui/icons";
+import { Router } from "$/webapp/pages/Router";
 
 export interface AppProps {
     compositionRoot: CompositionRoot;
@@ -41,19 +38,17 @@ function App(props: AppProps) {
 
     return (
         <MuiThemeProvider theme={muiTheme}>
-            <OldMuiThemeProvider muiTheme={muiThemeLegacy}>
-                <>
-                    <StyledHeaderBar appName="Skeleton App" />
+            <>
+                <StyledHeaderBar appName="Skeleton App" />
 
-                    <div id="app" className="content">
-                        <AppContext.Provider value={appContext}>
-                            <Router />
-                        </AppContext.Provider>
-                    </div>
+                <div id="app" className="content">
+                    <AppContext.Provider value={appContext}>
+                        <Router />
+                    </AppContext.Provider>
+                </div>
 
-                    <Share visible={showShareButton} />
-                </>
-            </OldMuiThemeProvider>
+                <Share visible={showShareButton} />
+            </>
         </MuiThemeProvider>
     );
 }
