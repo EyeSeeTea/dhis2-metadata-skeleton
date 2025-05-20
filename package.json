@@ -14,7 +14,7 @@
         "check-code": "yarn lint && yarn test",
         "generate-docs": "typedoc --entryPointStrategy expand ./src",
         "lint-unused": "ts-prune --ignore 'ts-utils.ts'",
-         "lint-all": "yarn lint && yarn lint-unused",
+        "lint-all": "yarn lint && yarn lint-unused",
         "run-script": "ts-node -P src/scripts",
         "source-map-explorer": "yarn build --sourcemap=true && source-map-explorer --no-border-checks --only-mapped build/assets/*js",
         "test": "yarn test-unit",
@@ -34,6 +34,7 @@
         "build-app": "tsc -p tsconfig.json",
         "lint": "eslint src/{data,domain,scripts,types,utils}/**/*.ts --ext .ts",
         "start": "ts-node ./src/scripts/index.ts",
+        "start-metadata-comparator-app": "vite --strictPort",
         "validate": "ts-node ./src/validateSchema.ts",
         "prettify": "prettier \"./**/*.{js,jsx,json,css,ts,tsx}\" --write",
         "metadata-build": "ts-node ./src/scripts/index.ts metadata build"
@@ -92,8 +93,6 @@
         "@dhis2/d2-i18n-generate": "1.2.0",
         "@dhis2/ui": "6.12.0",
         "@eyeseetea/d2-api": "1.16.0-beta.6",
-        "@eyeseetea/d2-ui-components": "2.9.0-beta.3",
-        "@eyeseetea/feedback-component": "0.1.3-beta.1",
         "@material-ui/core": "4.12.4",
         "@material-ui/icons": "4.11.3",
         "@material-ui/lab": "4.0.0-alpha.60",
@@ -113,7 +112,7 @@
         "real-cancellable-promise": "^1.1.2",
         "styled-components": "6.1.11",
         "styled-jsx": "^5.1.6",
-        "typed-immutable-map": "^0.1.1", 
+        "typed-immutable-map": "^0.1.1",
         "zustand": "^4.3.7"
     },
     "manifest.webapp": {
@@ -132,5 +131,4 @@
             }
         }
     }
-
 }

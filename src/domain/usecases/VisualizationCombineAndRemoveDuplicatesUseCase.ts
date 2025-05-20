@@ -1,4 +1,4 @@
-import { ProcessedDataSetProgram } from "../entities/ProcessedDataSetProgram";
+
 import { ProcessedVisualization } from "../entities/ProcessedVisualization";
 import { MetadataRepository } from "../repositories/MetadataRepository";
 import { concatUnique } from "./helpers/concatUnique";
@@ -44,7 +44,7 @@ export class VisualizationCombineAndRemoveDuplicatesUseCase {
             };
         }, initProcessedVisualization);
 
-        console.log(`Processed files successfully!`);
+        console.debug(`Processed files successfully!`);
         return processedVisualization;
     }
 }

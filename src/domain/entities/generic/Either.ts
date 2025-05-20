@@ -8,7 +8,7 @@
  *         return x > 0 ? Either.success(Math.sqrt(x)) : Either.error({ message: "negative!" });
  *     })
  *     .match({
- *         success: x => console.log(`Value is ${x}`),
+ *         success: x => console.debug(`Value is ${x}`),
  *         error: error => console.error(`Some error: ${error.message}`),
  *     }); // prints `Value is 3`
  * ```

@@ -1,4 +1,1 @@
-import { Ref } from "./Ref";
-
-export type MetadataPackage<T> = T
-
+export type MetadataPackage<T> = T;

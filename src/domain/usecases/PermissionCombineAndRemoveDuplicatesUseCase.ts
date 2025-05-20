@@ -38,7 +38,7 @@ export class PermissionCombineAndRemoveDuplicatesUseCase {
             };
         }, initProcessedPermissions);
 
-        console.log(`Processed files successfully!`);
+        console.debug(`Processed files successfully!`);
         return processedPermissions;
     }
 }

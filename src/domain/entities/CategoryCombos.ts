@@ -1,6 +1,5 @@
 import { BaseMetadata } from "./common";
 
-type Ref = { id: String };
 
 export interface CategoryCombos extends BaseMetadata {
   categories: Array<{
