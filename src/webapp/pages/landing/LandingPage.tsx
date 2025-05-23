@@ -1,13 +1,28 @@
 import { Typography } from "@material-ui/core";
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardGrid } from "$/webapp/components/card-grid/CardGrid";
 import { useAppContext } from "$/webapp/contexts/app-context";
 import i18n from "$/utils/i18n";
+import DiffViewer from "$/webapp/components/DiffViewer";
 
 export const LandingPage: React.FC = React.memo(() => {
     const navigate = useNavigate();
     const { currentUser } = useAppContext();
+
+    const [showDiff, setShowDiff] = useState(false);
+
+    const originalObject = {
+        name: "John",
+        age: 30,
+        email: "john@example.com",
+    };
+
+    const updatedObject = {
+        name: "John",
+        age: 31,
+        email: "john.doe@example.com",
+    };
 
     const cards: Card[] = [
         {
@@ -28,6 +43,14 @@ export const LandingPage: React.FC = React.memo(() => {
         },
     ];
 
+    function MyButton() {
+        return (
+            <button onClick={() => setShowDiff(prev => !prev)}>
+                {showDiff ? "Ocultar diferencias" : "Comparar ficheros"}
+            </button>
+        );
+    }
+
     return (
         <>
             <Typography variant="h6">
@@ -35,6 +58,14 @@ export const LandingPage: React.FC = React.memo(() => {
             </Typography>
 
             <CardGrid cards={cards} />
+
+            <MyButton />
+
+            {showDiff && (
+                <div style={{ marginTop: "1rem" }}>
+                    <DiffViewer original={originalObject} updated={updatedObject} />
+                </div>
+            )}
         </>
     );
 });

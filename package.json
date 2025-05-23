@@ -105,6 +105,7 @@
         "d2-manifest": "1.0.0",
         "eslint-plugin-no-relative-import-paths": "^1.5.3",
         "font-awesome": "4.7.0",
+        "jsondiffpatch": "^0.7.3",
         "purify-ts": "1.2.0",
         "purify-ts-extra-codec": "0.6.0",
         "react": "18.3.1",
