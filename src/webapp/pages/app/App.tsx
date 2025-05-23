@@ -1,5 +1,4 @@
-import styled from "styled-components";
-import { HeaderBar } from "@dhis2/ui";
+
 import { MuiThemeProvider } from "@material-ui/core/styles";
 import React, { useEffect, useState } from "react";
 import { CompositionRoot } from "$/CompositionRoot";
@@ -19,8 +18,7 @@ function App(props: AppProps) {
 
     useEffect(() => {
         async function setup() {
-
-            setAppContext({compositionRoot});
+            setAppContext({ compositionRoot });
 
             setLoading(false);
         }
@@ -32,8 +30,6 @@ function App(props: AppProps) {
     return (
         <MuiThemeProvider theme={muiTheme}>
             <>
-                <StyledHeaderBar appName="Skeleton App" />
-
                 <div id="app" className="content">
                     <AppContext.Provider value={appContext}>
                         <Router />
@@ -43,12 +39,5 @@ function App(props: AppProps) {
         </MuiThemeProvider>
     );
 }
-
-
-const StyledHeaderBar = styled(HeaderBar)`
-    div:first-of-type {
-        box-sizing: border-box;
-    }
-`;
 
 export default React.memo(App);
