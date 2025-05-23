@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
 import { CompositionRoot } from "$/CompositionRoot";
-import { User } from "$/domain/entities/User";
+
 
 export interface AppContextState {
-    currentUser: User;
+
     compositionRoot: CompositionRoot;
 }
 
