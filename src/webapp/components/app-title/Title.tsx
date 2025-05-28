@@ -1,5 +1,19 @@
 import styled from "styled-components";
 
+type TitleProps = {
+    children: React.ReactNode;
+};
+
+const Title: React.FC<TitleProps> = ({ children }) => {
+    return (
+        <TitleContainer>
+            <StyledTitle>{children}</StyledTitle>
+        </TitleContainer>
+    );
+};
+
+export default Title;
+
 const TitleContainer = styled.div`
     background-color: rgb(215, 215, 215);
     padding: 1.5rem 2rem;
@@ -15,17 +29,3 @@ const StyledTitle = styled.h1`
     font-weight: bold;
     margin: 0;
 `;
-
-interface TitleProps {
-    children: React.ReactNode;
-}
-
-const Title: React.FC<TitleProps> = ({ children }) => {
-    return (
-        <TitleContainer>
-            <StyledTitle>{children}</StyledTitle>
-        </TitleContainer>
-    );
-};
-
-export default Title;

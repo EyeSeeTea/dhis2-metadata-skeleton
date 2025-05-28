@@ -1,10 +1,7 @@
-import ButtonContainer from "$/webapp/components/ButtonContainer";
-
 import { ImportFile } from "$/webapp/components/import-file/ImportFile";
-import JsonContainer from "$/webapp/components/JsonContainer";
-import JsonDisplay from "$/webapp/components/JsonDisplay";
 
 import React, { useState, useCallback } from "react";
+import { styled } from "styled-components";
 
 export const Comparator: React.FC = () => {
     const [jsonContentUnsorted, setJsonContentUnsorted] = useState<
@@ -15,7 +12,6 @@ export const Comparator: React.FC = () => {
     >(undefined);
 
     const onFileChangeSorted = useCallback(async (file: File | undefined) => {
-        
         if (!file) {
             setJsonContentSorted(undefined);
             return;
@@ -91,3 +87,30 @@ export const Comparator: React.FC = () => {
 };
 
 export default Comparator;
+
+const ButtonContainer = styled.div`
+    display: flex;
+    justify-content: space-between;
+    margin: 2rem 4rem;
+`;
+
+const JsonDisplay = styled.div`
+    display: flex;
+    justify-content: space-between;
+    margin: 2rem;
+`;
+
+const JsonContainer = styled.div`
+    flex: 1;
+    margin: 1rem;
+    padding: 1rem;
+    background-color: #fafafa;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: auto;
+    min-height: 300px;
+    max-height: 500px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: monospace;
+`;

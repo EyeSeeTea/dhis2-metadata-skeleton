@@ -1,5 +1,13 @@
 import styled from "styled-components";
 
+export const Logo = () => {
+  return (
+    <LogoWrapper>
+      <Icon src="/icon.png" alt="Logo" />
+    </LogoWrapper>
+  );
+};
+
 const LogoWrapper = styled.div`
   position: absolute;
   top: 1rem;
@@ -12,11 +20,3 @@ const Icon = styled.img`
   width: 40px;
   height: 40px;
 `;
-
-export const Logo = () => {
-  return (
-    <LogoWrapper>
-      <Icon src="/icon.png" alt="Logo" />
-    </LogoWrapper>
-  );
-};
