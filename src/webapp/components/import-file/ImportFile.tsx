@@ -4,12 +4,12 @@ import { CloudUpload } from "@material-ui/icons";
 import i18n from "$/utils/i18n";
 
 type ImportFileProps = {
-    setFile: (file: File | undefined) => void;
+    onFileChange: (file: File | undefined) => void;
     id ?: string;
 }
 
 export const ImportFile: React.FC<ImportFileProps> = React.memo(props => {
-    const {setFile, id = "upload"} = props;
+    const {onFileChange, id = "upload"} = props;
 
     const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
 
@@ -19,11 +19,11 @@ export const ImportFile: React.FC<ImportFileProps> = React.memo(props => {
         const files = event.target.files;
         if (files && files.length > 0) {
             setSelectedFile(files[0]);
-            setFile(files[0]);
+            onFileChange(files[0]);
             console.debug("Handle file change:", files[0]);
         } else {
             setSelectedFile(undefined);
-            setFile(undefined);
+            onFileChange(undefined);
         }
     }, []);
 

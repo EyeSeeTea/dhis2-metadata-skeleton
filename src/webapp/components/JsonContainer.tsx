@@ -1,5 +1,7 @@
 import styled from 'styled-components';
 
+//Each "box" that will contain the JSON data
+
 const JsonContainer = styled.div`
   flex: 1;
   margin: 1rem;
