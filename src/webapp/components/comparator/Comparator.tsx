@@ -1,67 +1,29 @@
 import { ImportFile } from "$/webapp/components/import-file/ImportFile";
-
-import React, { useState, useCallback } from "react";
+import React from "react";
 import { styled } from "styled-components";
+import _ from "../../../domain/entities/generic/Collection";
+import { useJSONDifference } from "$/webapp/components/comparator/useJSONFDifference";
 
 export const Comparator: React.FC = () => {
-    const [jsonContentUnsorted, setJsonContentUnsorted] = useState<
-        Record<string, unknown[]> | undefined
-    >(undefined);
-    const [jsonContentSorted, setJsonContentSorted] = useState<
-        Record<string, unknown[]> | undefined
-    >(undefined);
+    const { jsonContentSorted, jsonContentUnsorted, jsonDifference, uploadSorted, uploadUnsorted } =
+        useJSONDifference();
 
-    const onFileChangeSorted = useCallback(async (file: File | undefined) => {
-        if (!file) {
-            setJsonContentSorted(undefined);
-            return;
-        }
-
-        try {
-            const jsonData = await file.text();
-            const jsonParsed = JSON.parse(jsonData);
-            setJsonContentSorted(jsonParsed);
-        } catch (error) {
-            console.error("Error getting sorted JSON:", error);
-            setJsonContentSorted(undefined);
-        }
-    }, []);
-
-    const onFileChangeUnsorted = useCallback(async (file: File | undefined) => {
-        if (!file) {
-            setJsonContentUnsorted(undefined);
-
-            return;
-        }
-
-        try {
-            const jsonData = await file.text();
-            const jsonParsed = JSON.parse(jsonData);
-            setJsonContentUnsorted(jsonParsed);
-        } catch (error) {
-            console.error("Error getting sorted JSON:", error);
-            setJsonContentUnsorted(undefined);
-        }
-    }, []);
-
-    console.debug("Unsorted JSON:", jsonContentUnsorted);
-    console.debug("Sorted JSON:", jsonContentSorted);
     return (
         <div>
             <ButtonContainer>
                 <div>
-                    <p>Upload unsorted :</p>
-                    <ImportFile id="upload-unsorted" onFileChange={onFileChangeUnsorted} />
+                    <p>Upload unsorted:</p>
+                    <ImportFile id="upload-unsorted" onFileChange={uploadUnsorted} />
                 </div>
                 <div>
-                    <p>Upload sorted :</p>
-                    <ImportFile id="upload-sorted" onFileChange={onFileChangeSorted} />
+                    <p>Upload sorted:</p>
+                    <ImportFile id="upload-sorted" onFileChange={uploadSorted} />
                 </div>
             </ButtonContainer>
 
             <JsonDisplay>
                 <JsonContainer>
-                    <strong>Unsorted JSON :</strong>
+                    <strong>Unsorted JSON:</strong>
                     <pre>
                         {jsonContentUnsorted
                             ? JSON.stringify(jsonContentUnsorted, null, 2)
@@ -70,11 +32,12 @@ export const Comparator: React.FC = () => {
                 </JsonContainer>
 
                 <JsonContainer>
-                    <strong>Comparison</strong>
+                    <strong>Difference:</strong>
+                    <pre>{jsonDifference}</pre>
                 </JsonContainer>
 
                 <JsonContainer>
-                    <strong>Sorted JSON :</strong>
+                    <strong>Sorted JSON:</strong>
                     <pre>
                         {jsonContentSorted
                             ? JSON.stringify(jsonContentSorted, null, 2)

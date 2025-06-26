@@ -6,9 +6,9 @@ export const LandingPage = () => {
     return (
         <div>
             <Logo />
-            <Title>Json Comparator</Title>
+            <Title>JSON Comparator</Title>
 
-            <Comparator/>
+            <Comparator />
         </div>
     );
 };
