@@ -2,7 +2,7 @@ export type CompositionRoot = ReturnType<typeof getCompositionRoot>;
 
 type Repositories = {};
 
-function getCompositionRoot(repositories: Repositories) {
+function getCompositionRoot(_repositories: Repositories) {
     return {};
 }
 

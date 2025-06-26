@@ -2,7 +2,7 @@ import { ImportFile } from "$/webapp/components/import-file/ImportFile";
 import React from "react";
 import { styled } from "styled-components";
 import _ from "../../../domain/entities/generic/Collection";
-import { useJSONDifference } from "$/webapp/components/comparator/useJSONFDifference";
+import { useJSONDifference } from "$/webapp/components/comparator/useJSONDifference";
 
 export const Comparator: React.FC = () => {
     const { jsonContentSorted, jsonContentUnsorted, jsonDifference, uploadSorted, uploadUnsorted } =

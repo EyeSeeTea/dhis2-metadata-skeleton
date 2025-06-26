@@ -1,9 +1,7 @@
 import React, { useContext } from "react";
 import { CompositionRoot } from "$/CompositionRoot";
 
-
 export interface AppContextState {
-
     compositionRoot: CompositionRoot;
 }
 
