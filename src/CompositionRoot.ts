@@ -1,9 +1,13 @@
+import { GenerateJSONDifferenceUseCase } from "$/domain/usecases/GenerateJSONDifferenceUseCase";
+
 export type CompositionRoot = ReturnType<typeof getCompositionRoot>;
 
 type Repositories = {};
 
 function getCompositionRoot(_repositories: Repositories) {
-    return {};
+    return {
+        generateJSONDifference: new GenerateJSONDifferenceUseCase(),
+    };
 }
 
 export function getWebappCompositionRoot() {

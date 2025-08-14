@@ -5,11 +5,11 @@ import i18n from "$/utils/i18n";
 
 type ImportFileProps = {
     onFileChange: (file: File | undefined) => void;
-    id ?: string;
-}
+    id?: string;
+};
 
 export const ImportFile: React.FC<ImportFileProps> = React.memo(props => {
-    const {onFileChange, id = "upload"} = props;
+    const { onFileChange, id = "upload" } = props;
 
     const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
 
@@ -28,19 +28,16 @@ export const ImportFile: React.FC<ImportFileProps> = React.memo(props => {
     }, []);
 
     return (
-       
-            <FileInputWrapper>
-                <FileInputLabel htmlFor={id}  >
-                    <span>{i18n.t("Select File")}</span>
-                    <CloudUpload />
-                </FileInputLabel>
-                <FileInput id={id} type="file" accept=".json" onChange={handleFileChange} />
-                {selectedFile && <p>{selectedFile.name}</p>}
-            </FileInputWrapper>
-       
+        <FileInputWrapper>
+            <FileInputLabel htmlFor={id}>
+                <span>{i18n.t("Select File")}</span>
+                <CloudUpload />
+            </FileInputLabel>
+            <FileInput id={id} type="file" accept=".json" onChange={handleFileChange} />
+            {selectedFile && <p>{selectedFile.name}</p>}
+        </FileInputWrapper>
     );
 });
-
 
 const FileInputWrapper = styled.div`
     position: relative;

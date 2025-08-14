@@ -1,6 +1,5 @@
 import { ProcessedPermissions } from "../entities/ProcessedPermissions";
 import { MetadataRepository } from "../repositories/MetadataRepository";
-import _ from "../entities/generic/Collection";
 import { concatUnique } from "./helpers/concatUnique";
 
 export class PermissionCombineAndRemoveDuplicatesUseCase {
