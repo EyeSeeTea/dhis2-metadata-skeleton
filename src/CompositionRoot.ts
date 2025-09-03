@@ -1,4 +1,4 @@
-import { GenerateJSONDifferenceUseCase } from "$/domain/usecases/GenerateJSONDifferenceUseCase";
+import { DownloadFileUseCase } from "$/domain/usecases/DownloadFileUseCase";
 
 export type CompositionRoot = ReturnType<typeof getCompositionRoot>;
 
@@ -6,7 +6,7 @@ type Repositories = {};
 
 function getCompositionRoot(_repositories: Repositories) {
     return {
-        generateJSONDifference: new GenerateJSONDifferenceUseCase(),
+        downloadFile: new DownloadFileUseCase(),
     };
 }
 

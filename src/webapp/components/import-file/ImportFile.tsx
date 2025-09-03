@@ -13,8 +13,6 @@ export const ImportFile: React.FC<ImportFileProps> = React.memo(props => {
 
     const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
 
-    console.debug("State import file", selectedFile);
-
     const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files;
         if (files && files.length > 0) {

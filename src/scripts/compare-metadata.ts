@@ -2,9 +2,9 @@ import { command, option, optional, run, string } from "cmd-ts";
 import { spawn } from "child_process";
 import { resolve } from "path";
 import { readFileSync } from "fs";
-import { GenerateJSONDifferenceUseCase } from "$/domain/usecases/GenerateJSONDifferenceUseCase";
 import { Maybe } from "$/utils/ts-utils";
 import { JSONContent } from "$/domain/entities/JSONContent";
+import { compare as diff } from "fast-json-patch";
 
 function main() {
     const cmd = command({
@@ -13,15 +13,15 @@ function main() {
         args: {
             file1: option({
                 type: optional(string),
-                long: "first-file-path",
-                short: "file1",
+                long: "sorted-metadata",
+                short: "s",
                 description: "Path to the first metadata JSON file",
                 defaultValue: () => undefined,
             }),
             file2: option({
                 type: optional(string),
-                long: "second-file-path",
-                short: "file2",
+                long: "unsorted-metadata",
+                short: "u",
                 description: "Path to the second metadata JSON file",
                 defaultValue: () => undefined,
             }),
@@ -38,7 +38,7 @@ function main() {
                 json2 &&
                 JSONContent.isValidJSON(json2)
             ) {
-                const jsonDifference = new GenerateJSONDifferenceUseCase().execute(json1, json2);
+                const jsonDifference = diff(json1, json2);
 
                 if (jsonDifference.length === 0) {
                     console.debug("The two JSON files are identical. No comparison needed.");

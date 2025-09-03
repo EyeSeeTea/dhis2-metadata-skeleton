@@ -1,28 +1,37 @@
 import { JSONContent } from "$/domain/entities/JSONContent";
 import { Maybe } from "$/utils/ts-utils";
-import { useAppContext } from "$/webapp/contexts/app-context";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-export function useJSONDifference() {
-    const { compositionRoot } = useAppContext();
+type JSONComparatorProps = {
+    hideButton: boolean;
+    jsonContent: Maybe<JSONContent>;
+};
+
+type JSONComparatorState = {
+    sortedMetadata: JSONComparatorProps;
+    unsortedMetadata: JSONComparatorProps;
+    uploadSorted: (file: Maybe<File>) => void;
+    uploadUnsorted: (file: Maybe<File>) => void;
+};
+
+export function useJSONComparator(): JSONComparatorState {
+    const [hideUnsortedButton, setHideUnsortedButton] = useState(false);
+    const [hideSortedButton, setHideSortedButton] = useState(false);
+    const [jsonContentUnsorted, setJsonContentUnsorted] = useState<Maybe<JSONContent>>(undefined);
+    const [jsonContentSorted, setJsonContentSorted] = useState<Maybe<JSONContent>>(undefined);
 
     useEffect(() => {
         const { json1Parsed, json2Parsed } = parseJSONFromEnvInput();
 
         if (json1Parsed) {
-            setHideUnsortedButton(true);
-            setJsonContentUnsorted(json1Parsed);
+            setHideSortedButton(true);
+            setJsonContentSorted(json1Parsed);
         }
         if (json2Parsed) {
-            setHideSortedButton(true);
-            setJsonContentSorted(json2Parsed);
+            setHideUnsortedButton(true);
+            setJsonContentUnsorted(json2Parsed);
         }
     }, []);
-
-    const [hideUnsortedButton, setHideUnsortedButton] = useState(false);
-    const [hideSortedButton, setHideSortedButton] = useState(false);
-    const [jsonContentUnsorted, setJsonContentUnsorted] = useState<Maybe<JSONContent>>(undefined);
-    const [jsonContentSorted, setJsonContentSorted] = useState<Maybe<JSONContent>>(undefined);
 
     const onFileChange = useCallback(
         async (file: Maybe<File>, setJsonContent: (value: Maybe<JSONContent>) => void) => {
@@ -50,22 +59,17 @@ export function useJSONDifference() {
         []
     );
 
-    const jsonDifference = useMemo(() => {
-        if (!jsonContentSorted || !jsonContentUnsorted) return [];
-        return compositionRoot.generateJSONDifference.execute(
-            jsonContentSorted,
-            jsonContentUnsorted
-        );
-    }, [jsonContentSorted, jsonContentUnsorted]);
-
     return {
-        hideUnsortedButton: hideUnsortedButton,
-        hideSortedButton: hideSortedButton,
-        jsonDifference: jsonDifference,
-        jsonContentSorted: jsonContentSorted,
-        jsonContentUnsorted: jsonContentUnsorted,
-        uploadUnsorted: uploadUnsorted,
+        sortedMetadata: {
+            hideButton: hideSortedButton,
+            jsonContent: jsonContentSorted,
+        },
+        unsortedMetadata: {
+            hideButton: hideUnsortedButton,
+            jsonContent: jsonContentUnsorted,
+        },
         uploadSorted: uploadSorted,
+        uploadUnsorted: uploadUnsorted,
     };
 }
 
