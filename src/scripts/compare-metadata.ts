@@ -32,12 +32,7 @@ function main() {
             const json1 = parseMetadataFromFile(file1);
             const json2 = parseMetadataFromFile(file2);
 
-            if (
-                json1 &&
-                JSONContent.isValidJSON(json1) &&
-                json2 &&
-                JSONContent.isValidJSON(json2)
-            ) {
+            if (JSONContent.isValidJSON(json1) && JSONContent.isValidJSON(json2)) {
                 const jsonDifference = diff(json1, json2);
 
                 if (jsonDifference.length === 0) {

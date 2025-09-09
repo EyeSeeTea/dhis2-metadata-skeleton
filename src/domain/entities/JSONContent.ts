@@ -1,17 +1,29 @@
 import { Maybe } from "$/utils/ts-utils";
 
-export class JSONContent {
-    [key: string]: unknown;
+export type JSONPrimitive = string | number | boolean | null;
+export type JSONValue = JSONPrimitive | JSONContent | JSONArray;
+export type JSONArray = JSONValue[];
 
-    constructor(data: Record<string, unknown>) {
-        Object.assign(this, data);
+export class JSONContent {
+    [key: string]: JSONValue;
+
+    static isValidJSON(jsonContent: Maybe<JSONContent>): jsonContent is JSONContent {
+        return jsonContent !== undefined && this.isObject(jsonContent);
     }
 
-    static isValidJSON(jsonContent: Maybe<JSONContent>): boolean {
+    static isArray(jsonContent: Maybe<JSONValue>): jsonContent is JSONArray {
+        return Array.isArray(jsonContent);
+    }
+
+    static isObject(jsonContent: Maybe<JSONValue>): jsonContent is JSONContent {
         return (
-            jsonContent !== undefined ||
-            Array.isArray(jsonContent) ||
-            (typeof jsonContent === "object" && jsonContent !== null && !Array.isArray(jsonContent))
+            typeof jsonContent === "object" && jsonContent !== null && !Array.isArray(jsonContent)
+        );
+    }
+
+    static isPrimitive(jsonContent: Maybe<JSONValue>): jsonContent is JSONPrimitive {
+        return (
+            jsonContent !== undefined && !this.isArray(jsonContent) && !this.isObject(jsonContent)
         );
     }
 }
