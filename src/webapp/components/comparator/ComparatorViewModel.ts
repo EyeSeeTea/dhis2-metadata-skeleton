@@ -42,101 +42,102 @@ export function prettyPrintJson(json: JSONContent): string {
 }
 
 export function renderValue(props: JsonRenderProps): Line[] {
-    const { jsonValue: val, path, depth, isLast, unit } = props;
+    const { jsonValue: jsonValue, path, depth, isLast, unit } = props;
     const indent = unit.repeat(depth);
     const mk = (t: string, p: string = path): Line => ({ text: t, path: p });
 
-    switch (true) {
-        case JSONContent.isPrimitive(val):
-            return [mk(indent + JSON.stringify(val) + (isLast ? "" : ","))];
-        case JSONContent.isArray(val): {
-            return [
-                mk(indent + "["),
-                ...val
-                    .map((el, i) =>
-                        renderValue({
-                            jsonValue: el,
-                            path: path + "/" + String(i),
-                            depth: depth + 1,
-                            isLast: i === val.length - 1,
-                            unit: unit,
-                        })
-                    )
-                    .reduce<Line[]>((a, b) => a.concat(b), []),
-                mk(indent + "]" + (isLast ? "" : ",")),
-            ];
-        }
-        case JSONContent.isObject(val): {
-            const keys = Object.keys(val);
-            const open: Line = { text: indent + "{", path };
-            const keyIndent = unit.repeat(depth + 1);
-
-            const inner = keys
-                .map((k, idx) => {
-                    const lastProp = idx === keys.length - 1;
-                    const keyPath = path + "/" + encodePtr(k);
-                    const pre = indent + " " + JSON.stringify(k) + ": ";
-                    const v = val[k];
-
-                    return JSONContent.isPrimitive(v)
-                        ? [mk(pre + JSON.stringify(v) + (lastProp ? "" : ","), keyPath)]
-                        : JSONContent.isArray(v)
-                        ? [
-                              mk(pre + "[", keyPath),
-                              ...v
-                                  .map((el, i) =>
-                                      renderValue({
-                                          jsonValue: el,
-                                          path: keyPath + "/" + String(i),
-                                          depth: depth + 2,
-                                          isLast: i === v.length - 1,
-                                          unit: unit,
-                                      })
-                                  )
-                                  .reduce<Line[]>((a, b) => a.concat(b), []),
-                              mk(keyIndent + "]" + (lastProp ? "" : ","), keyPath),
-                          ]
-                        : [
-                              mk(pre + "{", keyPath),
-                              ...Object.keys(v as JSONContent)
-                                  .map((kk, j) => {
-                                      const lastInner = j === Object.keys(v as object).length - 1;
-                                      const innerPath = keyPath + "/" + encodePtr(kk);
-                                      const innerIndent = unit.repeat(depth + 2);
-                                      const innerPre = innerIndent + JSON.stringify(kk) + ": ";
-                                      const vv = (v as JSONContent)[kk];
-
-                                      return JSONContent.isPrimitive(vv)
-                                          ? [
-                                                mk(
-                                                    innerPre +
-                                                        JSON.stringify(vv) +
-                                                        (lastInner ? "" : ","),
-                                                    innerPath
-                                                ),
-                                            ]
-                                          : vv !== undefined
-                                          ? renderValue({
-                                                jsonValue: vv,
-                                                path: innerPath,
-                                                depth: depth + 2,
-                                                isLast: lastInner,
-                                                unit: unit,
-                                            })
-                                          : [];
-                                  })
-                                  .reduce<Line[]>((a, b) => a.concat(b), []),
-                              mk(keyIndent + "}" + (lastProp ? "" : ","), keyPath),
-                          ];
-                })
-                .reduce<Line[]>((a, b) => a.concat(b), []);
-            const close: Line = { text: indent + "}" + (isLast ? "" : ","), path };
-
-            return [open, ...inner, close];
-        }
-        default:
-            return [{ text: indent + JSON.stringify(val) + (isLast ? "" : ","), path }];
+    if (JSONContent.isPrimitive(jsonValue)) {
+        return [mk(indent + JSON.stringify(jsonValue) + (isLast ? "" : ","))];
     }
+
+    if (JSONContent.isArray(jsonValue)) {
+        return [
+            mk(indent + "["),
+            ...jsonValue
+                .map((el, i) =>
+                    renderValue({
+                        jsonValue: el,
+                        path: path + "/" + String(i),
+                        depth: depth + 1,
+                        isLast: i === jsonValue.length - 1,
+                        unit: unit,
+                    })
+                )
+                .reduce<Line[]>((a, b) => a.concat(b), []),
+            mk(indent + "]" + (isLast ? "" : ",")),
+        ];
+    }
+
+    if (JSONContent.isObject(jsonValue)) {
+        const keys = Object.keys(jsonValue);
+        const open: Line = { text: indent + "{", path };
+        const keyIndent = unit.repeat(depth + 1);
+
+        const inner = keys
+            .map((k, idx) => {
+                const lastProp = idx === keys.length - 1;
+                const keyPath = path + "/" + encodePtr(k);
+                const pre = indent + " " + JSON.stringify(k) + ": ";
+                const v = jsonValue[k];
+
+                return JSONContent.isPrimitive(v)
+                    ? [mk(pre + JSON.stringify(v) + (lastProp ? "" : ","), keyPath)]
+                    : JSONContent.isArray(v)
+                    ? [
+                          mk(pre + "[", keyPath),
+                          ...v
+                              .map((el, i) =>
+                                  renderValue({
+                                      jsonValue: el,
+                                      path: keyPath + "/" + String(i),
+                                      depth: depth + 2,
+                                      isLast: i === v.length - 1,
+                                      unit: unit,
+                                  })
+                              )
+                              .reduce<Line[]>((a, b) => a.concat(b), []),
+                          mk(keyIndent + "]" + (lastProp ? "" : ","), keyPath),
+                      ]
+                    : [
+                          mk(pre + "{", keyPath),
+                          ...Object.keys(v as JSONContent)
+                              .map((kk, j) => {
+                                  const lastInner = j === Object.keys(v as object).length - 1;
+                                  const innerPath = keyPath + "/" + encodePtr(kk);
+                                  const innerIndent = unit.repeat(depth + 2);
+                                  const innerPre = innerIndent + JSON.stringify(kk) + ": ";
+                                  const vv = (v as JSONContent)[kk];
+
+                                  return JSONContent.isPrimitive(vv)
+                                      ? [
+                                            mk(
+                                                innerPre +
+                                                    JSON.stringify(vv) +
+                                                    (lastInner ? "" : ","),
+                                                innerPath
+                                            ),
+                                        ]
+                                      : vv !== undefined
+                                      ? renderValue({
+                                            jsonValue: vv,
+                                            path: innerPath,
+                                            depth: depth + 2,
+                                            isLast: lastInner,
+                                            unit: unit,
+                                        })
+                                      : [];
+                              })
+                              .reduce<Line[]>((a, b) => a.concat(b), []),
+                          mk(keyIndent + "}" + (lastProp ? "" : ","), keyPath),
+                      ];
+            })
+            .reduce<Line[]>((a, b) => a.concat(b), []);
+        const close: Line = { text: indent + "}" + (isLast ? "" : ","), path };
+
+        return [open, ...inner, close];
+    }
+
+    return [{ text: indent + JSON.stringify(jsonValue) + (isLast ? "" : ","), path }];
 }
 
 type JsonRenderProps = {
