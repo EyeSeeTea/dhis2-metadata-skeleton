@@ -13,17 +13,20 @@ export const ImportFile: React.FC<ImportFileProps> = React.memo(props => {
 
     const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
 
-    const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-        const files = event.target.files;
-        if (files && files.length > 0) {
-            setSelectedFile(files[0]);
-            onFileChange(files[0]);
-            console.debug("Handle file change:", files[0]);
-        } else {
-            setSelectedFile(undefined);
-            onFileChange(undefined);
-        }
-    }, []);
+    const handleFileChange = useCallback(
+        (event: React.ChangeEvent<HTMLInputElement>) => {
+            const files = event.target.files;
+            if (files && files.length > 0) {
+                setSelectedFile(files[0]);
+                onFileChange(files[0]);
+                console.debug("Handle file change:", files[0]);
+            } else {
+                setSelectedFile(undefined);
+                onFileChange(undefined);
+            }
+        },
+        [onFileChange]
+    );
 
     return (
         <FileInputWrapper>
@@ -40,7 +43,7 @@ export const ImportFile: React.FC<ImportFileProps> = React.memo(props => {
 const FileInputWrapper = styled.div`
     position: relative;
     margin-top: 1rem;
-    width: min-width;
+    width: min-content;
     display: flex;
     gap: 0.5rem;
 `;
