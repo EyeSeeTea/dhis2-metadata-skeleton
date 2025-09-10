@@ -1,7 +1,7 @@
-import { useComparator } from "$/webapp/components/comparator/useComparator";
+import { useComparator } from "$/webapp/components/comparator/hooks/useComparator";
 import { ImportFile } from "$/webapp/components/import-file/ImportFile";
 import styled from "styled-components";
-import { useDownloadJSON } from "$/webapp/components/comparator/useDownloadJSON";
+import { useDownloadJSON } from "$/webapp/components/comparator/hooks/useDownloadJSON";
 import { CloudDownload } from "@material-ui/icons";
 import i18n from "$/utils/i18n";
 import ActionButton from "$/webapp/components/ActionButton";

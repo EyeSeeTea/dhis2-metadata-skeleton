@@ -54,7 +54,7 @@ export function useDiffLineProps(props: DiffLineProps): DiffLineState {
 
     const toggleChoice = useCallback(() => {
         if (path) updateChoice(path, mergedSelection[path] === "unsorted" ? "sorted" : "unsorted");
-    }, []);
+    }, [path, mergedSelection, updateChoice]);
     const updateSelection = useCallback(() => {
         if (path) updateChoice(path, side);
     }, [path, side, updateChoice]);

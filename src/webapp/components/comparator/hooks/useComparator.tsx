@@ -58,7 +58,7 @@ export function useComparator(): ComparatorState {
             {}
         );
         setChoices(def);
-    }, [rows.map(r => r.path).join("|")]);
+    }, [rows]);
 
     const chosenOps = useMemo(
         () => rows.filter(r => mergedSelection[r.path] === "unsorted").map(r => r.op),

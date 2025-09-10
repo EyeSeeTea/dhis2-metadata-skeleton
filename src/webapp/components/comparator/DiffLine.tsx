@@ -1,5 +1,8 @@
 import { OpType } from "$/webapp/components/comparator/ComparatorViewModel";
-import { DiffLineProps, useDiffLineProps } from "$/webapp/components/comparator/useDiffLineProps";
+import {
+    DiffLineProps,
+    useDiffLineProps,
+} from "$/webapp/components/comparator/hooks/useDiffLineProps";
 import { AddCircleOutline, CachedOutlined, RemoveCircleOutline } from "@material-ui/icons";
 import styled from "styled-components";
 
