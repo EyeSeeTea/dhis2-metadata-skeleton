@@ -80,5 +80,10 @@ function parseMetadataFromFile(filePath: Maybe<string>): Maybe<JSONContent> {
     const file = resolve(filePath);
     const jsonContent = readFileSync(file, "utf-8");
 
-    return JSON.parse(jsonContent);
+    try {
+        return JSON.parse(jsonContent);
+    } catch (error) {
+        console.error(`Failed to parse JSON from file: ${filePath}`, error);
+        return undefined;
+    }
 }
