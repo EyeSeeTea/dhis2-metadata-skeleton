@@ -19,9 +19,9 @@ export function applyOps(base: JSONContent, ops: Operation[]): JSONContent {
     const ordered = [...ops].sort(
         (a, b) => pathToArray(a.path).length - pathToArray(b.path).length
     );
-    const clone = (x: JSONContent) => JSON.parse(JSON.stringify(x)) as JSONContent;
+    const clone = (x: JSONContent) => structuredClone<JSONContent>(x);
 
-    return applyPatch(clone(base), ordered, false).newDocument as JSONContent;
+    return applyPatch(clone(base), ordered, false).newDocument;
 }
 
 export function buildRows(a: JSONContent, b: JSONContent): Row[] {
@@ -81,20 +81,22 @@ export function renderValue(props: JsonRenderProps): Line[] {
                 const lastProp = idx === keys.length - 1;
                 const keyPath = path + "/" + encodePtr(k);
                 const pre = indent + " " + JSON.stringify(k) + ": ";
-                const v = jsonValue[k];
+                const jsonValueElement = jsonValue[k];
 
-                return JSONContent.isPrimitive(v)
-                    ? [mk(pre + JSON.stringify(v) + (lastProp ? "" : ","), keyPath)]
-                    : JSONContent.isArray(v)
+                if (!jsonValueElement) return [];
+
+                return JSONContent.isPrimitive(jsonValueElement)
+                    ? [mk(pre + JSON.stringify(jsonValueElement) + (lastProp ? "" : ","), keyPath)]
+                    : JSONContent.isArray(jsonValueElement)
                     ? [
                           mk(pre + "[", keyPath),
-                          ...v
+                          ...jsonValueElement
                               .map((el, i) =>
                                   renderValue({
                                       jsonValue: el,
                                       path: keyPath + "/" + String(i),
                                       depth: depth + 2,
-                                      isLast: i === v.length - 1,
+                                      isLast: i === jsonValueElement.length - 1,
                                       unit: unit,
                                   })
                               )
@@ -103,26 +105,27 @@ export function renderValue(props: JsonRenderProps): Line[] {
                       ]
                     : [
                           mk(pre + "{", keyPath),
-                          ...Object.keys(v as JSONContent)
-                              .map((kk, j) => {
-                                  const lastInner = j === Object.keys(v as object).length - 1;
-                                  const innerPath = keyPath + "/" + encodePtr(kk);
+                          ...Object.keys(jsonValueElement)
+                              .map((nestedKey, nestedKeyIndex) => {
+                                  const lastInner =
+                                      nestedKeyIndex === Object.keys(jsonValueElement).length - 1;
+                                  const innerPath = keyPath + "/" + encodePtr(nestedKey);
                                   const innerIndent = unit.repeat(depth + 2);
-                                  const innerPre = innerIndent + JSON.stringify(kk) + ": ";
-                                  const vv = (v as JSONContent)[kk];
+                                  const innerPre = innerIndent + JSON.stringify(nestedKey) + ": ";
+                                  const nestedJsonValue = jsonValueElement[nestedKey];
 
-                                  return JSONContent.isPrimitive(vv)
+                                  return JSONContent.isPrimitive(nestedJsonValue)
                                       ? [
                                             mk(
                                                 innerPre +
-                                                    JSON.stringify(vv) +
+                                                    JSON.stringify(nestedJsonValue) +
                                                     (lastInner ? "" : ","),
                                                 innerPath
                                             ),
                                         ]
-                                      : vv !== undefined
+                                      : nestedJsonValue !== undefined
                                       ? renderValue({
-                                            jsonValue: vv,
+                                            jsonValue: nestedJsonValue,
                                             path: innerPath,
                                             depth: depth + 2,
                                             isLast: lastInner,
