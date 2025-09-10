@@ -32,9 +32,15 @@ export function useDiffLineProps(props: DiffLineProps): DiffLineState {
     const chosenSide = path ? mergedSelection[path] : undefined;
     const isSelectedSide = chosenSide === side;
 
-    const selectedLineColor = changed ? (isSelectedSide ? "#c7f3d0" : "#fde68a") : "transparent";
-    const selectedBackgroundColor = isSelectedSide ? "#10b981" : "white";
-    const selectedButtonTextColor = isSelectedSide ? "white" : "black";
+    const selectedLineColor = changed
+        ? isSelectedSide
+            ? colors.SELECTED_LINE_COLOR
+            : colors.UNSELECTED_LINE_COLOR
+        : colors.TRANSPARENT;
+    const selectedBackgroundColor = isSelectedSide
+        ? colors.SELECTED_BACKGROUND_COLOR
+        : colors.WHITE;
+    const selectedButtonTextColor = isSelectedSide ? colors.WHITE : colors.BLACK;
 
     const opKindByPath = useMemo<Record<string, OpType>>(
         () =>
@@ -42,10 +48,13 @@ export function useDiffLineProps(props: DiffLineProps): DiffLineState {
                 (acc, r) => ({ ...acc, [r.path]: r.op.op as OpType }),
                 {}
             ),
-        [props.rows]
+        [rows]
     );
 
-    const operationType = useMemo(() => (path ? opKindByPath[path] : undefined), [path]);
+    const operationType = useMemo(
+        () => (path ? opKindByPath[path] : undefined),
+        [path, opKindByPath]
+    );
     const lineButtonText = useMemo(
         () => getButtonText(side, isSelectedSide),
         [side, isSelectedSide]
@@ -83,3 +92,12 @@ function getButtonText(side: Choice, chosenHere: boolean): string {
         }
     }
 }
+
+const colors = {
+    SELECTED_LINE_COLOR: "#c7f3d0",
+    UNSELECTED_LINE_COLOR: "#fde68a",
+    SELECTED_BACKGROUND_COLOR: "#10b981",
+    TRANSPARENT: "transparent",
+    WHITE: "#ffffff",
+    BLACK: "#000000",
+};
