@@ -88,7 +88,7 @@ export function useComparator(): ComparatorState {
                 const jsonParsed = JSON.parse(jsonData);
                 setJsonContent(jsonParsed);
             } catch (error) {
-                console.error("Error getting JSON:", error);
+                console.error("Error parsing JSON file:", error);
                 setJsonContent(undefined);
             }
         },
