@@ -136,8 +136,22 @@ function parseJSONFromEnvInput(): {
     json1Parsed: Maybe<JSONContent>;
     json2Parsed: Maybe<JSONContent>;
 } {
-    const json1Parsed = json1 ? JSON.parse(json1) : undefined;
-    const json2Parsed = json2 ? JSON.parse(json2) : undefined;
+    let json1Parsed: Maybe<JSONContent> = undefined;
+    let json2Parsed: Maybe<JSONContent> = undefined;
 
-    return { json1Parsed, json2Parsed };
+    try {
+        json1Parsed = json1 ? JSON.parse(json1) : undefined;
+    } catch (error) {
+        console.error("Error parsing json1:", error);
+        json1Parsed = undefined;
+    }
+
+    try {
+        json2Parsed = json2 ? JSON.parse(json2) : undefined;
+    } catch (error) {
+        console.error("Error parsing json2:", error);
+        json2Parsed = undefined;
+    }
+
+    return { json1Parsed: json1Parsed, json2Parsed: json2Parsed };
 }

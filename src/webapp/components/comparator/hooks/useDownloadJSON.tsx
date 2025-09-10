@@ -18,7 +18,7 @@ export function useDownloadJSON(jsonContent: Maybe<JSONContent>): DownloadJSONSt
             content: JSON.stringify(jsonContent, null, 2),
             contentType: "application/json",
         });
-    }, [jsonContent]);
+    }, [compositionRoot, jsonContent]);
 
     return {
         downloadJSON: downloadJSON,
