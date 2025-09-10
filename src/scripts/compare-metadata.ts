@@ -13,14 +13,14 @@ function main() {
         args: {
             file1: option({
                 type: optional(string),
-                long: "sorted-metadata",
+                long: "sorted",
                 short: "s",
                 description: "Path to the first metadata JSON file",
                 defaultValue: () => undefined,
             }),
             file2: option({
                 type: optional(string),
-                long: "unsorted-metadata",
+                long: "unsorted",
                 short: "u",
                 description: "Path to the second metadata JSON file",
                 defaultValue: () => undefined,
