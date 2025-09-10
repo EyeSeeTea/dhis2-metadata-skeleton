@@ -62,7 +62,11 @@ export function useDiffLineProps(props: DiffLineProps): DiffLineState {
     const isPathModified = useMemo(() => changed && path !== undefined, [changed, path]);
 
     const toggleChoice = useCallback(() => {
-        if (path) updateChoice(path, mergedSelection[path] === "unsorted" ? "sorted" : "unsorted");
+        if (path)
+            updateChoice(
+                path,
+                mergedSelection[path] === Choice.UNSORTED ? Choice.SORTED : Choice.UNSORTED
+            );
     }, [path, mergedSelection, updateChoice]);
     const updateSelection = useCallback(() => {
         if (path) updateChoice(path, side);
@@ -84,10 +88,10 @@ export function useDiffLineProps(props: DiffLineProps): DiffLineState {
 
 function getButtonText(side: Choice, chosenHere: boolean): string {
     switch (side) {
-        case "sorted": {
+        case Choice.SORTED: {
             return chosenHere ? i18n.t("Using A") : i18n.t("Use A");
         }
-        case "unsorted": {
+        case Choice.UNSORTED: {
             return chosenHere ? i18n.t("Using B") : i18n.t("Use B");
         }
     }

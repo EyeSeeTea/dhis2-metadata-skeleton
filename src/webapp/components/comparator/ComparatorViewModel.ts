@@ -3,7 +3,10 @@ import { Maybe } from "$/utils/ts-utils";
 import { compare as diff, applyPatch, type Operation } from "fast-json-patch";
 
 export type OpType = Operation["op"];
-export type Choice = "sorted" | "unsorted";
+export enum Choice {
+    SORTED = "sorted",
+    UNSORTED = "unsorted",
+}
 export type Line = { text: string; path?: string };
 export type Row = {
     path: string;

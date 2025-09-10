@@ -6,7 +6,7 @@ import { CloudDownload } from "@material-ui/icons";
 import i18n from "$/utils/i18n";
 import ActionButton from "$/webapp/components/ActionButton";
 import { DiffViewer } from "$/webapp/components/comparator/DiffViewer";
-import { prettyPrintJson } from "$/webapp/components/comparator/ComparatorViewModel";
+import { Choice, prettyPrintJson } from "$/webapp/components/comparator/ComparatorViewModel";
 
 export default function Comparator() {
     const {
@@ -42,7 +42,7 @@ export default function Comparator() {
                 <DiffViewer
                     label="Sorted JSON"
                     jsonContent={sortedMetadata.jsonContent}
-                    side="sorted"
+                    side={Choice.SORTED}
                     rows={rows}
                     mergedSelection={mergedSelection}
                     updateChoice={updateChoice}
@@ -50,7 +50,7 @@ export default function Comparator() {
                 <DiffViewer
                     label="Unsorted JSON"
                     jsonContent={unsortedMetadata.jsonContent}
-                    side="unsorted"
+                    side={Choice.UNSORTED}
                     rows={rows}
                     mergedSelection={mergedSelection}
                     updateChoice={updateChoice}

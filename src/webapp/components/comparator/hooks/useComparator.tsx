@@ -54,14 +54,14 @@ export function useComparator(): ComparatorState {
 
     useEffect(() => {
         const def = rows.reduce<Record<string, Choice>>(
-            (acc, r) => ({ ...acc, [r.path]: acc[r.path] ?? "sorted" }),
+            (acc, r) => ({ ...acc, [r.path]: acc[r.path] ?? Choice.SORTED }),
             {}
         );
         setChoices(def);
     }, [rows]);
 
     const chosenOps = useMemo(
-        () => rows.filter(r => mergedSelection[r.path] === "unsorted").map(r => r.op),
+        () => rows.filter(r => mergedSelection[r.path] === Choice.UNSORTED).map(r => r.op),
         [rows, mergedSelection]
     );
 
