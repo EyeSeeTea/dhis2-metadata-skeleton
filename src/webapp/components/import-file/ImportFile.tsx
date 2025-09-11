@@ -43,7 +43,6 @@ export const ImportFile: React.FC<ImportFileProps> = React.memo(props => {
 const FileInputWrapper = styled.div`
     position: relative;
     margin-top: 1rem;
-    width: min-content;
     display: flex;
     gap: 0.5rem;
 `;
