@@ -1,12 +1,30 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: i18next-conv\n"
-"POT-Creation-Date: 2025-05-27T09:35:42.659Z\n"
+"POT-Creation-Date: 2025-09-11T12:43:14.345Z\n"
 "PO-Revision-Date: 2018-10-25T09:02:35.143Z\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+msgid "Upload sorted"
+msgstr ""
+
+msgid "Upload unsorted"
+msgstr ""
+
+msgid "Using A"
+msgstr ""
+
+msgid "Use A"
+msgstr ""
+
+msgid "Using B"
+msgstr ""
+
+msgid "Use B"
+msgstr ""
 
 msgid "Select File"
 msgstr ""
@@ -16,6 +34,9 @@ msgstr "Añadir"
 
 msgid "List"
 msgstr "Listar"
+
+msgid "Metadata JSON Comparator/Merge"
+msgstr ""
 
 #~ msgid "Back"
 #~ msgstr "Volver"
