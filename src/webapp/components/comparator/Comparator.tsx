@@ -60,9 +60,19 @@ export default function Comparator() {
             <MergedPreviewContainer>
                 <StyledDiv>
                     <ButtonContainer>
-                        <StyledSpan>{i18n.t(`Diffs: ${rows.length}`)}</StyledSpan>
-                        <StyledSpan>{i18n.t(`Chosen A: ${choiceCounts.sorted}`)}</StyledSpan>
-                        <StyledSpan>{i18n.t(`Chosen B: ${choiceCounts.unsorted}`)}</StyledSpan>
+                        <StyledSpan>
+                            {i18n.t("Diffs: {{count}}", { count: rows.length })}
+                        </StyledSpan>
+                        <StyledSpan>
+                            {i18n.t("Chosen A: {{sortedCount}}", {
+                                sortedCount: choiceCounts.sorted,
+                            })}
+                        </StyledSpan>
+                        <StyledSpan>
+                            {i18n.t("Chosen B: {{unsortedCount}}", {
+                                unsortedCount: choiceCounts.unsorted,
+                            })}
+                        </StyledSpan>
                     </ButtonContainer>
                     {mergedJSON && (
                         <ActionButton
