@@ -1,7 +1,7 @@
 import { command, option, optional, run, string } from "cmd-ts";
 import { spawn } from "child_process";
 import { resolve } from "path";
-import { readFileSync } from "fs";
+import { readFileSync, mkdirSync, existsSync, writeFileSync, rmSync } from "fs";
 import { Maybe } from "$/utils/ts-utils";
 import { JSONContent } from "$/domain/entities/JSONContent";
 import { compare as diff } from "fast-json-patch";
@@ -13,15 +13,15 @@ function main() {
         args: {
             file1: option({
                 type: optional(string),
-                long: "sorted",
-                short: "s",
+                long: "file1",
+                short: "f",
                 description: "Path to the first metadata JSON file",
                 defaultValue: () => undefined,
             }),
             file2: option({
                 type: optional(string),
-                long: "unsorted",
-                short: "u",
+                long: "file2",
+                short: "s",
                 description: "Path to the second metadata JSON file",
                 defaultValue: () => undefined,
             }),
@@ -53,27 +53,58 @@ function main() {
 main();
 
 function startMetadataComparator(json1: Maybe<JSONContent>, json2: Maybe<JSONContent>): void {
-    console.debug("Differences found. Opening comparator...");
-    const env = { ...process.env };
+    console.debug("Differences found. Preparing comparator input...");
+
+    const tmpDir = resolve(process.cwd(), "public/.tmp");
+
+    cleanupTempDir(tmpDir);
+    mkdirSync(tmpDir, { recursive: true });
 
     if (json1) {
-        env.VITE_METADATA_JSON_1 = JSON.stringify(json1);
+        const file1Path = resolve(tmpDir, "file1.json");
+        writeFileSync(file1Path, JSON.stringify(json1));
     }
 
     if (json2) {
-        env.VITE_METADATA_JSON_2 = JSON.stringify(json2);
+        const file2Path = resolve(tmpDir, "file2.json");
+        writeFileSync(file2Path, JSON.stringify(json2));
     }
 
+    console.debug("Opening comparator...");
     const comparator = spawn("yarn", ["start-comparator"], {
         stdio: "inherit",
-        env,
+        env: { ...process.env },
     });
 
-    comparator.on("close", code => {
-        console.debug("Comparison completed.");
-        process.exit(code ?? 0);
-    });
+    comparator.on("close", code => cleanupAndExit(tmpDir, code ?? 0));
+
+    // Cleanup on termination signals
+    const onSignal = (signal: NodeJS.Signals) => {
+        try {
+            comparator.kill(signal);
+        } catch (error) {
+            console.error("Error terminating comparator process:", error);
+        }
+        cleanupAndExit(tmpDir, 0);
+    };
+
+    process.on("SIGINT", onSignal);
+    process.on("SIGTERM", onSignal);
 }
+
+const cleanupTempDir = (tmpDir: string) => {
+    try {
+        if (existsSync(tmpDir)) rmSync(tmpDir, { recursive: true, force: true });
+    } catch (error) {
+        console.error("Error during cleanup of temporary directory:", error);
+    }
+};
+
+const cleanupAndExit = (tmpDir: string, code?: number) => {
+    console.debug("Comparison completed. Cleaning up...");
+    cleanupTempDir(tmpDir);
+    process.exit(code ?? 0);
+};
 
 function parseMetadataFromFile(filePath: Maybe<string>): Maybe<JSONContent> {
     if (!filePath) return undefined;

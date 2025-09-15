@@ -40,16 +40,29 @@ export function useComparator(): ComparatorState {
     );
 
     useEffect(() => {
-        const { json1Parsed, json2Parsed } = parseJSONFromEnvInput();
+        async function fetchJsonFromTemp() {
+            try {
+                const [sortedRes, unsortedRes] = await Promise.all([
+                    fetch(FILE1_PATH, { cache: "no-store" }).catch(() => undefined),
+                    fetch(FILE2_PATH, { cache: "no-store" }).catch(() => undefined),
+                ]);
 
-        if (json1Parsed) {
-            setHideSortedButton(true);
-            setJsonContentSorted(json1Parsed);
+                if (sortedRes && sortedRes.ok) {
+                    const sorted = (await sortedRes.json()) as JSONContent;
+                    setHideSortedButton(true);
+                    setJsonContentSorted(sorted);
+                }
+                if (unsortedRes && unsortedRes.ok) {
+                    const unsorted = (await unsortedRes.json()) as JSONContent;
+                    setHideUnsortedButton(true);
+                    setJsonContentUnsorted(unsorted);
+                }
+            } catch (error) {
+                console.error("Error loading JSON from temp files:", error);
+            }
         }
-        if (json2Parsed) {
-            setHideUnsortedButton(true);
-            setJsonContentUnsorted(json2Parsed);
-        }
+
+        fetchJsonFromTemp();
     }, []);
 
     useEffect(() => {
@@ -129,29 +142,5 @@ export function useComparator(): ComparatorState {
     };
 }
 
-const json1 = import.meta.env.VITE_METADATA_JSON_1;
-const json2 = import.meta.env.VITE_METADATA_JSON_2;
-
-function parseJSONFromEnvInput(): {
-    json1Parsed: Maybe<JSONContent>;
-    json2Parsed: Maybe<JSONContent>;
-} {
-    let json1Parsed: Maybe<JSONContent> = undefined;
-    let json2Parsed: Maybe<JSONContent> = undefined;
-
-    try {
-        json1Parsed = json1 ? JSON.parse(json1) : undefined;
-    } catch (error) {
-        console.error("Error parsing json1:", error);
-        json1Parsed = undefined;
-    }
-
-    try {
-        json2Parsed = json2 ? JSON.parse(json2) : undefined;
-    } catch (error) {
-        console.error("Error parsing json2:", error);
-        json2Parsed = undefined;
-    }
-
-    return { json1Parsed: json1Parsed, json2Parsed: json2Parsed };
-}
+const FILE1_PATH = "/.tmp/file1.json";
+const FILE2_PATH = "/.tmp/file2.json";

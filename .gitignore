@@ -40,3 +40,4 @@ cypress/fixtures/
 .idea/*
 docs/
 /dist
+public/.tmp/
