@@ -4,9 +4,10 @@ import { MetadataRepository } from "$/domain/repositories/MetadataRepository";
 import { MetadataPackage } from "$/domain/entities/MetadataPackage";
 import { getJsonFileNames } from "$/helpers/files";
 
-//TODO: allow different names per output file
-
-const FILE_NAME = "output.json";
+function getOutputFileName(inputPath: string): string {
+    const folder = path.basename(inputPath);
+    return `${folder}.json`;
+}
 
 export class MetadataJSONRepository implements MetadataRepository {
     constructor(private inputPath: string, private outputPath: string) {}
@@ -24,7 +25,8 @@ export class MetadataJSONRepository implements MetadataRepository {
     }
 
     async save<T>(data: MetadataPackage<T>): Promise<void> {
-        const outputFile = path.join(this.outputPath, FILE_NAME);
+        const fileName = getOutputFileName(this.inputPath);
+        const outputFile = path.join(this.outputPath, fileName);
         await fs.writeFile(outputFile, JSON.stringify(data, null, 2));
     }
 
