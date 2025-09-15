@@ -14,11 +14,12 @@ export const build = command({
         try {
             console.debug("Building metadata...");
 
-            const capturePath = path.join(__dirname, "../capture");
-            const visualizationPath = path.join(__dirname, "../visualizations");
-            const permissionPath = path.join(__dirname, "../permissions");
+            const repoRoot = process.cwd();
+            const capturePath = path.join(repoRoot, "capture");
+            const visualizationPath = path.join(repoRoot, "visualizations");
+            const permissionPath = path.join(repoRoot, "permissions");
 
-            const outputPath = path.join(__dirname, "../output");
+            const outputPath = path.join(repoRoot, "output");
 
             const captureRepository = new MetadataJSONRepository(capturePath, outputPath);
             const visualizationRepository = new MetadataJSONRepository(
