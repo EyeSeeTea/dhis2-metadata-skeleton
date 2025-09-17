@@ -33,7 +33,7 @@
         "build-app": "tsc -p tsconfig.json",
         "lint": "eslint src/{data,domain,scripts,types,utils}/**/*.ts --ext .ts",
         "start": "ts-node ./src/scripts/index.ts",
-        "start-comparator": "vite --strictPort",
+        "start-comparator": "VITE_COMPARATOR_ONLY=true vite --strictPort",
         "compare-metadata": "ts-node ./src/scripts/compare-metadata.ts",
         "validate": "ts-node ./src/validateSchema.ts",
         "prettify": "prettier \"./**/*.{js,jsx,json,css,ts,tsx}\" --write",

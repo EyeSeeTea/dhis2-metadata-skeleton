@@ -50,9 +50,14 @@ function getProxy(env: Record<string, string>) {
     const dhis2AuthVar = "VITE_DHIS2_AUTH";
     const targetUrl = env[dhis2UrlVar];
     const auth = env[dhis2AuthVar];
+
     const isBuild = env.NODE_ENV === "production";
+    const comparatorOnly = env.VITE_COMPARATOR_ONLY === "true";
 
     if (isBuild) {
+        return {};
+    } else if (comparatorOnly) {
+        // Comparator mode: do not set DHIS2 proxy and skip auth checks
         return {};
     } else if (!targetUrl) {
         console.error(`Set ${dhis2UrlVar}`);
@@ -60,7 +65,7 @@ function getProxy(env: Record<string, string>) {
     } else if (!auth) {
         console.error(`Set ${dhis2AuthVar}`);
         process.exit(1);
-    } else { 
+    } else {
         return {
             "/dhis2": {
                 target: targetUrl,
