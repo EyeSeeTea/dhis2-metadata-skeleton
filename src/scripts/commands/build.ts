@@ -15,9 +15,9 @@ export const build = command({
             console.debug("Building metadata...");
 
             const repoRoot = process.cwd();
-            const capturePath = path.join(repoRoot, "capture");
-            const visualizationPath = path.join(repoRoot, "visualizations");
-            const permissionPath = path.join(repoRoot, "permissions");
+            const capturePath = path.resolve(repoRoot, "capture");
+            const visualizationPath = path.resolve(repoRoot, "visualizations");
+            const permissionPath = path.resolve(repoRoot, "permissions");
 
             const outputPath = path.join(repoRoot, "output");
 
