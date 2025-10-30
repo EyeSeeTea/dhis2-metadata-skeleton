@@ -1,61 +1,50 @@
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { JSONContent } from "$/domain/entities/JSONContent";
 import { Maybe } from "$/utils/ts-utils";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import {
-    applyOps,
-    buildRows,
-    Choice,
-    Row,
-} from "$/webapp/components/comparator/ComparatorViewModel";
+import * as jsondiffpatch from "jsondiffpatch";
 
-type ComparatorProps = {
-    hideButton: boolean;
-    jsonContent: Maybe<JSONContent>;
-    upload: (file: Maybe<File>) => void;
-};
+const FILE1_PATH = "/temp/file1.json";
+const FILE2_PATH = "/temp/file2.json";
 
-type ComparatorState = {
-    choiceCounts: Record<Choice, number>;
-    mergedJSON: Maybe<JSONContent>;
-    mergedSelection: Record<string, Choice>;
-    rows: Row[];
-    sortedMetadata: ComparatorProps;
-    unsortedMetadata: ComparatorProps;
-    updateChoice: (p: string, c: Choice) => void;
+export type ComparatorState = {
+    hideLeftButton: boolean;
+    hideRightButton: boolean;
+    leftText: string;
+    mergedJson: Maybe<JSONContent>;
+    mergedText: string;
+    rightText: string;
+    acceptLeft: () => void;
+    applyMergedJson: (mergedJson: JSONContent) => void;
+    acceptRight: () => void;
+    handleMergedChange: (value: Maybe<string>) => void;
+    uploadLeft: (file: Maybe<File>) => Promise<void>;
+    uploadRight: (file: Maybe<File>) => Promise<void>;
 };
 
 export function useComparator(): ComparatorState {
-    const [hideUnsortedButton, setHideUnsortedButton] = useState(false);
-    const [hideSortedButton, setHideSortedButton] = useState(false);
-    const [jsonContentUnsorted, setJsonContentUnsorted] = useState<Maybe<JSONContent>>(undefined);
-    const [jsonContentSorted, setJsonContentSorted] = useState<Maybe<JSONContent>>(undefined);
-    const [mergedSelection, setChoices] = useState<Record<string, Choice>>({});
-
-    const rows = useMemo(
-        () =>
-            jsonContentSorted && jsonContentUnsorted
-                ? buildRows(jsonContentSorted, jsonContentUnsorted)
-                : [],
-        [jsonContentSorted, jsonContentUnsorted]
-    );
+    const [leftJson, setLeftJson] = useState<Maybe<JSONContent>>(undefined);
+    const [rightJson, setRightJson] = useState<Maybe<JSONContent>>(undefined);
+    const [mergedJson, setMergedJson] = useState<Maybe<JSONContent>>(undefined);
+    const [hideLeftButton, setHideLeftButton] = useState(false);
+    const [hideRightButton, setHideRightButton] = useState(false);
 
     useEffect(() => {
         async function fetchJsonFromTemp() {
             try {
-                const [sortedRes, unsortedRes] = await Promise.all([
+                const [leftJsonResponse, rightJsonResponse] = await Promise.all([
                     fetch(FILE1_PATH, { cache: "no-store" }).catch(() => undefined),
                     fetch(FILE2_PATH, { cache: "no-store" }).catch(() => undefined),
                 ]);
 
-                if (sortedRes && sortedRes.ok) {
-                    const sorted = (await sortedRes.json()) as JSONContent;
-                    setHideSortedButton(true);
-                    setJsonContentSorted(sorted);
+                if (leftJsonResponse && leftJsonResponse.ok) {
+                    const left = (await leftJsonResponse.json()) as JSONContent;
+                    setHideLeftButton(true);
+                    setLeftJson(left);
                 }
-                if (unsortedRes && unsortedRes.ok) {
-                    const unsorted = (await unsortedRes.json()) as JSONContent;
-                    setHideUnsortedButton(true);
-                    setJsonContentUnsorted(unsorted);
+                if (rightJsonResponse && rightJsonResponse.ok) {
+                    const right = (await rightJsonResponse.json()) as JSONContent;
+                    setHideRightButton(true);
+                    setRightJson(right);
                 }
             } catch (error) {
                 console.error("Error loading JSON from temp files:", error);
@@ -66,81 +55,125 @@ export function useComparator(): ComparatorState {
     }, []);
 
     useEffect(() => {
-        const def = rows.reduce<Record<string, Choice>>(
-            (acc, r) => ({ ...acc, [r.path]: acc[r.path] ?? Choice.SORTED }),
-            {}
-        );
-        setChoices(def);
-    }, [rows]);
+        if (leftJson && !mergedJson) {
+            setMergedJson(cloneJson(leftJson));
+        }
+    }, [leftJson, mergedJson]);
 
-    const chosenOps = useMemo(
-        () => rows.filter(r => mergedSelection[r.path] === Choice.UNSORTED).map(r => r.op),
-        [rows, mergedSelection]
-    );
+    const uploadLeft = useCallback(async (file: Maybe<File>) => {
+        if (!file) {
+            setLeftJson(undefined);
+            setMergedJson(undefined);
+            return;
+        }
 
-    const mergedJSON = useMemo(
-        () => (jsonContentSorted ? applyOps(jsonContentSorted, chosenOps) : undefined),
-        [jsonContentSorted, chosenOps]
-    );
+        try {
+            const text = await file.text();
+            const json = parseFromEditor(text);
+            if (json) {
+                setLeftJson(json);
+                setMergedJson(cloneJson(json));
+            }
+        } catch (error) {
+            console.error("Error parsing left JSON file:", error); // snackbar
+        }
+    }, []);
 
-    const choiceCounts = useMemo(
-        () =>
-            Object.values(mergedSelection).reduce((acc, c) => ({ ...acc, [c]: acc[c] + 1 }), {
-                sorted: 0,
-                unsorted: 0,
-            } as Record<Choice, number>),
-        [mergedSelection]
-    );
+    const uploadRight = useCallback(async (file: Maybe<File>) => {
+        if (!file) {
+            setRightJson(undefined);
+            return;
+        }
 
-    const onFileChange = useCallback(
-        async (file: Maybe<File>, setJsonContent: (value: Maybe<JSONContent>) => void) => {
-            if (!file) return setJsonContent(undefined);
+        try {
+            const text = await file.text();
+            const json = parseFromEditor(text);
+            setRightJson(json);
+        } catch (error) {
+            console.error("Error parsing right JSON file:", error); // snackbar
+        }
+    }, []);
 
-            try {
-                const jsonData = await file.text();
-                const jsonParsed = JSON.parse(jsonData);
-                setJsonContent(jsonParsed);
-            } catch (error) {
-                console.error("Error parsing JSON file:", error);
-                setJsonContent(undefined);
+    const acceptLeft = useCallback(() => {
+        if (leftJson) {
+            setMergedJson(cloneJson(leftJson));
+        }
+    }, [leftJson]);
+
+    const acceptRight = useCallback(() => {
+        if (rightJson) {
+            setMergedJson(cloneJson(rightJson));
+        }
+    }, [rightJson]);
+
+    const leftText = useMemo(() => formatJson(leftJson), [leftJson]);
+    const rightText = useMemo(() => formatJson(rightJson), [rightJson]);
+    const mergedText = useMemo(() => formatJson(mergedJson), [mergedJson]);
+
+    const parseFromEditor = useCallback((text: string): Maybe<JSONContent> => {
+        try {
+            return JSON.parse(text) as JSONContent;
+        } catch {
+            return undefined;
+        }
+    }, []);
+
+    const handleMergedChange = useCallback(
+        (value: Maybe<string>) => {
+            if (value) {
+                const parsed = parseFromEditor(value);
+                if (parsed) {
+                    const sortedJson = sortJSONKeys(parsed);
+                    setMergedJson(sortedJson);
+                }
             }
         },
-        []
+        [parseFromEditor]
     );
 
-    const updateChoice = useCallback(
-        (path: string, choice: Choice) => setChoices(prev => ({ ...prev, [path]: choice })),
-        []
-    );
-
-    const uploadUnsorted = useCallback(
-        (file: Maybe<File>) => onFileChange(file, setJsonContentUnsorted),
-        []
-    );
-
-    const uploadSorted = useCallback(
-        (file: Maybe<File>) => onFileChange(file, setJsonContentSorted),
-        []
-    );
+    const applyMergedJson = useCallback((merged: JSONContent) => {
+        setMergedJson(merged);
+    }, []);
 
     return {
-        choiceCounts: choiceCounts,
-        mergedJSON: mergedJSON,
-        mergedSelection: mergedSelection,
-        rows: rows,
-        sortedMetadata: {
-            hideButton: hideSortedButton,
-            jsonContent: jsonContentSorted,
-            upload: uploadSorted,
-        },
-        unsortedMetadata: {
-            hideButton: hideUnsortedButton,
-            jsonContent: jsonContentUnsorted,
-            upload: uploadUnsorted,
-        },
-        updateChoice: updateChoice,
+        leftText: leftText,
+        rightText: rightText,
+        mergedText: mergedText,
+        mergedJson: mergedJson,
+        hideLeftButton: hideLeftButton,
+        hideRightButton: hideRightButton,
+        acceptLeft: acceptLeft,
+        acceptRight: acceptRight,
+        handleMergedChange: handleMergedChange,
+        applyMergedJson: applyMergedJson,
+        uploadLeft: uploadLeft,
+        uploadRight: uploadRight,
     };
 }
 
-const FILE1_PATH = "/.tmp/file1.json";
-const FILE2_PATH = "/.tmp/file2.json";
+const sortJSONKeys = (obj: any): any => {
+    if (obj === null || typeof obj !== "object") return obj;
+    if (Array.isArray(obj)) return obj.map(sortJSONKeys);
+
+    return Object.keys(obj)
+        .sort()
+        .reduce((result: any, key: string) => {
+            result[key] = sortJSONKeys(obj[key]);
+            return result;
+        }, {});
+};
+
+const formatJson = (json: Maybe<JSONContent>) => {
+    if (!json) return "";
+
+    try {
+        const sorted = sortJSONKeys(json);
+        return JSON.stringify(sorted, null, 2);
+    } catch {
+        return "";
+    }
+};
+
+function cloneJson(obj: JSONContent): JSONContent {
+    return jsondiffpatch.clone(obj) as JSONContent;
+}

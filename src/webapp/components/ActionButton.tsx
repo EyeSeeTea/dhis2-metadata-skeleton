@@ -4,13 +4,14 @@ import { Button as MUIButton } from "@material-ui/core";
 type ActionButtonProps = {
     children?: React.ReactNode;
     disabled?: boolean;
-    icon?: React.ReactNode;
+    endIcon?: React.ReactNode;
     label: string;
+    startIcon?: React.ReactNode;
     onClick?: () => void;
 };
 
 export default function ActionButton(props: ActionButtonProps) {
-    const { children, disabled, icon, label, onClick } = props;
+    const { children, disabled, startIcon, endIcon, label, onClick } = props;
 
     return (
         <MUIButton
@@ -18,8 +19,9 @@ export default function ActionButton(props: ActionButtonProps) {
             color="primary"
             onClick={onClick}
             disabled={disabled}
-            startIcon={icon}
-            style={{ marginLeft: "auto", textTransform: "none" }}
+            startIcon={startIcon}
+            endIcon={endIcon}
+            style={{ textTransform: "none" }}
         >
             {i18n.t(label)}
             {children}

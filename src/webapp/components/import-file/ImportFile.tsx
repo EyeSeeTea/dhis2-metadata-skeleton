@@ -2,16 +2,18 @@ import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 import { CloudUpload } from "@material-ui/icons";
 import i18n from "$/utils/i18n";
+import { Maybe } from "$/utils/ts-utils";
 
 type ImportFileProps = {
-    onFileChange: (file: File | undefined) => void;
+    onFileChange: (file: Maybe<File>) => void;
     id?: string;
+    label?: string;
 };
 
 export const ImportFile: React.FC<ImportFileProps> = React.memo(props => {
-    const { onFileChange, id = "upload" } = props;
+    const { onFileChange, id = "upload", label } = props;
 
-    const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
+    const [selectedFile, setSelectedFile] = useState<Maybe<File>>(undefined);
 
     const handleFileChange = useCallback(
         (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,7 +33,7 @@ export const ImportFile: React.FC<ImportFileProps> = React.memo(props => {
     return (
         <FileInputWrapper>
             <FileInputLabel htmlFor={id}>
-                <span>{i18n.t("Select File")}</span>
+                <span>{label ? i18n.t(label) : i18n.t("Select File")}</span>
                 <CloudUpload />
             </FileInputLabel>
             <FileInput id={id} type="file" accept=".json" onChange={handleFileChange} />
@@ -42,9 +44,15 @@ export const ImportFile: React.FC<ImportFileProps> = React.memo(props => {
 
 const FileInputWrapper = styled.div`
     position: relative;
-    margin-top: 1rem;
     display: flex;
-    gap: 0.5rem;
+    flex-direction: column;
+    gap: 0.1rem;
+
+    p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: ${props => props.theme.palette.text.secondary};
+    }
 `;
 
 const FileInputLabel = styled.label`
@@ -55,9 +63,13 @@ const FileInputLabel = styled.label`
     padding: 0.75rem 1rem;
     cursor: pointer;
     border-radius: 0.5rem;
-    background-color: #1976d2;
+    background-color: ${props => props.theme.palette.primary.main};
     font-size: 1rem;
-    color: #fff;
+    color: ${props => props.theme.palette.common.white};
+
+    &:hover {
+        background-color: ${props => props.theme.palette.primary.dark};
+    }
 `;
 
 const FileInput = styled.input`

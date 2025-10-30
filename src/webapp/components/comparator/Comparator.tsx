@@ -1,156 +1,158 @@
+import { Editor } from "@monaco-editor/react";
+import styled from "styled-components";
+import Split from "react-split";
 import { useComparator } from "$/webapp/components/comparator/hooks/useComparator";
 import { ImportFile } from "$/webapp/components/import-file/ImportFile";
-import styled from "styled-components";
-import { useDownloadJSON } from "$/webapp/components/comparator/hooks/useDownloadJSON";
-import { CloudDownload } from "@material-ui/icons";
 import i18n from "$/utils/i18n";
-import ActionButton from "$/webapp/components/ActionButton";
-import { DiffViewer } from "$/webapp/components/comparator/DiffViewer";
-import { Choice, prettyPrintJson } from "$/webapp/components/comparator/ComparatorViewModel";
+import DiffSection from "$/webapp/components/comparator/DiffSection";
+
+export const EditorPane = (props: { children: React.ReactNode; label?: string }) => {
+    const { children, label } = props;
+
+    return (
+        <EditorWrapper>
+            <p>{label}</p>
+            {children}
+        </EditorWrapper>
+    );
+};
 
 export default function Comparator() {
     const {
-        choiceCounts,
-        mergedJSON,
-        mergedSelection,
-        rows,
-        sortedMetadata,
-        unsortedMetadata,
-        updateChoice,
+        leftText,
+        rightText,
+        mergedText,
+        hideLeftButton,
+        hideRightButton,
+        uploadLeft,
+        uploadRight,
+        ...comparatorState
     } = useComparator();
-    const { downloadJSON: downloadMerged } = useDownloadJSON(mergedJSON);
 
     return (
         <Container>
-            <ButtonContainer>
-                {!sortedMetadata.hideButton && (
-                    <div>
-                        <span>{i18n.t("Upload sorted")}</span>
-                        <ImportFile id="upload-sorted" onFileChange={sortedMetadata.upload} />
-                    </div>
+            <UploadGroup>
+                {!hideLeftButton && (
+                    <ImportFile
+                        id="upload-file-1"
+                        label={i18n.t("Upload File 1")}
+                        onFileChange={uploadLeft}
+                    />
                 )}
 
-                {!unsortedMetadata.hideButton && (
-                    <RightAlignContainer>
-                        <span>{i18n.t("Upload unsorted")}</span>
-                        <ImportFile id="upload-unsorted" onFileChange={unsortedMetadata.upload} />
-                    </RightAlignContainer>
+                {!hideRightButton && (
+                    <ImportFile
+                        id="upload-file-2"
+                        label={i18n.t("Upload File 2")}
+                        onFileChange={uploadRight}
+                    />
                 )}
-            </ButtonContainer>
+            </UploadGroup>
 
-            <JsonDisplay>
-                <DiffViewer
-                    label="Sorted JSON"
-                    jsonContent={sortedMetadata.jsonContent}
-                    side={Choice.SORTED}
-                    rows={rows}
-                    mergedSelection={mergedSelection}
-                    updateChoice={updateChoice}
+            {leftText && rightText && mergedText ? (
+                <DiffSection
+                    {...comparatorState}
+                    leftText={leftText}
+                    rightText={rightText}
+                    mergedText={mergedText}
                 />
-                <DiffViewer
-                    label="Unsorted JSON"
-                    jsonContent={unsortedMetadata.jsonContent}
-                    side={Choice.UNSORTED}
-                    rows={rows}
-                    mergedSelection={mergedSelection}
-                    updateChoice={updateChoice}
-                />
-            </JsonDisplay>
+            ) : (
+                <EditorContainer>
+                    <Split
+                        sizes={[50, 50]}
+                        minSize={200}
+                        gutterSize={15}
+                        direction="horizontal"
+                        cursor="col-resize"
+                        className="split-container"
+                    >
+                        <EditorPane label="File 1">
+                            <Editor
+                                language="json"
+                                value={leftText}
+                                options={{
+                                    readOnly: true,
+                                    minimap: { enabled: true },
+                                    scrollBeyondLastLine: false,
+                                    fontSize: 12,
+                                    wordWrap: "on",
+                                    formatOnPaste: true,
+                                    formatOnType: true,
+                                }}
+                            />
+                        </EditorPane>
 
-            <MergedPreviewContainer>
-                <StyledDiv>
-                    <ButtonContainer>
-                        <StyledSpan>
-                            {i18n.t("Diffs: {{count}}", { count: rows.length })}
-                        </StyledSpan>
-                        <StyledSpan>
-                            {i18n.t("Chosen A: {{sortedCount}}", {
-                                sortedCount: choiceCounts.sorted,
-                            })}
-                        </StyledSpan>
-                        <StyledSpan>
-                            {i18n.t("Chosen B: {{unsortedCount}}", {
-                                unsortedCount: choiceCounts.unsorted,
-                            })}
-                        </StyledSpan>
-                    </ButtonContainer>
-                    {mergedJSON && (
-                        <ActionButton
-                            onClick={downloadMerged}
-                            disabled={!mergedJSON}
-                            label="Download merged.json"
-                            icon={<CloudDownload />}
-                        />
-                    )}
-                </StyledDiv>
-                <JsonContainer>
-                    <Title>Merged Preview:</Title>
-                    <pre>
-                        {mergedJSON ? prettyPrintJson(mergedJSON) : "No merged content available."}
-                    </pre>
-                </JsonContainer>
-            </MergedPreviewContainer>
+                        <EditorPane label="File 2">
+                            <Editor
+                                language="json"
+                                value={rightText}
+                                options={{
+                                    readOnly: true,
+                                    minimap: { enabled: true },
+                                    scrollBeyondLastLine: false,
+                                    fontSize: 12,
+                                    wordWrap: "on",
+                                    formatOnPaste: true,
+                                    formatOnType: true,
+                                }}
+                            />
+                        </EditorPane>
+                    </Split>
+                </EditorContainer>
+            )}
         </Container>
     );
 }
 
 const Container = styled.div`
-    margin: 2rem;
-`;
-
-export const Title = styled.p`
-    font-size: 14px;
-    font-weight: bold;
-    margin-bottom: 0.4rem;
-`;
-
-const ButtonContainer = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-`;
-
-const JsonDisplay = styled.div`
-    display: flex;
-    justify-content: space-between;
-    gap: 2rem;
-`;
-
-export const JsonContainer = styled.div`
-    flex: 1;
-    margin: 2rem 1rem 1rem 0;
-    padding: 1rem;
-    background-color: #fafafa;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    overflow: auto;
-    min-height: 300px;
-    max-height: 500px;
-    white-space: pre-wrap;
-    word-break: break-word;
-    font-family: monospace;
-    font-size: 12px;
-`;
-
-const MergedPreviewContainer = styled.section`
     display: flex;
     flex-direction: column;
-    margin-top: 2rem;
+    padding: 3rem;
 `;
 
-const RightAlignContainer = styled.div`
-    margin-left: auto;
-`;
-
-const StyledSpan = styled.span`
-    padding: 4px 8px;
-    border: 1px solid #e5e7eb;
-    border-radius: 1.25rem;
-    font-size: 0.75rem;
-`;
-
-const StyledDiv = styled.div`
+const UploadGroup = styled.div`
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
+`;
+
+const EditorContainer = styled.div`
+    flex: 1;
+    overflow: hidden;
+    margin-block: 2rem;
+
+    .split-container {
+        display: flex;
+        height: 100%;
+    }
+
+    .gutter:hover {
+        background-color: ${props => props.theme.palette.background.grey};
+    }
+
+    .gutter.gutter-horizontal {
+        cursor: col-resize;
+    }
+
+    .gutter.gutter-vertical {
+        cursor: row-resize;
+    }
+`;
+
+const EditorWrapper = styled.div`
+    display: flex;
+    flex-direction: column;
+    height: 75vh;
+    width: 75%;
+    border: 1.5px solid ${props => props.theme.palette.divider};
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+
+    p {
+        margin: 0;
+        margin-block-end: 0.5rem;
+        font-size: 0.75rem;
+        font-family: monospace;
+        color: ${props => props.theme.palette.text.secondary};
+    }
 `;

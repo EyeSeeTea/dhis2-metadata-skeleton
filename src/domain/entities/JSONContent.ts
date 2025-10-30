@@ -8,8 +8,8 @@ export interface JSONContent {
     [key: string]: JSONValue;
 }
 
-export function isValidJSON(jsonContent: Maybe<JSONContent>): jsonContent is JSONContent {
-    return jsonContent !== undefined && isJSONContent(jsonContent);
+export function isValidJSON(jsonContent: Maybe<JSONValue>): jsonContent is JSONValue {
+    return jsonContent !== undefined && jsonContent !== null;
 }
 
 export function isJSONArray(jsonContent: Maybe<JSONValue>): jsonContent is JSONArray {
