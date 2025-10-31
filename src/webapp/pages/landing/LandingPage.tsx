@@ -1,13 +1,14 @@
 import i18n from "$/utils/i18n";
 import styled from "styled-components";
 import Comparator from "$/webapp/components/comparator/Comparator";
+import iconImage from "$/webapp/components/share/logo-eyeseetea.png";
 
 export const LandingPage = () => {
     return (
         <>
             <Header>
                 <LogoWrapper>
-                    <Icon src="/icon.png" alt="Logo" />
+                    <Icon src={iconImage} alt="logo" />
                 </LogoWrapper>
 
                 <StyledTitle>{i18n.t("Metadata JSON Merge tool")}</StyledTitle>
