@@ -41,11 +41,13 @@ export default function Comparator() {
                 )}
 
                 {!hideRightButton && (
-                    <ImportFile
-                        id="upload-file-2"
-                        label={i18n.t("Upload File 2")}
-                        onFileChange={uploadRight}
-                    />
+                    <RightAlignedImportFile>
+                        <ImportFile
+                            id="upload-file-2"
+                            label={i18n.t("Upload File 2")}
+                            onFileChange={uploadRight}
+                        />
+                    </RightAlignedImportFile>
                 )}
             </UploadGroup>
 
@@ -155,4 +157,8 @@ const EditorWrapper = styled.div`
         font-family: monospace;
         color: ${props => props.theme.palette.text.secondary};
     }
+`;
+
+const RightAlignedImportFile = styled.div`
+    margin-left: auto;
 `;

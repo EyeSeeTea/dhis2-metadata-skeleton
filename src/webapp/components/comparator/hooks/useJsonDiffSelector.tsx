@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { JSONContent, JSONValue } from "$/domain/entities/JSONContent";
+import { JSONArray, JSONContent, JSONValue } from "$/domain/entities/JSONContent";
 import { Maybe } from "$/utils/ts-utils";
 
 type JsonDiff = {
@@ -198,71 +198,103 @@ const parsePath = (path: string): string[] => {
     return parts;
 };
 
-const setNestedValue = (obj: any, pathParts: string[], value: Maybe<JSONValue>): any => {
-    if (pathParts.length === 0) return value;
+const setNestedValue = (
+    obj: JSONContent | JSONArray,
+    pathParts: string[],
+    value: Maybe<JSONValue>
+): JSONContent | JSONArray => {
+    if (pathParts.length === 0) return value as JSONContent | JSONArray;
 
     const [head, ...tail] = pathParts;
+    if (!head) return obj;
 
-    if (head) {
-        if (head.startsWith("[id:") && head.endsWith("]")) {
-            const id = head.slice(4, -1);
-            if (Array.isArray(obj)) {
-                const index = obj.findIndex(item => hasIdField(item) && String(item.id) === id);
+    if (head.startsWith("[id:") && head.endsWith("]")) {
+        const id = head.slice(4, -1);
+        if (Array.isArray(obj)) {
+            const index = obj.findIndex(
+                (item: JSONValue) => hasIdField(item) && String(item.id) === id
+            );
 
-                if (index !== -1) {
-                    const newArray = [...obj];
-                    if (tail.length === 0) {
+            if (index !== -1) {
+                const newArray = [...obj];
+                if (tail.length === 0) {
+                    if (value !== undefined) {
                         newArray[index] = value;
-                    } else {
-                        newArray[index] = setNestedValue(newArray[index], tail, value);
                     }
-                    return newArray;
+                } else {
+                    const currentItem = newArray[index];
+                    if (JSONContent.isObject(currentItem) || JSONContent.isArray(currentItem)) {
+                        newArray[index] = setNestedValue(currentItem, tail, value);
+                    }
                 }
+                return newArray;
             }
         }
+        return obj;
+    }
 
+    if (JSONContent.isObject(obj)) {
         if (tail.length === 0) {
-            return { ...obj, [head]: value };
+            return { ...obj, [head]: value } as JSONContent;
         }
+
+        const nested = obj[head];
+        const nestedValue =
+            JSONContent.isObject(nested) || JSONContent.isArray(nested)
+                ? setNestedValue(nested, tail, value)
+                : {};
 
         return {
             ...obj,
-            [head]: setNestedValue(obj[head] || {}, tail, value),
+            [head]: nestedValue,
         };
     }
+
+    return obj;
 };
 
-const deleteNestedKey = (obj: any, pathParts: string[]): any => {
+const deleteNestedKey = (
+    obj: JSONContent | JSONArray,
+    pathParts: string[]
+): JSONContent | JSONArray => {
     if (pathParts.length === 0) return obj;
 
     const [head, ...tail] = pathParts;
 
-    if (head) {
-        if (head.startsWith("[id:") && head.endsWith("]")) {
-            const id = head.slice(4, -1);
-            if (Array.isArray(obj)) {
-                if (tail.length === 0) {
-                    return obj.filter(item => !hasIdField(item) || String(item.id) !== id);
-                } else {
-                    return obj.map(item => {
-                        if (hasIdField(item) && String(item.id) === id) {
-                            return deleteNestedKey(item, tail);
-                        }
-                        return item;
-                    });
-                }
-            }
-        }
+    if (!head) return obj;
 
+    if (head.startsWith("[id:") && head.endsWith("]")) {
+        const id = head.slice(4, -1);
+        if (Array.isArray(obj)) {
+            if (tail.length === 0) {
+                return obj.filter((item: JSONValue) => !hasIdField(item) || String(item.id) !== id);
+            }
+
+            return obj.map((item: JSONValue) => {
+                if (hasIdField(item) && String(item.id) === id) {
+                    if (JSONContent.isObject(item) || JSONContent.isArray(item)) {
+                        return deleteNestedKey(item, tail);
+                    }
+                }
+                return item;
+            });
+        }
+        return obj;
+    }
+
+    if (JSONContent.isObject(obj)) {
         if (tail.length === 0) {
             const { [head]: _, ...rest } = obj;
             return rest;
         }
 
-        return {
-            ...obj,
-            [head]: deleteNestedKey(obj[head] || {}, tail),
-        };
+        const nested = obj[head];
+        if (JSONContent.isObject(nested) || JSONContent.isArray(nested)) {
+            return {
+                ...obj,
+                [head]: deleteNestedKey(nested, tail),
+            };
+        }
     }
 
     return obj;
@@ -302,22 +334,28 @@ export function useJsonDiffSelector(
         if (!leftText || jsonDiffs.length === 0) return;
 
         try {
-            const leftJson = JSON.parse(leftText);
+            const leftJson = JSON.parse(leftText) as JSONContent;
 
-            const result = jsonDiffs.reduce((acc, diff) => {
+            const result = jsonDiffs.reduce<JSONContent>((acc, diff) => {
                 const selection = selectedChanges[diff.path];
                 const pathParts = parsePath(diff.path);
 
                 if (selection === "right") {
-                    return diff.type === "removed"
-                        ? deleteNestedKey(acc, pathParts)
-                        : setNestedValue(acc, pathParts, diff.rightValue);
+                    const updated =
+                        diff.type === "removed"
+                            ? deleteNestedKey(acc, pathParts)
+                            : setNestedValue(acc, pathParts, diff.rightValue);
+
+                    return JSONContent.isObject(updated) ? updated : acc;
                 }
 
-                return diff.type === "added"
-                    ? deleteNestedKey(acc, pathParts)
-                    : setNestedValue(acc, pathParts, diff.leftValue);
-            }, JSON.parse(JSON.stringify(leftJson)));
+                const updated =
+                    diff.type === "added"
+                        ? deleteNestedKey(acc, pathParts)
+                        : setNestedValue(acc, pathParts, diff.leftValue);
+
+                return JSONContent.isObject(updated) ? updated : acc;
+            }, structuredClone(leftJson));
 
             onMergedChange(result);
         } catch (error) {

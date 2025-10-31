@@ -1,23 +1,30 @@
 import i18n from "$/utils/i18n";
 import styled from "styled-components";
 import Comparator from "$/webapp/components/comparator/Comparator";
-import iconImage from "$/webapp/components/share/logo-eyeseetea.png";
+import logoImage from "$/webapp/components/share/logo-eyeseetea.png";
 
 export const LandingPage = () => {
     return (
-        <>
+        <Container>
             <Header>
                 <LogoWrapper>
-                    <Icon src={iconImage} alt="logo" />
+                    <Logo src={logoImage} alt="EyeSeeTea Logo" />
                 </LogoWrapper>
-
-                <StyledTitle>{i18n.t("Metadata JSON Merge tool")}</StyledTitle>
+                <Title>{i18n.t("Metadata JSON Merge tool")}</Title>
             </Header>
 
-            <Comparator />
-        </>
+            <Main>
+                <Comparator />
+            </Main>
+        </Container>
     );
 };
+
+const Container = styled.div`
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+`;
 
 const Header = styled.header`
     display: flex;
@@ -31,14 +38,19 @@ const LogoWrapper = styled.div`
     align-items: center;
 `;
 
-const Icon = styled.img`
+const Logo = styled.img`
     height: 4rem;
+    width: auto;
 `;
 
-const StyledTitle = styled.h1`
+const Title = styled.h1`
     font-size: 2rem;
-    font-weight: bold;
+    font-weight: 700;
     margin: 0;
-    padding-inline: 1.5rem;
+    padding-inline-start: 1.5rem;
     color: ${props => props.theme.palette.common.white};
+`;
+
+const Main = styled.main`
+    flex: 1;
 `;

@@ -8,25 +8,30 @@ export interface JSONContent {
     [key: string]: JSONValue;
 }
 
-export function isValidJSON(jsonContent: Maybe<JSONValue>): jsonContent is JSONValue {
+export const isValidJSON = (jsonContent: Maybe<JSONValue>): jsonContent is JSONValue => {
     return jsonContent !== undefined && jsonContent !== null;
-}
+};
 
-export function isJSONArray(jsonContent: Maybe<JSONValue>): jsonContent is JSONArray {
+export const isJSONArray = (jsonContent: Maybe<JSONValue>): jsonContent is JSONArray => {
     return Array.isArray(jsonContent);
-}
+};
 
-export function isJSONContent(jsonContent: Maybe<JSONValue>): jsonContent is JSONContent {
+export const isJSONContent = (jsonContent: Maybe<JSONValue>): jsonContent is JSONContent => {
     return typeof jsonContent === "object" && jsonContent !== null && !Array.isArray(jsonContent);
-}
+};
 
-export function isJSONPrimitive(jsonContent: Maybe<JSONValue>): jsonContent is JSONPrimitive {
-    return jsonContent !== undefined && !isJSONArray(jsonContent) && !isJSONContent(jsonContent);
-}
+export const isJSONPrimitive = (jsonContent: Maybe<JSONValue>): jsonContent is JSONPrimitive => {
+    return (
+        jsonContent === null ||
+        typeof jsonContent === "string" ||
+        typeof jsonContent === "number" ||
+        typeof jsonContent === "boolean"
+    );
+};
 
 export const JSONContent = {
-    isValidJSON: isValidJSON,
+    isValidJSON,
     isArray: isJSONArray,
     isObject: isJSONContent,
     isPrimitive: isJSONPrimitive,
-};
+} as const;
