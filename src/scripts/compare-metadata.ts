@@ -4,7 +4,10 @@ import { resolve } from "path";
 import { readFileSync, mkdirSync, existsSync, writeFileSync, rmSync } from "fs";
 import { Maybe } from "$/utils/ts-utils";
 import { JSONContent } from "$/domain/entities/JSONContent";
-import { compare as diff } from "fast-json-patch";
+
+function areJsonsIdentical(json1: JSONContent, json2: JSONContent): boolean {
+    return JSON.stringify(json1) === JSON.stringify(json2);
+}
 
 function main() {
     const cmd = command({
@@ -33,14 +36,12 @@ function main() {
             const json2 = parseMetadataFromFile(file2);
 
             if (JSONContent.isValidJSON(json1) && JSONContent.isValidJSON(json2)) {
-                const jsonDifference = diff(json1, json2);
-
-                if (jsonDifference.length === 0) {
+                if (areJsonsIdentical(json1, json2)) {
                     console.debug("The two JSON files are identical. No comparison needed.");
                     return;
-                } else {
-                    startMetadataComparator(json1, json2);
                 }
+
+                startMetadataComparator(json1, json2);
             } else {
                 startMetadataComparator(json1, json2);
             }
