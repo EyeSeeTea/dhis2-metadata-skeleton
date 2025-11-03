@@ -5,25 +5,28 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2025-09-11T12:43:14.345Z\n"
-"PO-Revision-Date: 2025-09-11T12:43:14.345Z\n"
+"POT-Creation-Date: 2025-11-03T13:47:37.397Z\n"
+"PO-Revision-Date: 2025-11-03T13:47:37.397Z\n"
 
-msgid "Upload sorted"
+msgid "Upload File 1"
 msgstr ""
 
-msgid "Upload unsorted"
+msgid "Upload File 2"
 msgstr ""
 
-msgid "Using A"
+msgid "Accept file 1"
 msgstr ""
 
-msgid "Use A"
+msgid "Accept file 2"
 msgstr ""
 
-msgid "Using B"
+msgid "Download Merged"
 msgstr ""
 
-msgid "Use B"
+msgid "Merged Result"
+msgstr ""
+
+msgid "Select Changes"
 msgstr ""
 
 msgid "Select File"
@@ -35,5 +38,5 @@ msgstr ""
 msgid "List"
 msgstr ""
 
-msgid "Metadata JSON Comparator/Merge"
+msgid "Metadata JSON Merge tool"
 msgstr ""
