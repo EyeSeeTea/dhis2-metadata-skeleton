@@ -1,7 +1,12 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { JSONContent } from "$/domain/entities/JSONContent";
 import { Maybe } from "$/utils/ts-utils";
-import { cloneJson, sortJSONKeys, formatJson, parseJson } from "$/domain/services/jsonUtils";
+import {
+    cloneJson,
+    sortJSONKeys,
+    formatJson,
+    parseJson,
+} from "$/webapp/components/comparator/hooks/utils/jsonUtils";
 
 export type ComparatorState = {
     hideLeftButton: boolean;
@@ -30,8 +35,18 @@ export function useComparator(): ComparatorState {
     const [mergedJson, setMergedJson] = useState<Maybe<JSONContent>>(undefined);
 
     useEffect(() => {
-        if (preloadedLeft) setLeftJson(preloadedLeft);
-        if (preloadedRight) setRightJson(preloadedRight);
+        if (preloadedLeft) {
+            const sorted = sortJSONKeys(preloadedLeft);
+            if (JSONContent.isObject(sorted)) {
+                setLeftJson(sorted);
+            }
+        }
+        if (preloadedRight) {
+            const sorted = sortJSONKeys(preloadedRight);
+            if (JSONContent.isObject(sorted)) {
+                setRightJson(sorted);
+            }
+        }
     }, [preloadedLeft, preloadedRight]);
 
     useEffect(() => {
@@ -51,8 +66,11 @@ export function useComparator(): ComparatorState {
             const text = await file.text();
             const json = parseJson(text);
             if (json) {
-                setLeftJson(json);
-                setMergedJson(cloneJson(json));
+                const sorted = sortJSONKeys(json);
+                if (JSONContent.isObject(sorted)) {
+                    setLeftJson(sorted);
+                    setMergedJson(cloneJson(sorted));
+                }
             }
         } catch (error) {
             console.error("Error parsing left JSON file:", error);
@@ -68,7 +86,12 @@ export function useComparator(): ComparatorState {
         try {
             const text = await file.text();
             const json = parseJson(text);
-            setRightJson(json);
+            if (json) {
+                const sorted = sortJSONKeys(json);
+                if (JSONContent.isObject(sorted)) {
+                    setRightJson(sorted);
+                }
+            }
         } catch (error) {
             console.error("Error parsing right JSON file:", error);
         }

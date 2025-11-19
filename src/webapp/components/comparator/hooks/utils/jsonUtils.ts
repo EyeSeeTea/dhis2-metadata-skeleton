@@ -1,18 +1,27 @@
 import * as jsondiffpatch from "jsondiffpatch";
 import { JSONContent, JSONValue } from "$/domain/entities/JSONContent";
 import { Maybe } from "$/utils/ts-utils";
+import _ from "$/domain/entities/generic/Collection";
 
-export const sortJSONKeys = (obj: JSONValue): JSONValue => {
-    if (obj === null || typeof obj !== "object") return obj;
-    if (Array.isArray(obj)) return obj.map(sortJSONKeys);
+export const sortJSONKeys = (value: JSONValue): JSONValue => {
+    if (JSONContent.isArray(value)) {
+        const sorted = _(value)
+            .sortBy(value => (JSONContent.isObject(value) && "id" in value ? value.id : "~"))
+            .value();
 
-    return Object.keys(obj)
-        .sort()
-        .reduce((result: Record<string, JSONValue>, key: string) => {
-            const value = obj[key];
-            if (value) result[key] = sortJSONKeys(value);
-            return result;
-        }, {});
+        return sorted.map(value => sortJSONKeys(value));
+    }
+
+    if (JSONContent.isObject(value)) {
+        return Object.keys(value)
+            .sort()
+            .reduce((result, key) => {
+                if (value[key]) result[key] = sortJSONKeys(value[key]);
+                return result;
+            }, {} as JSONContent);
+    }
+
+    return value;
 };
 
 export const formatJson = (json: Maybe<JSONContent>): string => {
