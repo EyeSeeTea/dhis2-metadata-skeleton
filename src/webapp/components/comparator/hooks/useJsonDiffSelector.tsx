@@ -228,6 +228,8 @@ const setNestedValue = (
                     }
                 }
                 return newArray;
+            } else if (tail.length === 0 && value !== undefined) {
+                return [...obj, value];
             }
         }
         return obj;
@@ -239,14 +241,21 @@ const setNestedValue = (
         }
 
         const nested = obj[head];
-        const nestedValue =
-            JSONContent.isObject(nested) || JSONContent.isArray(nested)
-                ? setNestedValue(nested, tail, value)
-                : {};
+
+        if (!nested || (!JSONContent.isObject(nested) && !JSONContent.isArray(nested))) {
+            const nextPart = tail[0];
+            const shouldCreateArray = nextPart?.startsWith("[");
+            const newNested = shouldCreateArray ? [] : {};
+
+            return {
+                ...obj,
+                [head]: setNestedValue(newNested, tail, value),
+            };
+        }
 
         return {
             ...obj,
-            [head]: nestedValue,
+            [head]: setNestedValue(nested, tail, value),
         };
     }
 
@@ -341,27 +350,29 @@ export function useJsonDiffSelector(
                 const pathParts = parsePath(diff.path);
 
                 if (selection === "right") {
-                    const updated =
-                        diff.type === "removed"
-                            ? deleteNestedKey(acc, pathParts)
-                            : setNestedValue(acc, pathParts, diff.rightValue);
-
-                    return JSONContent.isObject(updated) ? updated : acc;
+                    if (diff.type === "removed") {
+                        const updated = deleteNestedKey(acc, pathParts);
+                        return JSONContent.isObject(updated) ? updated : acc;
+                    } else {
+                        const updated = setNestedValue(acc, pathParts, diff.rightValue);
+                        return JSONContent.isObject(updated) ? updated : acc;
+                    }
                 }
 
-                const updated =
-                    diff.type === "added"
-                        ? deleteNestedKey(acc, pathParts)
-                        : setNestedValue(acc, pathParts, diff.leftValue);
-
-                return JSONContent.isObject(updated) ? updated : acc;
+                if (diff.type === "added") {
+                    const updated = deleteNestedKey(acc, pathParts);
+                    return JSONContent.isObject(updated) ? updated : acc;
+                } else {
+                    const updated = setNestedValue(acc, pathParts, diff.leftValue);
+                    return JSONContent.isObject(updated) ? updated : acc;
+                }
             }, structuredClone(leftJson));
 
             onMergedChange(result);
         } catch (error) {
             console.error("Failed to apply selected changes:", error);
         }
-    }, [selectedChanges, jsonDiffs, leftText, onMergedChange]);
+    }, [selectedChanges, jsonDiffs, leftText, rightText, onMergedChange]);
 
     const handleChangeSelection = useCallback((path: string, selection: "left" | "right") => {
         setSelectedChanges(prev => ({ ...prev, [path]: selection }));
