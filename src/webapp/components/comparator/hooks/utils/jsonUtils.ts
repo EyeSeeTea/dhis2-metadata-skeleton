@@ -20,7 +20,10 @@ export const sortJSONKeys = (value: JSONValue): JSONValue => {
         return Object.keys(value)
             .sort()
             .reduce((result, key) => {
-                if (value[key]) result[key] = sortJSONKeys(value[key]);
+                const currentValue = value[key];
+                if (currentValue) {
+                    result[key] = sortJSONKeys(currentValue);
+                }
                 return result;
             }, {} as JSONContent);
     }
@@ -99,7 +102,8 @@ export const restoreOriginalOrder = (
             const rightObj = JSONContent.isObject(rightRef) ? rightRef : {};
 
             return Object.keys(val).reduce((result, key) => {
-                if (val[key]) result[key] = restore(val[key], leftObj[key], rightObj[key]);
+                const itemValue = val[key];
+                if (itemValue) result[key] = restore(itemValue, leftObj[key], rightObj[key]);
                 return result;
             }, {} as JSONContent);
         }
