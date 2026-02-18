@@ -11,9 +11,9 @@ This project processes metadata for datasets, programs, permissions, and visuali
 1. Clone the repository:
 
     ```sh
-    git clone https://github.com/yourusername/metadata-skeleton-offline-2.git
+    git clone https://github.com/Eyeseetea/dhis2-metadata-skeleton.git
 
-    cd metadata-skeleton-offline-2
+    cd dhis2-metadata-skeleton
     ```
 
 2. Install the dependencies:
