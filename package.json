@@ -32,7 +32,7 @@
         "lint": "eslint src/{data,domain,scripts,types,utils}/**/*.ts --ext .ts",
         "start": "ts-node ./src/scripts/index.ts",
         "start-comparator": "VITE_COMPARATOR_ONLY=true vite --strictPort",
-        "compare-metadata": "ts-node ./src/scripts/compare-metadata.ts",
+        "compare-metadata": "ts-node ./src/scripts/index.ts compare metadata",
         "validate": "ts-node ./src/validateSchema.ts",
         "prettify": "prettier \"./**/*.{js,jsx,json,css,ts,tsx}\" --write",
         "metadata-build": "ts-node ./src/scripts/index.ts metadata build"
