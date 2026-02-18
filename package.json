@@ -18,8 +18,6 @@
         "run-script": "ts-node -P src/scripts",
         "source-map-explorer": "yarn build --sourcemap=true && source-map-explorer --no-border-checks --only-mapped build/assets/*js",
         "test": "yarn test-unit",
-        "test-fixtures-generate": "yarn run-script src/tests/manage.ts generate-fixtures",
-        "test-snapshots-delete": "yarn run-script src/tests/manage.ts delete",
         "test-unit": "vitest run --reporter=basic",
         "test-unit-watch": "vitest watch",
         "postinstall": "yarn localize",

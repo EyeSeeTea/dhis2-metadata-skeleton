@@ -4,7 +4,7 @@ This project processes metadata for datasets, programs, permissions, and visuali
 
 ## Prerequisites
 
--   Node.js (>=14.x)
+-   Node.js (>=18.x)
 
 ## Installation
 
