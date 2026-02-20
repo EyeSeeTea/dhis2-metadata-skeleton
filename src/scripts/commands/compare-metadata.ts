@@ -4,6 +4,7 @@ import { resolve } from "path";
 import { readFileSync, mkdirSync, existsSync, writeFileSync, rmSync } from "fs";
 import { Maybe } from "$/utils/ts-utils";
 import { JSONContent } from "$/domain/entities/JSONContent";
+import { parseJson } from "$/utils/jsonParser";
 
 export function getCommand() {
     return subcommands({
@@ -38,13 +39,13 @@ const compareMetadata = command({
         const json1 = parseMetadataFromFile(file1);
         const json2 = parseMetadataFromFile(file2);
 
-        if (JSONContent.isValidJSON(json1) && JSONContent.isValidJSON(json2)) {
-            if (areJsonsIdentical(json1, json2)) {
-                console.debug("The two JSON files are identical. No comparison needed.");
-                return;
-            }
-
-            startMetadataComparator(json1, json2);
+        if (
+            JSONContent.isValidJSON(json1) &&
+            JSONContent.isValidJSON(json2) &&
+            areJsonsIdentical(json1, json2)
+        ) {
+            console.debug("The two JSON files are identical. No comparison needed.");
+            return;
         } else {
             startMetadataComparator(json1, json2);
         }
@@ -109,13 +110,13 @@ function parseMetadataFromFile(filePath: Maybe<string>): Maybe<JSONContent> {
     if (!filePath) return undefined;
     const file = resolve(filePath);
     const jsonContent = readFileSync(file, "utf-8");
+    const parsed = parseJson(jsonContent);
 
-    try {
-        return JSON.parse(jsonContent);
-    } catch (error) {
-        console.error(`Failed to parse JSON from file: ${filePath}`, error);
-        return undefined;
+    if (!parsed) {
+        console.error(`Failed to parse JSON from file: ${filePath}`);
     }
+
+    return parsed;
 }
 
 function areJsonsIdentical(json1: JSONContent, json2: JSONContent): boolean {

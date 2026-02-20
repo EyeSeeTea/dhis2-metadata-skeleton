@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { JSONArray, JSONContent, JSONValue } from "$/domain/entities/JSONContent";
 import { Maybe } from "$/utils/ts-utils";
+import { parseJson } from "$/utils/jsonParser";
 
 type JsonDiff = {
     path: string;
@@ -319,16 +320,16 @@ export function useJsonDiffSelector(
     const jsonDiffs = useMemo(() => {
         if (!leftText || !rightText) return [];
 
-        try {
-            const leftJson = JSON.parse(leftText);
-            const rightJson = JSON.parse(rightText);
-            const differences = detectJsonDifferences(leftJson, rightJson);
+        const leftJson = parseJson(leftText);
+        const rightJson = parseJson(rightText);
 
-            return [...differences].sort((a, b) => a.path.localeCompare(b.path));
-        } catch (error) {
-            console.error("Failed to parse JSON for diff detection:", error);
+        if (!leftJson || !rightJson) {
+            console.error("Failed to parse JSON for diff detection");
             return [];
         }
+
+        const differences = detectJsonDifferences(leftJson, rightJson);
+        return [...differences].sort((a, b) => a.path.localeCompare(b.path));
     }, [leftText, rightText]);
 
     useEffect(() => {
@@ -342,36 +343,33 @@ export function useJsonDiffSelector(
     useEffect(() => {
         if (!leftText || jsonDiffs.length === 0) return;
 
-        try {
-            const leftJson = JSON.parse(leftText) as JSONContent;
+        const leftJson = parseJson(leftText);
+        if (!leftJson) return;
 
-            const result = jsonDiffs.reduce<JSONContent>((acc, diff) => {
-                const selection = selectedChanges[diff.path];
-                const pathParts = parsePath(diff.path);
+        const result = jsonDiffs.reduce<JSONContent>((acc, diff) => {
+            const selection = selectedChanges[diff.path];
+            const pathParts = parsePath(diff.path);
 
-                if (selection === "right") {
-                    if (diff.type === "removed") {
-                        const updated = deleteNestedKey(acc, pathParts);
-                        return JSONContent.isObject(updated) ? updated : acc;
-                    } else {
-                        const updated = setNestedValue(acc, pathParts, diff.rightValue);
-                        return JSONContent.isObject(updated) ? updated : acc;
-                    }
-                }
-
-                if (diff.type === "added") {
+            if (selection === "right") {
+                if (diff.type === "removed") {
                     const updated = deleteNestedKey(acc, pathParts);
                     return JSONContent.isObject(updated) ? updated : acc;
                 } else {
-                    const updated = setNestedValue(acc, pathParts, diff.leftValue);
+                    const updated = setNestedValue(acc, pathParts, diff.rightValue);
                     return JSONContent.isObject(updated) ? updated : acc;
                 }
-            }, structuredClone(leftJson));
+            }
 
-            onMergedChange(result);
-        } catch (error) {
-            console.error("Failed to apply selected changes:", error);
-        }
+            if (diff.type === "added") {
+                const updated = deleteNestedKey(acc, pathParts);
+                return JSONContent.isObject(updated) ? updated : acc;
+            } else {
+                const updated = setNestedValue(acc, pathParts, diff.leftValue);
+                return JSONContent.isObject(updated) ? updated : acc;
+            }
+        }, structuredClone(leftJson));
+
+        onMergedChange(result);
     }, [selectedChanges, jsonDiffs, leftText, rightText, onMergedChange]);
 
     const handleChangeSelection = useCallback((path: string, selection: "left" | "right") => {

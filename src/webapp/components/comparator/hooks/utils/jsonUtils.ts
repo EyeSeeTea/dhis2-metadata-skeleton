@@ -42,14 +42,6 @@ export const formatJson = (json: Maybe<JSONContent>): string => {
     }
 };
 
-export const parseJson = (text: string): Maybe<JSONContent> => {
-    try {
-        return JSON.parse(text) as JSONContent;
-    } catch {
-        return undefined;
-    }
-};
-
 export const cloneJson = <T extends JSONContent | JSONValue>(obj: T): T => {
     return jsondiffpatch.clone(obj) as T;
 };

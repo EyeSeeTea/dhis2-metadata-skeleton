@@ -5,9 +5,9 @@ import {
     cloneJson,
     sortJSONKeys,
     formatJson,
-    parseJson,
     restoreOriginalOrder,
 } from "$/webapp/components/comparator/hooks/utils/jsonUtils";
+import { parseJson } from "$/utils/jsonParser";
 
 export type ComparatorState = {
     hideLeftButton: boolean;
