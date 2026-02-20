@@ -63,32 +63,35 @@ export function useComparator(): ComparatorState {
             const restored = restoreOriginalMergedOrder(cloneJson(leftJson));
             setMergedJson(restored);
         }
-    }, [leftJson, mergedJson]);
+    }, [leftJson, mergedJson, restoreOriginalMergedOrder]);
 
-    const uploadLeft = useCallback(async (file: Maybe<File>) => {
-        if (!file) {
-            setLeftJson(undefined);
-            setLeftOriginal(undefined);
-            setMergedJson(undefined);
-            return;
-        }
-
-        try {
-            const text = await file.text();
-            const json = parseJson(text);
-            if (json) {
-                setLeftOriginal(cloneJson(json));
-                const sorted = sortJSONKeys(json);
-                if (JSONContent.isObject(sorted)) {
-                    setLeftJson(sorted);
-                    const restored = restoreOriginalMergedOrder(cloneJson(sorted));
-                    setMergedJson(restored);
-                }
+    const uploadLeft = useCallback(
+        async (file: Maybe<File>) => {
+            if (!file) {
+                setLeftJson(undefined);
+                setLeftOriginal(undefined);
+                setMergedJson(undefined);
+                return;
             }
-        } catch (error) {
-            console.error("Error parsing left JSON file:", error);
-        }
-    }, []);
+
+            try {
+                const text = await file.text();
+                const json = parseJson(text);
+                if (json) {
+                    setLeftOriginal(cloneJson(json));
+                    const sorted = sortJSONKeys(json);
+                    if (JSONContent.isObject(sorted)) {
+                        setLeftJson(sorted);
+                        const restored = restoreOriginalMergedOrder(cloneJson(sorted));
+                        setMergedJson(restored);
+                    }
+                }
+            } catch (error) {
+                console.error("Error parsing left JSON file:", error);
+            }
+        },
+        [restoreOriginalMergedOrder]
+    );
 
     const uploadRight = useCallback(async (file: Maybe<File>) => {
         if (!file) {
@@ -117,32 +120,38 @@ export function useComparator(): ComparatorState {
             const restored = restoreOriginalMergedOrder(cloneJson(leftJson));
             setMergedJson(restored);
         }
-    }, [leftJson]);
+    }, [leftJson, restoreOriginalMergedOrder]);
 
     const acceptRight = useCallback(() => {
         if (rightJson) {
             const restored = restoreOriginalMergedOrder(cloneJson(rightJson));
             setMergedJson(restored);
         }
-    }, [rightJson]);
+    }, [rightJson, restoreOriginalMergedOrder]);
 
-    const handleMergedChange = useCallback((value: Maybe<string>) => {
-        if (!value) return;
+    const handleMergedChange = useCallback(
+        (value: Maybe<string>) => {
+            if (!value) return;
 
-        const parsed = parseJson(value);
-        if (parsed) {
-            const sorted = sortJSONKeys(parsed);
-            if (sorted && JSONContent.isObject(sorted)) {
-                const restored = restoreOriginalMergedOrder(cloneJson(sorted));
-                setMergedJson(restored);
+            const parsed = parseJson(value);
+            if (parsed) {
+                const sorted = sortJSONKeys(parsed);
+                if (sorted && JSONContent.isObject(sorted)) {
+                    const restored = restoreOriginalMergedOrder(cloneJson(sorted));
+                    setMergedJson(restored);
+                }
             }
-        }
-    }, []);
+        },
+        [restoreOriginalMergedOrder]
+    );
 
-    const applyMergedJson = useCallback((merged: JSONContent) => {
-        const restored = restoreOriginalMergedOrder(merged);
-        setMergedJson(restored);
-    }, []);
+    const applyMergedJson = useCallback(
+        (merged: JSONContent) => {
+            const restored = restoreOriginalMergedOrder(merged);
+            setMergedJson(restored);
+        },
+        [restoreOriginalMergedOrder]
+    );
 
     const leftText = useMemo(() => formatJson(leftJson), [leftJson]);
     const rightText = useMemo(() => formatJson(rightJson), [rightJson]);
@@ -150,7 +159,7 @@ export function useComparator(): ComparatorState {
         if (!mergedJson) return "";
         const restoredValue = restoreOriginalMergedOrder(mergedJson);
         return JSON.stringify(restoredValue, null, 2);
-    }, [mergedJson, leftOriginal, rightOriginal]);
+    }, [mergedJson, restoreOriginalMergedOrder]);
 
     return {
         leftText,

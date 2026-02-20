@@ -36,6 +36,8 @@ module.exports = {
         "no-debugger": "warn",
         "no-extra-semi": "off",
         "no-mixed-spaces-and-tabs": "off",
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn",
     },
-    plugins: ["@typescript-eslint"],
+    plugins: ["@typescript-eslint", "react-hooks"],
 };
