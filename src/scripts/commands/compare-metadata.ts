@@ -14,7 +14,7 @@ export function getCommand() {
     });
 }
 
-const compareMetadata = command({
+export const compareMetadata = command({
     name: "compare-metadata",
     description: "Compare two metadata JSON files",
     args: {
