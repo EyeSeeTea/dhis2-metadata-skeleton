@@ -12,7 +12,7 @@ describe("User", () => {
 
         expect(user.isAdmin()).toBe(false);
     });
-    it("should return belong to user group equal to false when the id exist", () => {
+    it("should return belong to user group equal to true when the id exist", () => {
         const userGroupId = "BwyMfDBLih9";
 
         const user = createUserWithGroups([{ id: userGroupId, name: "Group 1" }]);

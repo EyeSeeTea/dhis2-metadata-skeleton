@@ -119,6 +119,6 @@ function parseMetadataFromFile(filePath: Maybe<string>): Maybe<JSONContent> {
     return parsed;
 }
 
-function areJsonsIdentical(json1: JSONContent, json2: JSONContent): boolean {
+function areJsonsIdentical(json1: Maybe<JSONContent>, json2: Maybe<JSONContent>): boolean {
     return JSON.stringify(json1) === JSON.stringify(json2);
 }
