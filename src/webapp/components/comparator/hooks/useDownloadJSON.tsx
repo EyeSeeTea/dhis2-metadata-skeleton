@@ -1,4 +1,4 @@
-import { JSONContent } from "$/domain/entities/JSONContent";
+import { JSONValue } from "$/domain/entities/JSONContent";
 import { Maybe } from "$/utils/ts-utils";
 import { useAppContext } from "$/webapp/contexts/app-context";
 import { useCallback } from "react";
@@ -7,7 +7,7 @@ type DownloadJSONState = {
     downloadJSON: () => void;
 };
 
-export function useDownloadJSON(jsonContent: Maybe<JSONContent>): DownloadJSONState {
+export function useDownloadJSON(jsonContent: Maybe<JSONValue>): DownloadJSONState {
     const { compositionRoot } = useAppContext();
 
     const downloadJSON = useCallback(() => {

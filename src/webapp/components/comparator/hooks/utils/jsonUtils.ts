@@ -31,7 +31,7 @@ export const sortJSONKeys = (value: JSONValue): JSONValue => {
     return value;
 };
 
-export const formatJson = (json: Maybe<JSONContent>): string => {
+export const formatJson = (json: Maybe<JSONValue>): string => {
     if (!json) return "";
 
     try {
@@ -48,8 +48,8 @@ export const cloneJson = <T extends JSONContent | JSONValue>(obj: T): T => {
 
 export const restoreOriginalOrder = (
     value: JSONValue,
-    leftOriginal: Maybe<JSONContent>,
-    rightOriginal: Maybe<JSONContent>
+    leftOriginal: Maybe<JSONValue>,
+    rightOriginal: Maybe<JSONValue>
 ): JSONValue => {
     const restore = (
         val: JSONValue,
