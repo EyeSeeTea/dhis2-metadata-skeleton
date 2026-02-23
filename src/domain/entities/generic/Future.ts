@@ -1,5 +1,4 @@
 import * as rcpromise from "real-cancellable-promise";
-import { Cancellation } from "real-cancellable-promise";
 
 /**
  * Futures are async values similar to promises, with some differences:
@@ -32,6 +31,13 @@ export class Future<E, D> {
             });
 
             return new rcpromise.CancellablePromise(promise, cancel || (() => {}));
+        });
+    }
+
+    static fromPromise<Data>(promise: Promise<Data>): FutureData<Data> {
+        return Future.fromComputation((resolve, reject) => {
+            promise.then(resolve).catch(err => reject(err ? err.message : "Unknown error"));
+            return () => {};
         });
     }
 
@@ -157,6 +163,8 @@ export class Future<E, D> {
     }
 }
 
+export type FutureData<D> = Future<Error, D>;
+
 export type Cancel = (() => void) | undefined;
 
 interface CaptureAsync<E> {
@@ -165,29 +173,3 @@ interface CaptureAsync<E> {
 }
 
 type ParallelOptions = { concurrency: number };
-
-export function getJSON<U>(url: string): Future<TypeError | SyntaxError, U> {
-    const abortController = new AbortController();
-
-    return Future.fromComputation((resolve, reject) => {
-        // exceptions: TypeError | DOMException[name=AbortError]
-        fetch(url, { method: "get", signal: abortController.signal })
-            .then(res => res.json() as U) // exceptions: SyntaxError
-            .then(data => resolve(data))
-            .catch((error: unknown) => {
-                if (isNamedError(error) && error.name === "AbortError") {
-                    throw new Cancellation();
-                } else if (error instanceof TypeError || error instanceof SyntaxError) {
-                    reject(error);
-                } else {
-                    reject(new TypeError("Unknown error"));
-                }
-            });
-
-        return () => abortController.abort();
-    });
-}
-
-function isNamedError(error: unknown): error is { name: string } {
-    return Boolean(error && typeof error === "object" && "name" in error);
-}

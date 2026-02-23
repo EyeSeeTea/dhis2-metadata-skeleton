@@ -1,3 +1,4 @@
+import { FutureData } from "$/domain/entities/generic/Future";
 import { ProcessedDataSetProgram } from "../entities/ProcessedDataSetProgram";
 import { MetadataRepository } from "../repositories/MetadataRepository";
 import { concatUnique } from "./helpers/concatUnique";
@@ -5,20 +6,14 @@ import { concatUnique } from "./helpers/concatUnique";
 export class DataSetProgramCombineAndRemoveDuplicatesUseCase {
     constructor(private metadataRepository: MetadataRepository) {}
 
-    async execute(): Promise<void> {
-        try {
-            const metadataPackages = await this.metadataRepository.get<ProcessedDataSetProgram>();
-
+    execute(): FutureData<void> {
+        return this.metadataRepository.get<ProcessedDataSetProgram>().flatMap(metadataPackages => {
             const metadataPackagesWithoutDuplicates =
                 this.combineAndRemoveDuplicatesById(metadataPackages);
-
-            await this.metadataRepository.save<ProcessedDataSetProgram>(
+            return this.metadataRepository.save<ProcessedDataSetProgram>(
                 metadataPackagesWithoutDuplicates
             );
-        } catch (error) {
-            console.error("Error processing datasets:", error);
-            throw error;
-        }
+        });
     }
 
     private combineAndRemoveDuplicatesById(
