@@ -2,13 +2,11 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { JSONArray, JSONContent, JSONValue } from "$/domain/entities/JSONContent";
 import { Maybe } from "$/utils/ts-utils";
 import { parseJson } from "$/utils/jsonParser";
-
-type JsonDiff = {
-    path: string;
-    leftValue: Maybe<JSONValue>;
-    rightValue: Maybe<JSONValue>;
-    type: "added" | "removed" | "modified";
-};
+import {
+    detectJsonDifferences,
+    hasIdField,
+    JsonDiff,
+} from "$/webapp/components/comparator/hooks/utils/jsonUtils";
 
 type JsonDiffSelectorState = {
     jsonDiffs: JsonDiff[];
@@ -18,148 +16,6 @@ type JsonDiffSelectorState = {
         leftPreview: string;
         rightPreview: string;
     };
-};
-
-const hasIdField = (value: JSONValue): value is { id: string | number } => {
-    return JSONContent.isObject(value) && "id" in value;
-};
-
-const detectJsonDifferences = (
-    left: Maybe<JSONValue>,
-    right: Maybe<JSONValue>,
-    path = ""
-): JsonDiff[] => {
-    if (!JSONContent.isValidJSON(left) && !JSONContent.isValidJSON(right)) return [];
-
-    if (!JSONContent.isValidJSON(left)) {
-        return [{ path, leftValue: left, rightValue: right, type: "added" }];
-    }
-
-    if (!JSONContent.isValidJSON(right)) {
-        return [{ path, leftValue: left, rightValue: right, type: "removed" }];
-    }
-
-    if (JSONContent.isPrimitive(left) && JSONContent.isPrimitive(right)) {
-        return left !== right
-            ? [{ path, leftValue: left, rightValue: right, type: "modified" }]
-            : [];
-    }
-
-    if (JSONContent.isPrimitive(left) || JSONContent.isPrimitive(right)) {
-        return [{ path, leftValue: left, rightValue: right, type: "modified" }];
-    }
-
-    if (JSONContent.isArray(left) && JSONContent.isArray(right)) {
-        const leftHasIds = left.length > 0 && left.every(hasIdField);
-        const rightHasIds = right.length > 0 && right.every(hasIdField);
-
-        if (leftHasIds && rightHasIds) {
-            const leftById = new Map(left.map(item => [item.id, item]));
-            const rightById = new Map(right.map(item => [item.id, item]));
-            const allIds = [...new Set([...leftById.keys(), ...rightById.keys()])];
-
-            return allIds.flatMap(id => {
-                const currentPath = `${path}[id:${id}]`;
-                const leftItem = leftById.get(id);
-                const rightItem = rightById.get(id);
-
-                if (!leftItem) {
-                    return [
-                        {
-                            path: currentPath,
-                            leftValue: undefined,
-                            rightValue: rightItem,
-                            type: "added" as const,
-                        },
-                    ];
-                }
-
-                if (!rightItem) {
-                    return [
-                        {
-                            path: currentPath,
-                            leftValue: leftItem,
-                            rightValue: undefined,
-                            type: "removed" as const,
-                        },
-                    ];
-                }
-
-                return detectJsonDifferences(leftItem, rightItem, currentPath);
-            });
-        }
-
-        const maxLen = Math.max(left.length, right.length);
-        return Array.from({ length: maxLen }, (_, i) => {
-            const currentPath = `${path}[${i}]`;
-
-            if (i >= left.length) {
-                return [
-                    {
-                        path: currentPath,
-                        leftValue: undefined,
-                        rightValue: right[i],
-                        type: "added" as const,
-                    },
-                ];
-            }
-
-            if (i >= right.length) {
-                return [
-                    {
-                        path: currentPath,
-                        leftValue: left[i],
-                        rightValue: undefined,
-                        type: "removed" as const,
-                    },
-                ];
-            }
-
-            return detectJsonDifferences(left[i], right[i], currentPath);
-        }).flat();
-    }
-
-    if (JSONContent.isArray(left) !== JSONContent.isArray(right)) {
-        return [{ path, leftValue: left, rightValue: right, type: "modified" }];
-    }
-
-    if (JSONContent.isObject(left) && JSONContent.isObject(right)) {
-        const leftKeys = Object.keys(left);
-        const rightKeys = Object.keys(right);
-        const allKeys = [...new Set([...leftKeys, ...rightKeys])];
-
-        return allKeys.flatMap(key => {
-            const currentPath = path ? `${path}.${key}` : key;
-            const hasLeft = key in left;
-            const hasRight = key in right;
-
-            if (!hasLeft && hasRight) {
-                return [
-                    {
-                        path: currentPath,
-                        leftValue: undefined,
-                        rightValue: right[key],
-                        type: "added" as const,
-                    },
-                ];
-            }
-
-            if (hasLeft && !hasRight) {
-                return [
-                    {
-                        path: currentPath,
-                        leftValue: left[key],
-                        rightValue: undefined,
-                        type: "removed" as const,
-                    },
-                ];
-            }
-
-            return detectJsonDifferences(left[key], right[key], currentPath);
-        });
-    }
-
-    return [];
 };
 
 const parsePath = (path: string): string[] => {
@@ -200,10 +56,10 @@ const parsePath = (path: string): string[] => {
 };
 
 const setNestedValue = (
-    obj: JSONContent | JSONArray,
+    obj: JSONValue,
     pathParts: string[],
     value: Maybe<JSONValue>
-): JSONContent | JSONArray => {
+): JSONValue => {
     if (pathParts.length === 0) return value as JSONContent | JSONArray;
 
     const [head, ...tail] = pathParts;
@@ -225,7 +81,8 @@ const setNestedValue = (
                 } else {
                     const currentItem = newArray[index];
                     if (JSONContent.isObject(currentItem) || JSONContent.isArray(currentItem)) {
-                        newArray[index] = setNestedValue(currentItem, tail, value);
+                        const updatedItem = setNestedValue(currentItem, tail, value);
+                        newArray[index] = updatedItem;
                     }
                 }
                 return newArray;
@@ -263,10 +120,7 @@ const setNestedValue = (
     return obj;
 };
 
-const deleteNestedKey = (
-    obj: JSONContent | JSONArray,
-    pathParts: string[]
-): JSONContent | JSONArray => {
+const deleteNestedKey = (obj: JSONValue, pathParts: string[]): JSONValue => {
     if (pathParts.length === 0) return obj;
 
     const [head, ...tail] = pathParts;
@@ -313,7 +167,7 @@ const deleteNestedKey = (
 export function useJsonDiffSelector(
     leftText: string,
     rightText: string,
-    onMergedChange: (mergedJson: JSONContent) => void
+    onMergedChange: (mergedJson: JSONValue) => void
 ): JsonDiffSelectorState {
     const [selectedChanges, setSelectedChanges] = useState<Record<string, "left" | "right">>({});
 
@@ -346,26 +200,34 @@ export function useJsonDiffSelector(
         const leftJson = parseJson(leftText);
         if (!leftJson) return;
 
-        const result = jsonDiffs.reduce<JSONContent>((acc, diff) => {
+        const result: JSONValue = jsonDiffs.reduce<JSONValue>((acc, diff) => {
             const selection = selectedChanges[diff.path];
             const pathParts = parsePath(diff.path);
 
             if (selection === "right") {
                 if (diff.type === "removed") {
                     const updated = deleteNestedKey(acc, pathParts);
-                    return JSONContent.isObject(updated) ? updated : acc;
+                    return JSONContent.isObject(updated) || JSONContent.isArray(updated)
+                        ? updated
+                        : acc;
                 } else {
                     const updated = setNestedValue(acc, pathParts, diff.rightValue);
-                    return JSONContent.isObject(updated) ? updated : acc;
+                    return JSONContent.isObject(updated) || JSONContent.isArray(updated)
+                        ? updated
+                        : acc;
                 }
             }
 
             if (diff.type === "added") {
                 const updated = deleteNestedKey(acc, pathParts);
-                return JSONContent.isObject(updated) ? updated : acc;
+                return JSONContent.isObject(updated) || JSONContent.isArray(updated)
+                    ? updated
+                    : acc;
             } else {
                 const updated = setNestedValue(acc, pathParts, diff.leftValue);
-                return JSONContent.isObject(updated) ? updated : acc;
+                return JSONContent.isObject(updated) || JSONContent.isArray(updated)
+                    ? updated
+                    : acc;
             }
         }, structuredClone(leftJson));
 

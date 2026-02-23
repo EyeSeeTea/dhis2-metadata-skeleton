@@ -47,14 +47,12 @@ export function useComparator(): ComparatorState {
         if (preloadedLeft) {
             setLeftOriginal(cloneJson(preloadedLeft));
             const sorted = sortJSONKeys(preloadedLeft);
-            if (JSONContent.isObject(sorted)) setLeftJson(sorted);
+            setLeftJson(sorted);
         }
         if (preloadedRight) {
             setRightOriginal(cloneJson(preloadedRight));
             const sorted = sortJSONKeys(preloadedRight);
-            if (JSONContent.isObject(sorted)) {
-                setRightJson(sorted);
-            }
+            setRightJson(sorted);
         }
     }, [preloadedLeft, preloadedRight]);
 
@@ -132,10 +130,8 @@ export function useComparator(): ComparatorState {
             const parsed = parseJson(value);
             if (parsed) {
                 const sorted = sortJSONKeys(parsed);
-                if (sorted && JSONContent.isObject(sorted)) {
-                    const restored = restoreOriginalMergedOrder(cloneJson(sorted));
-                    setMergedJson(restored);
-                }
+                const restored = restoreOriginalMergedOrder(cloneJson(sorted));
+                setMergedJson(restored);
             }
         },
         [restoreOriginalMergedOrder]
@@ -143,7 +139,8 @@ export function useComparator(): ComparatorState {
 
     const applyMergedJson = useCallback(
         (merged: JSONValue) => {
-            const restored = restoreOriginalMergedOrder(merged);
+            const sorted = sortJSONKeys(merged);
+            const restored = restoreOriginalMergedOrder(cloneJson(sorted));
             setMergedJson(restored);
         },
         [restoreOriginalMergedOrder]
