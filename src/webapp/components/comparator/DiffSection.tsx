@@ -2,9 +2,12 @@ import styled from "styled-components";
 import { DiffEditor, Editor } from "@monaco-editor/react";
 import ActionButton from "$/webapp/components/ActionButton";
 import i18n from "$/utils/i18n";
-import { ChevronLeft, ChevronRight, CloudDownload } from "@material-ui/icons";
+import { Check, ChevronLeft, ChevronRight, CloudDownload } from "@material-ui/icons";
 import { useDownloadJSON } from "$/webapp/components/comparator/hooks/useDownloadJSON";
-import { useJsonDiffSelector } from "$/webapp/components/comparator/hooks/useJsonDiffSelector";
+import {
+    FilterStatus,
+    useJsonDiffSelector,
+} from "$/webapp/components/comparator/hooks/useJsonDiffSelector";
 import { ComparatorState } from "$/webapp/components/comparator/hooks/useComparator";
 import { EditorPane } from "$/webapp/components/comparator/Comparator";
 
@@ -26,8 +29,17 @@ export default function DiffSection(props: DiffSectionProps) {
     } = props;
 
     const { downloadJSON: downloadMerged } = useDownloadJSON(mergedJson);
-    const { jsonDiffs, selectedChanges, handleChangeSelection, getChangePreview } =
-        useJsonDiffSelector(leftText, rightText, applyMergedJson);
+    const {
+        filteredDiffs,
+        selectedChanges,
+        handledPaths,
+        handledCount,
+        totalCount,
+        filterStatus,
+        setFilterStatus,
+        handleChangeSelection,
+        getChangePreview,
+    } = useJsonDiffSelector(leftText, rightText, applyMergedJson);
 
     return (
         <Container>
@@ -88,16 +100,40 @@ export default function DiffSection(props: DiffSectionProps) {
                     />
                 </EditorPane>
                 <ChangeControls>
-                    <ChangeControlsTitle>
-                        {i18n.t("Select Changes")} ({jsonDiffs.length})
-                    </ChangeControlsTitle>
+                    <ChangeControlsHeader>
+                        <ChangeControlsTitle>
+                            {i18n.t("Select Changes")} ({totalCount})
+                        </ChangeControlsTitle>
+                        <ProgressText>
+                            {handledCount} / {totalCount} {i18n.t("handled")}
+                        </ProgressText>
+                    </ChangeControlsHeader>
+                    <FilterToggle>
+                        {(["all", "unhandled", "handled"] as FilterStatus[]).map(status => (
+                            <FilterButton
+                                key={status}
+                                active={filterStatus === status}
+                                onClick={() => setFilterStatus(status)}
+                            >
+                                {status === "all"
+                                    ? i18n.t("All")
+                                    : status === "unhandled"
+                                      ? i18n.t("Unhandled")
+                                      : i18n.t("Handled")}
+                            </FilterButton>
+                        ))}
+                    </FilterToggle>
                     <ChangeList>
-                        {jsonDiffs.map(diff => {
+                        {filteredDiffs.map(diff => {
                             const { leftPreview, rightPreview } = getChangePreview(diff);
+                            const isHandled = handledPaths.has(diff.path);
                             return (
-                                <ChangeItem key={diff.path}>
+                                <ChangeItem key={diff.path} isHandled={isHandled}>
                                     <ChangeInfo>
-                                        <PathLabel>{diff.path}</PathLabel>
+                                        <PathLabel>
+                                            {isHandled && <CheckIcon />}
+                                            {diff.path}
+                                        </PathLabel>
                                         <ChangeType type={diff.type}>{diff.type}</ChangeType>
                                     </ChangeInfo>
                                     <ValuePreviews>
@@ -181,9 +217,48 @@ const ChangeControls = styled.div`
     height: 100%;
 `;
 
+const ChangeControlsHeader = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-block-end: 0.5rem;
+`;
+
 const ChangeControlsTitle = styled.h4`
-    margin: 0 0 1rem 0;
+    margin: 0;
     font-size: 0.9rem;
+`;
+
+const ProgressText = styled.span`
+    font-size: 0.75rem;
+    color: ${props => props.theme.palette.text.secondary};
+`;
+
+const FilterToggle = styled.div`
+    display: flex;
+    gap: 0;
+    margin-block-end: 0.75rem;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid ${props => props.theme.palette.divider};
+`;
+
+const FilterButton = styled.button<{ active: boolean }>`
+    flex: 1;
+    padding: 0.3rem 0.5rem;
+    font-size: 0.7rem;
+    border: none;
+    cursor: pointer;
+    background-color: ${props =>
+        props.active ? props.theme.palette.primary.main : "transparent"};
+    color: ${props =>
+        props.active ? props.theme.palette.common.white : props.theme.palette.text.secondary};
+    transition: all 0.2s;
+
+    &:hover {
+        background-color: ${props =>
+            props.active ? props.theme.palette.primary.dark : props.theme.palette.action.hover};
+    }
 `;
 
 const ChangeList = styled.div`
@@ -192,11 +267,17 @@ const ChangeList = styled.div`
     gap: 0.75rem;
 `;
 
-const ChangeItem = styled.div`
+const ChangeItem = styled.div<{ isHandled: boolean }>`
     border-radius: 4px;
     padding: 0.75rem;
-    border-inline-start: 3px solid ${props => props.theme.palette.primary.dark};
+    border-inline-start: 3px solid
+        ${props =>
+            props.isHandled
+                ? props.theme.palette.status.positive
+                : props.theme.palette.primary.dark};
     box-shadow: 2px 4px 6px ${props => props.theme.palette.shadow};
+    opacity: ${props => (props.isHandled ? 0.7 : 1)};
+    transition: opacity 0.2s, border-color 0.2s;
 `;
 
 const ChangeInfo = styled.div`
@@ -207,10 +288,18 @@ const ChangeInfo = styled.div`
 `;
 
 const PathLabel = styled.span`
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
     color: ${props => props.theme.palette.text.primary};
     font-size: 0.9rem;
     font-family: monospace;
     word-break: break-all;
+`;
+
+const CheckIcon = styled(Check)`
+    font-size: 0.9rem !important;
+    color: ${props => props.theme.palette.status.positive};
 `;
 
 const ValuePreviews = styled.div`

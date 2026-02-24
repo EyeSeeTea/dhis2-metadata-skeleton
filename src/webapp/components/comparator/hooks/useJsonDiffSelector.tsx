@@ -8,9 +8,17 @@ import {
     JsonDiff,
 } from "$/webapp/components/comparator/hooks/utils/jsonUtils";
 
+export type FilterStatus = "all" | "unhandled" | "handled";
+
 type JsonDiffSelectorState = {
     jsonDiffs: JsonDiff[];
+    filteredDiffs: JsonDiff[];
     selectedChanges: Record<string, "left" | "right">;
+    handledPaths: Set<string>;
+    handledCount: number;
+    totalCount: number;
+    filterStatus: FilterStatus;
+    setFilterStatus: (status: FilterStatus) => void;
     handleChangeSelection: (path: string, selection: "left" | "right") => void;
     getChangePreview: (diff: JsonDiff) => {
         leftPreview: string;
@@ -170,6 +178,8 @@ export function useJsonDiffSelector(
     onMergedChange: (mergedJson: JSONValue) => void
 ): JsonDiffSelectorState {
     const [selectedChanges, setSelectedChanges] = useState<Record<string, "left" | "right">>({});
+    const [handledPaths, setHandledPaths] = useState<Set<string>>(new Set());
+    const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
 
     const jsonDiffs = useMemo(() => {
         if (!leftText || !rightText) return [];
@@ -192,6 +202,8 @@ export function useJsonDiffSelector(
             {} as Record<string, "left" | "right">
         );
         setSelectedChanges(initial);
+        setHandledPaths(new Set());
+        setFilterStatus("all");
     }, [jsonDiffs]);
 
     useEffect(() => {
@@ -236,6 +248,11 @@ export function useJsonDiffSelector(
 
     const handleChangeSelection = useCallback((path: string, selection: "left" | "right") => {
         setSelectedChanges(prev => ({ ...prev, [path]: selection }));
+        setHandledPaths(prev => {
+            const next = new Set(prev);
+            next.add(path);
+            return next;
+        });
     }, []);
 
     const getChangePreview = useCallback((diff: JsonDiff) => {
@@ -248,9 +265,25 @@ export function useJsonDiffSelector(
         };
     }, []);
 
+    const handledCount = handledPaths.size;
+    const totalCount = jsonDiffs.length;
+
+    const filteredDiffs = useMemo(() => {
+        if (filterStatus === "all") return jsonDiffs;
+        return jsonDiffs.filter(diff =>
+            filterStatus === "handled" ? handledPaths.has(diff.path) : !handledPaths.has(diff.path)
+        );
+    }, [jsonDiffs, filterStatus, handledPaths]);
+
     return {
         jsonDiffs,
+        filteredDiffs,
         selectedChanges,
+        handledPaths,
+        handledCount,
+        totalCount,
+        filterStatus,
+        setFilterStatus,
         handleChangeSelection,
         getChangePreview,
     };

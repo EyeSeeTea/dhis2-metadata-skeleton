@@ -1,0 +1,129 @@
+schema: spec-driven
+
+context: |
+  Project: DHIS2 Metadata Skeleton
+
+  What it is:
+  - Dual-mode TypeScript toolset:
+    1) CLI offline metadata processor (filesystem-driven)
+    2) Vite + React comparator/merge UI
+
+  Tech stack:
+  - Node.js >= 18
+  - TypeScript 5.x
+  - CLI: cmd-ts + ts-node
+  - UI: React 18 + Vite 4 + React Router v6 + Zustand + Monaco Editor
+  - Testing: Vitest (jsdom)
+
+  Directory structure:
+  - src/
+    - scripts/       # CLI entrypoint
+    - domain/        # Use cases (combine, deduplicate, compare)
+    - data/          # File repositories
+    - helpers/       # Filesystem utilities
+    - components/    # React components
+    - pages/         # UI routes
+    - state/         # Zustand stores
+
+  Filesystem contract (this is the "API"):
+  - Input folders at repo root:
+    - capture/
+    - visualizations/
+    - permissions/
+  - Only *.json files are processed
+  - Ignore any file with "-sorted" in the filename
+  - Outputs go to output/ with filenames derived from folder name:
+    - output/capture.json
+    - output/visualizations.json
+    - output/permissions.json
+
+  Deduplication contract:
+  - Entities are deduplicated by `id` (order-dependent); minimum shape is { id: string }
+
+  Canonical & alias commands:
+  - Build:
+    - Alias: yarn metadata-build
+    - Canonical: yarn start metadata build
+  - Compare (preload and launch UI):
+    - Alias: yarn compare-metadata -f file1.json -s file2.json
+    - Canonical: yarn start metadata compare -f file1.json -s file2.json
+    - Behavior: writes files into public/.tmp then launches comparator
+  - Run UI only:
+    - yarn start-comparator
+    - Note: start-comparator does NOT accept -f/-s flags (upload via UI)
+    - Runs without requiring DHIS2 auth configuration
+    - Relies on CLI compare command to preload temp files into public/.tmp
+  - IMPORTANT: The CLI compare command and the UI-only start command are distinct entry points. Never conflate them.
+
+  Code conventions:
+  - TypeScript strict mode, no implicit any
+  - Functional composition over OOP
+  - Use-case driven domain functions
+  - Naming: camelCase variables/functions, PascalCase React components, kebab-case CLI commands
+
+  Non-goals (do NOT introduce these):
+  - No backend API or server layer
+  - No database
+  - No authentication server
+  - No cloud deployment pipeline
+  - No metadata validation against a DHIS2 instance (offline only)
+
+  Extension principles:
+  - Preserve deterministic build outputs
+  - Keep CLI side-effect boundaries clear (pure logic vs I/O)
+  - Do not introduce runtime network dependencies
+  - Maintain id-based deduplication contract
+  - Keep comparator usable fully offline
+
+  Known constraints:
+  - Large metadata files may impact browser performance in comparator
+  - No schema validation against DHIS2 API
+  - Merge conflicts are structural, not semantic
+
+  Versioning:
+  - Semantic versioning
+  - Backward compatibility for CLI commands
+  - Explicit change proposals required for CLI interface, folder structure, or deduplication behavior changes
+
+  Testing strategy:
+  - Unit tests (Vitest) for deduplication logic, domain combine use cases, CLI command behavior
+  - No end-to-end browser tests currently required
+  - Comparator UI validated manually during development
+
+  ClickUp project structure:
+  - Projects are stored under space "Projects" in ClickUp
+  - Each project has 2 lists:
+    - PM list: high-level project progress tracking
+    - Team list: individual task progress tracking
+  - Naming convention:
+    - Folder: "Client - Project name"
+    - Lists: "Client - Project name - PM" and "Client - Project name - team"
+
+rules:
+  project:
+    - "Specs first: before modifying any behavior, check openspec/specs/ for existing specs. If behavior is unclear, read the spec. If no spec exists, propose one under changes/. Never change behavior without updating specs first."
+    - Treat the filesystem contract as the primary interface; any changes to folder names, ignore rules, or output paths require spec updates.
+    - Do not introduce backend APIs or databases unless explicitly proposed as a major change.
+    - Follow code conventions: TypeScript strict, functional composition, correct naming (camelCase/PascalCase/kebab-case).
+    - New code goes in the correct src/ subdirectory: domain logic in domain/, React components in components/, UI routes in pages/, state in state/.
+    - "Do NOT: silently change folder names, change output filenames without spec + proposal, modify CLI flags without documenting a migration path, or assume schema validation beyond `id` unless specified in specs."
+    - "Definition of Done: a change is complete when specs are updated, code aligns with specs, tests pass, and no breaking contract surfaces are altered without a proposal."
+
+  proposal:
+    - Must include: Goals, Non-goals, User impact, Compatibility (CLI + folder structure), and Rollback plan.
+    - If changing CLI surface or aliases, explicitly list old vs new commands.
+    - Confirm the change respects extension principles (determinism, offline, no network deps).
+
+  design:
+    - Must describe: input discovery, merge order assumptions, dedup rule, and output writing behavior.
+    - For comparator-related changes, describe how the UI reads inputs (public/.tmp vs upload) and how comparator-only mode is preserved. Comparator-only mode must work without DHIS2 auth and must not accept -f/-s flags.
+    - Note known constraints (large file performance, structural-only merge) when relevant.
+
+  tasks:
+    - Include at least one task for tests (Vitest) when domain logic or CLI behavior changes.
+    - Include a task to update specs/ domain docs whenever behavior changes.
+    - "Tag each task with the responsible agent role: [FE], [BE], [DB], [UX], [GD]."
+
+  specs:
+    - Specs are source-of-truth; code must align to specs before merge.
+    - Any change that affects CLI flags, folder contract, or dedup behavior must come with delta specs under changes/<change-name>/specs/.
