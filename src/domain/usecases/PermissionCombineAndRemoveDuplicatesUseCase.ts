@@ -1,25 +1,19 @@
+import { FutureData } from "$/domain/entities/generic/Future";
 import { ProcessedPermissions } from "../entities/ProcessedPermissions";
 import { MetadataRepository } from "../repositories/MetadataRepository";
-import _ from "../entities/generic/Collection";
 import { concatUnique } from "./helpers/concatUnique";
 
 export class PermissionCombineAndRemoveDuplicatesUseCase {
     constructor(private metadataRepository: MetadataRepository) {}
 
-    async execute(): Promise<void> {
-        try {
-            const metadataPackages = await this.metadataRepository.get<ProcessedPermissions>();
-
+    execute(): FutureData<void> {
+        return this.metadataRepository.get<ProcessedPermissions>().flatMap(metadataPackages => {
             const metadataPackagesWithoutDuplicates =
                 this.combineAndRemoveDuplicatesById(metadataPackages);
-
-            await this.metadataRepository.save<ProcessedPermissions>(
+            return this.metadataRepository.save<ProcessedPermissions>(
                 metadataPackagesWithoutDuplicates
             );
-        } catch (error) {
-            console.error("Error processing datasets:", error);
-            throw error;
-        }
+        });
     }
 
     private combineAndRemoveDuplicatesById(
@@ -38,7 +32,7 @@ export class PermissionCombineAndRemoveDuplicatesUseCase {
             };
         }, initProcessedPermissions);
 
-        console.log(`Processed files successfully!`);
+        console.debug(`Processed files successfully!`);
         return processedPermissions;
     }
 }

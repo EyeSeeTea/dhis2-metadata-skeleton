@@ -41,3 +41,5 @@ export interface BaseMetadata {
     user: NamedRef;
     attributeValues: unknown[];
 }
+
+export type MetadataItem = BaseMetadata & Record<string, unknown>;

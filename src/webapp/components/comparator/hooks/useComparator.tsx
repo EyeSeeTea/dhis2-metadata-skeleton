@@ -1,0 +1,212 @@
+import { useState, useCallback, useEffect, useMemo } from "react";
+import { JSONContent, JSONValue } from "$/domain/entities/JSONContent";
+import { Maybe } from "$/utils/ts-utils";
+import {
+    cloneJson,
+    sortJSONKeys,
+    formatJson,
+    restoreOriginalOrder,
+} from "$/webapp/components/comparator/hooks/utils/jsonUtils";
+import { parseJson } from "$/utils/jsonParser";
+
+export type ComparatorState = {
+    hideLeftButton: boolean;
+    hideRightButton: boolean;
+    leftText: string;
+    mergedJson: Maybe<JSONValue>;
+    mergedText: string;
+    rightText: string;
+    acceptLeft: () => void;
+    applyMergedJson: (mergedJson: JSONValue) => void;
+    acceptRight: () => void;
+    handleMergedChange: (value: Maybe<string>) => void;
+    uploadLeft: (file: Maybe<File>) => Promise<void>;
+    uploadRight: (file: Maybe<File>) => Promise<void>;
+};
+
+export function useComparator(): ComparatorState {
+    const {
+        leftJson: preloadedLeft,
+        rightJson: preloadedRight,
+        hasPreloadedData,
+    } = useJsonFromTempFiles();
+
+    const [leftOriginal, setLeftOriginal] = useState<Maybe<JSONValue>>(undefined);
+    const [rightOriginal, setRightOriginal] = useState<Maybe<JSONValue>>(undefined);
+    const [leftJson, setLeftJson] = useState<Maybe<JSONValue>>(undefined);
+    const [rightJson, setRightJson] = useState<Maybe<JSONValue>>(undefined);
+    const [mergedJson, setMergedJson] = useState<Maybe<JSONValue>>(undefined);
+
+    const restoreOriginalMergedOrder = useCallback(
+        (mergedJson: JSONValue) =>
+            restoreOriginalOrder(mergedJson, leftOriginal, rightOriginal) as JSONValue,
+        [leftOriginal, rightOriginal]
+    );
+
+    useEffect(() => {
+        if (preloadedLeft) {
+            setLeftOriginal(cloneJson(preloadedLeft));
+            const sorted = sortJSONKeys(preloadedLeft);
+            setLeftJson(sorted);
+        }
+        if (preloadedRight) {
+            setRightOriginal(cloneJson(preloadedRight));
+            const sorted = sortJSONKeys(preloadedRight);
+            setRightJson(sorted);
+        }
+    }, [preloadedLeft, preloadedRight]);
+
+    useEffect(() => {
+        if (leftJson && !mergedJson) {
+            const restored = restoreOriginalMergedOrder(cloneJson(leftJson));
+            setMergedJson(restored);
+        }
+    }, [leftJson, mergedJson, restoreOriginalMergedOrder]);
+
+    const uploadLeft = useCallback(
+        async (file: Maybe<File>) => {
+            if (!file) {
+                setLeftJson(undefined);
+                setLeftOriginal(undefined);
+                setMergedJson(undefined);
+                return;
+            }
+
+            try {
+                const text = await file.text();
+                const json = parseJson(text);
+                if (json) {
+                    setLeftOriginal(cloneJson(json));
+                    const sorted = sortJSONKeys(json);
+                    setLeftJson(sorted);
+                    const restored = restoreOriginalMergedOrder(cloneJson(sorted));
+                    setMergedJson(restored);
+                }
+            } catch (error) {
+                console.error("Error parsing left JSON file:", error);
+            }
+        },
+        [restoreOriginalMergedOrder]
+    );
+
+    const uploadRight = useCallback(async (file: Maybe<File>) => {
+        if (!file) {
+            setRightJson(undefined);
+            setRightOriginal(undefined);
+            return;
+        }
+
+        try {
+            const text = await file.text();
+            const json = parseJson(text);
+            if (json) {
+                setRightOriginal(cloneJson(json));
+                const sorted = sortJSONKeys(json);
+                setRightJson(sorted);
+            }
+        } catch (error) {
+            console.error("Error parsing right JSON file:", error);
+        }
+    }, []);
+
+    const acceptLeft = useCallback(() => {
+        if (leftJson) {
+            const restored = restoreOriginalMergedOrder(cloneJson(leftJson));
+            setMergedJson(restored);
+        }
+    }, [leftJson, restoreOriginalMergedOrder]);
+
+    const acceptRight = useCallback(() => {
+        if (rightJson) {
+            const restored = restoreOriginalMergedOrder(cloneJson(rightJson));
+            setMergedJson(restored);
+        }
+    }, [rightJson, restoreOriginalMergedOrder]);
+
+    const handleMergedChange = useCallback(
+        (value: Maybe<string>) => {
+            if (!value) return;
+
+            const parsed = parseJson(value);
+            if (parsed) {
+                const sorted = sortJSONKeys(parsed);
+                const restored = restoreOriginalMergedOrder(cloneJson(sorted));
+                setMergedJson(restored);
+            }
+        },
+        [restoreOriginalMergedOrder]
+    );
+
+    const applyMergedJson = useCallback(
+        (merged: JSONValue) => {
+            const sorted = sortJSONKeys(merged);
+            const restored = restoreOriginalMergedOrder(cloneJson(sorted));
+            setMergedJson(restored);
+        },
+        [restoreOriginalMergedOrder]
+    );
+
+    const leftText = useMemo(() => formatJson(leftJson), [leftJson]);
+    const rightText = useMemo(() => formatJson(rightJson), [rightJson]);
+    const mergedText = useMemo(() => {
+        if (!mergedJson) return "";
+        const restoredValue = restoreOriginalMergedOrder(mergedJson);
+        return JSON.stringify(restoredValue, null, 2);
+    }, [mergedJson, restoreOriginalMergedOrder]);
+
+    return {
+        leftText,
+        rightText,
+        mergedText,
+        mergedJson,
+        hideLeftButton: hasPreloadedData.leftJson,
+        hideRightButton: hasPreloadedData.rightJson,
+        acceptLeft,
+        acceptRight,
+        handleMergedChange,
+        applyMergedJson,
+        uploadLeft,
+        uploadRight,
+    };
+}
+
+function useJsonFromTempFiles() {
+    const [leftJson, setLeftJson] = useState<Maybe<JSONContent>>(undefined);
+    const [rightJson, setRightJson] = useState<Maybe<JSONContent>>(undefined);
+
+    useEffect(() => {
+        const fetchJsonFromTemp = async () => {
+            const FILE1_PATH = "/.tmp/file1.json";
+            const FILE2_PATH = "/.tmp/file2.json";
+
+            try {
+                const [leftResponse, rightResponse] = await Promise.all([
+                    fetch(FILE1_PATH, { cache: "no-store" }).catch(() => null),
+                    fetch(FILE2_PATH, { cache: "no-store" }).catch(() => null),
+                ]);
+
+                if (leftResponse?.ok) {
+                    const left = await leftResponse.json();
+                    setLeftJson(left);
+                }
+                if (rightResponse?.ok) {
+                    const right = await rightResponse.json();
+                    setRightJson(right);
+                }
+            } catch (error) {
+                console.error("Error loading JSON from temp files:", error);
+            }
+        };
+
+        fetchJsonFromTemp();
+    }, []);
+
+    return {
+        leftJson,
+        rightJson,
+        hasPreloadedData: {
+            leftJson: !!leftJson,
+            rightJson: !!rightJson,
+        },
+    };
+}

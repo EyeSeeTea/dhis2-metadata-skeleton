@@ -1,13 +1,9 @@
-import { Dashboard } from "./Dashboards";
-import { Indicator } from "./Indicators";
-import { LegendSetVisuals } from "./LegenSetsVisuals";
-import { Visualization } from "./Visualizations";
-import { IndicatorType } from "./IndicatorType";
+import { MetadataItem } from "$/domain/entities/common";
 
-export interface ProcessedVisualization {
-    dashboards: Dashboard[];
-    indicators: Indicator[];
-    legendSets: LegendSetVisuals[];
-    visualizations: Visualization[];
-    indicatorTypes: IndicatorType[];
-}
+export type ProcessedVisualization = {
+    dashboards: MetadataItem[];
+    indicators: MetadataItem[];
+    legendSets: MetadataItem[];
+    visualizations: MetadataItem[];
+    indicatorTypes: MetadataItem[];
+};

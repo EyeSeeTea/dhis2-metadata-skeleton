@@ -1,4 +1,4 @@
-import { ProcessedDataSetProgram } from "../entities/ProcessedDataSetProgram";
+import { FutureData } from "$/domain/entities/generic/Future";
 import { ProcessedVisualization } from "../entities/ProcessedVisualization";
 import { MetadataRepository } from "../repositories/MetadataRepository";
 import { concatUnique } from "./helpers/concatUnique";
@@ -6,20 +6,14 @@ import { concatUnique } from "./helpers/concatUnique";
 export class VisualizationCombineAndRemoveDuplicatesUseCase {
     constructor(private metadataRepository: MetadataRepository) {}
 
-    async execute(): Promise<void> {
-        try {
-            const metadataPackages = await this.metadataRepository.get<ProcessedVisualization>();
-
+    execute(): FutureData<void> {
+        return this.metadataRepository.get<ProcessedVisualization>().flatMap(metadataPackages => {
             const metadataPackagesWithoutDuplicates =
                 this.combineAndRemoveDuplicatesById(metadataPackages);
-
-            await this.metadataRepository.save<ProcessedVisualization>(
+            return this.metadataRepository.save<ProcessedVisualization>(
                 metadataPackagesWithoutDuplicates
             );
-        } catch (error) {
-            console.error("Error processing programs:", error);
-            throw error;
-        }
+        });
     }
 
     private combineAndRemoveDuplicatesById(
@@ -44,7 +38,7 @@ export class VisualizationCombineAndRemoveDuplicatesUseCase {
             };
         }, initProcessedVisualization);
 
-        console.log(`Processed files successfully!`);
+        console.debug(`Processed files successfully!`);
         return processedVisualization;
     }
 }
