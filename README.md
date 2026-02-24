@@ -65,7 +65,7 @@ This command will:
 
 ## 2. Metadata Comparator/Merge Tool
 
-A modern web-based tool that allows you to compare two DHIS2 metadata JSON files, visualize their differences, and selectively merge changes to create a unified metadata package.
+A modern web-based tool that allows you to compare two DHIS2 metadata JSON files, visualize their differences, and selectively merge changes to create a unified metadata package. The application will open in your browser at http://localhost:8081 (or the port specified in the .env file).
 
 ### Features
 
