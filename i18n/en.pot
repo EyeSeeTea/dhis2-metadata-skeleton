@@ -1,0 +1,42 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: i18next-conv\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"POT-Creation-Date: 2025-11-03T13:47:37.397Z\n"
+"PO-Revision-Date: 2025-11-03T13:47:37.397Z\n"
+
+msgid "Upload File 1"
+msgstr ""
+
+msgid "Upload File 2"
+msgstr ""
+
+msgid "Accept file 1"
+msgstr ""
+
+msgid "Accept file 2"
+msgstr ""
+
+msgid "Download Merged"
+msgstr ""
+
+msgid "Merged Result"
+msgstr ""
+
+msgid "Select Changes"
+msgstr ""
+
+msgid "Select File"
+msgstr ""
+
+msgid "Add"
+msgstr ""
+
+msgid "List"
+msgstr ""
+
+msgid "Metadata JSON Merge tool"
+msgstr ""
