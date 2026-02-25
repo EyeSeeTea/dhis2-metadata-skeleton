@@ -1,3 +1,4 @@
+import { useState } from "react";
 import styled from "styled-components";
 import { DiffEditor, Editor } from "@monaco-editor/react";
 import ActionButton from "$/webapp/components/ActionButton";
@@ -10,6 +11,8 @@ import {
 } from "$/webapp/components/comparator/hooks/useJsonDiffSelector";
 import { ComparatorState } from "$/webapp/components/comparator/hooks/useComparator";
 import { EditorPane } from "$/webapp/components/comparator/Comparator";
+import { useMergeHighlighting } from "$/webapp/components/comparator/hooks/useMergeHighlighting";
+import { Maybe } from "$/utils/ts-utils";
 
 type DiffSectionProps = Omit<
     ComparatorState,
@@ -28,8 +31,11 @@ export default function DiffSection(props: DiffSectionProps) {
         applyMergedJson,
     } = props;
 
+    const [focusedPath, setFocusedPath] = useState<Maybe<string>>(undefined);
+
     const { downloadJSON: downloadMerged } = useDownloadJSON(mergedJson);
     const {
+        jsonDiffs,
         filteredDiffs,
         selectedChanges,
         handledPaths,
@@ -40,6 +46,14 @@ export default function DiffSection(props: DiffSectionProps) {
         handleChangeSelection,
         getChangePreview,
     } = useJsonDiffSelector(leftText, rightText, applyMergedJson);
+
+    const { onEditorMount, scrollToPath } = useMergeHighlighting({
+        mergedText,
+        jsonDiffs,
+        selectedChanges,
+        handledPaths,
+        focusedPath,
+    });
 
     return (
         <Container>
@@ -88,9 +102,11 @@ export default function DiffSection(props: DiffSectionProps) {
                         language="json"
                         value={mergedText}
                         onChange={handleMergedChange}
+                        onMount={onEditorMount}
                         options={{
                             readOnly: false,
                             minimap: { enabled: true },
+                            glyphMargin: true,
                             scrollBeyondLastLine: false,
                             fontSize: 12,
                             wordWrap: "on",
@@ -128,7 +144,13 @@ export default function DiffSection(props: DiffSectionProps) {
                             const { leftPreview, rightPreview } = getChangePreview(diff);
                             const isHandled = handledPaths.has(diff.path);
                             return (
-                                <ChangeItem key={diff.path} isHandled={isHandled}>
+                                <ChangeItem
+                                    key={diff.path}
+                                    isHandled={isHandled}
+                                    onMouseEnter={() => setFocusedPath(diff.path)}
+                                    onMouseLeave={() => setFocusedPath(undefined)}
+                                    onClick={() => scrollToPath(diff.path)}
+                                >
                                     <ChangeInfo>
                                         <PathLabel>
                                             {isHandled && <CheckIcon />}
@@ -270,6 +292,7 @@ const ChangeList = styled.div`
 const ChangeItem = styled.div<{ isHandled: boolean }>`
     border-radius: 4px;
     padding: 0.75rem;
+    cursor: pointer;
     border-inline-start: 3px solid
         ${props =>
             props.isHandled
