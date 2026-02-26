@@ -197,11 +197,7 @@ export function useJsonDiffSelector(
     }, [leftText, rightText]);
 
     useEffect(() => {
-        const initial = jsonDiffs.reduce(
-            (acc, diff) => ({ ...acc, [diff.path]: "left" as const }),
-            {} as Record<string, "left" | "right">
-        );
-        setSelectedChanges(initial);
+        setSelectedChanges({});
         setHandledPaths(new Set());
         setFilterStatus("all");
     }, [jsonDiffs]);
