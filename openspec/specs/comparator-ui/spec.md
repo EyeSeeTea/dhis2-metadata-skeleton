@@ -62,6 +62,8 @@ Minimum requirements:
 - The change list SHALL visually distinguish between differences the user has explicitly acted on (handled) and those still pending review (unhandled).
 - The change list header area SHALL include a progress indicator showing handled count vs total count.
 - The change list SHALL support filtering by handled status (All, Unhandled, Handled) with "All" as the default.
+- When the comparator loads with differences, no side SHALL be pre-selected for any difference. Both "Use Left" and "Use Right" buttons SHALL appear in their inactive state until the user makes an explicit choice.
+- The merged output SHALL use the left-side value as a fallback for differences where the user has not yet made an explicit selection.
 
 Non-requirements:
 - No requirement for semantic DHIS2 validation.
