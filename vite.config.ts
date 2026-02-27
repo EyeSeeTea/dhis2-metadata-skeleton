@@ -30,7 +30,7 @@ export default ({ mode }) => {
             environment: "jsdom",
             include: ["**/*.spec.{ts,tsx}"],
             setupFiles: "./src/tests/setup.js",
-            exclude: ["node_modules", "src/tests/playwright"],
+            exclude: ["node_modules", "src/tests/playwright", "e2e"],
             globals: true,
         },
         server: {

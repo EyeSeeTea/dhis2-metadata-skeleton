@@ -1,0 +1,10 @@
+{
+    "name": "Test Package",
+    "version": "2.0",
+    "description": "Modified description",
+    "items": [
+        { "id": "item-1", "label": "First Item Updated", "value": 100 },
+        { "id": "item-2", "label": "Second Item", "value": 200 }
+    ],
+    "addedField": "this is new"
+}

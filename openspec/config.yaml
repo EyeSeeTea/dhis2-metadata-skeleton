@@ -13,7 +13,7 @@ context: |
   - TypeScript 5.x
   - CLI: cmd-ts + ts-node
   - UI: React 18 + Vite 4 + React Router v6 + Zustand + Monaco Editor
-  - Testing: Vitest (jsdom)
+  - Testing: Vitest (unit, jsdom), Playwright (e2d, browser)
 
   Directory structure:
   - src/
@@ -115,6 +115,8 @@ context: |
   - Unit tests (Vitest) for deduplication logic, domain combine use cases, CLI command behavior
   - No end-to-end browser tests currently required
   - Comparator UI validated manually during development
+  - Playwright tests go in e2e/ or tests/e2e/ directory
+  - Playwright tests run against the Vite dev server (yarn start-comparator)
 
   ClickUp project structure:
   - Projects are stored under space "Projects" in ClickUp
@@ -149,6 +151,7 @@ rules:
 
   tasks:
     - Include at least one task for tests (Vitest) when domain logic or CLI behavior changes.
+    - Include at least one task for Playwright e2e tests when comparator UI behavior changes.
     - Include a task to update specs/ domain docs whenever behavior changes.
     - "Tag each task with the responsible agent role: [FE], [BE], [DB], [UX], [GD], [AND]."
 

@@ -96,31 +96,33 @@ export default function DiffSection(props: DiffSectionProps) {
             </DownloadButton>
 
             <DiffWithControls>
-                <EditorPane label={i18n.t("Merged Result")}>
-                    <Editor
-                        width={"100%"}
-                        language="json"
-                        value={mergedText}
-                        onChange={handleMergedChange}
-                        onMount={onEditorMount}
-                        options={{
-                            readOnly: false,
-                            minimap: { enabled: true },
-                            glyphMargin: true,
-                            scrollBeyondLastLine: false,
-                            fontSize: 12,
-                            wordWrap: "on",
-                            formatOnPaste: true,
-                            formatOnType: true,
-                        }}
-                    />
-                </EditorPane>
+                <MergedEditorWrapper data-testid="merged-editor">
+                    <EditorPane label={i18n.t("Merged Result")}>
+                        <Editor
+                            width={"100%"}
+                            language="json"
+                            value={mergedText}
+                            onChange={handleMergedChange}
+                            onMount={onEditorMount}
+                            options={{
+                                readOnly: false,
+                                minimap: { enabled: true },
+                                glyphMargin: true,
+                                scrollBeyondLastLine: false,
+                                fontSize: 12,
+                                wordWrap: "on",
+                                formatOnPaste: true,
+                                formatOnType: true,
+                            }}
+                        />
+                    </EditorPane>
+                </MergedEditorWrapper>
                 <ChangeControls>
                     <ChangeControlsHeader>
                         <ChangeControlsTitle>
                             {i18n.t("Select Changes")} ({totalCount})
                         </ChangeControlsTitle>
-                        <ProgressText>
+                        <ProgressText data-testid="progress-text">
                             {handledCount} / {totalCount} {i18n.t("handled")}
                         </ProgressText>
                     </ChangeControlsHeader>
@@ -128,6 +130,7 @@ export default function DiffSection(props: DiffSectionProps) {
                         {(["all", "unhandled", "handled"] as FilterStatus[]).map(status => (
                             <FilterButton
                                 key={status}
+                                data-testid={`filter-${status}`}
                                 active={filterStatus === status}
                                 onClick={() => setFilterStatus(status)}
                             >
@@ -139,26 +142,27 @@ export default function DiffSection(props: DiffSectionProps) {
                             </FilterButton>
                         ))}
                     </FilterToggle>
-                    <ChangeList>
+                    <ChangeList data-testid="change-list">
                         {filteredDiffs.map(diff => {
                             const { leftPreview, rightPreview } = getChangePreview(diff);
                             const isHandled = handledPaths.has(diff.path);
                             return (
                                 <ChangeItem
                                     key={diff.path}
+                                    data-testid={`change-item-${diff.path}`}
                                     isHandled={isHandled}
                                     onMouseEnter={() => setFocusedPath(diff.path)}
                                     onMouseLeave={() => setFocusedPath(undefined)}
                                     onClick={() => scrollToPath(diff.path)}
                                 >
                                     <ChangeInfo>
-                                        <PathLabel>
+                                        <PathLabel data-testid="change-path">
                                             {isHandled && <CheckIcon />}
                                             {diff.path}
                                         </PathLabel>
                                         <ChangeInfoRight>
                                             {isHandled && (
-                                                <DirectionIcon>
+                                                <DirectionIcon data-testid="direction-icon">
                                                     {selectedChanges[diff.path] === "left" ? (
                                                         <ChevronLeft fontSize="small" />
                                                     ) : (
@@ -166,7 +170,9 @@ export default function DiffSection(props: DiffSectionProps) {
                                                     )}
                                                 </DirectionIcon>
                                             )}
-                                            <ChangeType type={diff.type}>{diff.type}</ChangeType>
+                                            <ChangeType data-testid="change-type" type={diff.type}>
+                                                {diff.type}
+                                            </ChangeType>
                                         </ChangeInfoRight>
                                     </ChangeInfo>
                                     <ValuePreviews>
@@ -181,12 +187,14 @@ export default function DiffSection(props: DiffSectionProps) {
                                     </ValuePreviews>
                                     <ChangeButtons>
                                         <SelectButton
+                                            data-testid="use-left"
                                             active={selectedChanges[diff.path] === "left"}
                                             onClick={() => handleChangeSelection(diff.path, "left")}
                                         >
                                             ← Use Left
                                         </SelectButton>
                                         <SelectButton
+                                            data-testid="use-right"
                                             active={selectedChanges[diff.path] === "right"}
                                             onClick={() =>
                                                 handleChangeSelection(diff.path, "right")
@@ -234,6 +242,11 @@ const MergeControls = styled.div`
 
 const DownloadButton = styled.div`
     margin-inline-start: auto;
+`;
+
+const MergedEditorWrapper = styled.div`
+    flex: 1;
+    min-width: 0;
 `;
 
 const DiffWithControls = styled.div`

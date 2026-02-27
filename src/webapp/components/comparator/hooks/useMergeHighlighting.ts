@@ -66,7 +66,7 @@ export function useMergeHighlighting(props: UseMergeHighlightingProps): UseMerge
         });
 
         return () => cancelAnimationFrame(rafRef.current);
-    }, [decorations]);
+    }, [decorations, focusedPath]);
 
     const onEditorMount: OnMount = useCallback((editorInstance) => {
         editorRef.current = editorInstance;

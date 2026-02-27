@@ -1,0 +1,11 @@
+{
+    "name": "Test Package",
+    "version": "1.0",
+    "description": "Original description",
+    "items": [
+        { "id": "item-1", "label": "First Item", "value": 100 },
+        { "id": "item-2", "label": "Second Item", "value": 200 },
+        { "id": "item-3", "label": "Third Item", "value": 300 }
+    ],
+    "removedField": "this will be removed"
+}
