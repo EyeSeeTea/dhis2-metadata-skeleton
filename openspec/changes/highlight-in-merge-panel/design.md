@@ -56,7 +56,7 @@ The merge result editor uses Monaco Editor in editable JSON mode with pretty-pri
 - `.highlight-added` — green background (rgba, 25% opacity)
 - `.highlight-removed` — red background (rgba, 25% opacity)
 - `.highlight-modified` — yellow background (rgba, 25% opacity)
-- Gutter glyphs for: left arrow (handled + "Use Left"), right arrow (handled + "Use Right"), and warning icon (unhandled)
+- Gutter glyphs for: left arrow (blue, handled + "Use Left"), right arrow (blue, handled + "Use Right"), and warning icon (amber, unhandled)
 
 Since only one block is highlighted at a time (the focused one), no separate `.highlight-focused` class is needed — the change-type color itself is sufficiently prominent.
 
@@ -72,18 +72,17 @@ Hovering sets `focusedPath` which triggers the single-block decoration. Mouse le
 
 **Decision**: When a change has been handled (user selected "Use Left" or "Use Right"), display a `ChevronLeft` or `ChevronRight` Material UI icon next to the diff type badge in the ChangeItem card.
 
-**Rationale**: The Monaco gutter glyphs (unicode arrows) may not render reliably across all environments. Showing the direction indicator directly in the card provides a reliable, always-visible indication of the selection direction without depending on Monaco glyph rendering.
+**Rationale**: Providing a direction indicator directly in the card gives a reliable, always-visible indication without requiring the user to look at the Monaco gutter. The gutter arrows complement this by showing direction in context next to the code.
 
 ### 6. Pass diff metadata alongside merged text for annotation computation
 
 **Decision**: The `useMergeHighlighting` hook receives `jsonDiffs`, `selectedChanges`, `handledPaths`, `focusedPath`, and `mergedText` to compute decorations.
 
-Decoration computation is focus-driven: when `focusedPath` is set, the hook finds the matching diff and produces a single decoration for that path's line range. When `focusedPath` is unset, no decorations are produced.
+Decoration computation produces two layers:
+- **Persistent gutter glyphs**: For every diff path that has lines in the merged text, a gutter glyph is always shown — a warning icon (amber ⚠) for unhandled diffs, or a directional arrow (blue ← / →) for handled diffs. These are visible at all times regardless of hover state.
+- **Hover-driven background highlights**: When `focusedPath` is set, the hook applies a color-coded background highlight (green/red/yellow) only to the focused diff's line range. When `focusedPath` is unset, no background highlights are produced.
 
-For the focused diff path:
-- Apply the change-type background color (added/removed/modified)
-- If handled: show a left or right arrow glyph based on `selectedChanges[path]`
-- If unhandled: show a warning/pending glyph
+An `editorMounted` state flag ensures decorations are applied after the Monaco editor instance is available, since the initial `useEffect` may fire before `onEditorMount`.
 
 ## Risks / Trade-offs
 

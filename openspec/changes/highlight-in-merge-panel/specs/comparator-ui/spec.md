@@ -10,7 +10,7 @@ Minimum requirements:
 - The change list header area SHALL include a progress indicator showing handled count vs total count.
 - The change list SHALL support filtering by handled status (All, Unhandled, Handled) with "All" as the default.
 - Hovering a change item in the Select Changes panel SHALL highlight only the corresponding block in the Merge Result editor with a color-coded background (green for added, red for removed, yellow for modified). No other blocks SHALL be highlighted.
-- The focused block SHALL display a gutter glyph: a directional arrow (left/right) if handled, or a warning icon if unhandled.
+- All diff blocks with lines in the merged text SHALL display persistent gutter glyphs: a directional arrow (left/right, blue) if handled, or a warning icon (amber) if unhandled. Glyphs are always visible, not only on hover.
 - Handled change items in the Select Changes panel SHALL display a directional chevron icon (left or right) next to the diff type badge.
 - Clicking a change item in the Select Changes panel SHALL scroll the Merge Result editor to reveal the corresponding lines.
 
@@ -19,7 +19,7 @@ Non-requirements:
 - No requirement for server persistence.
 - No requirement for persisting handled state across browser sessions.
 - No requirement for reverse synchronization (clicking in the Merge Result to highlight a change item).
-- No requirement for always-on highlighting of all diffs — only the focused item is highlighted.
+- No requirement for always-on background highlighting of all diffs — only the focused item gets a background highlight. Gutter glyphs, however, ARE always-on for all diffs.
 
 #### Scenario: Merge Result highlights the focused change block
 - **WHEN** the user hovers over a change item in the Select Changes panel

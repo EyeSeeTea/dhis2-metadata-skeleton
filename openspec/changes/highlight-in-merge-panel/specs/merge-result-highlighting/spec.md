@@ -23,27 +23,32 @@ The Merge Result editor SHALL apply a color-coded background highlight to the li
 
 #### Scenario: No highlight when no change item is hovered
 - **WHEN** no change item is hovered (focusedPath is unset)
-- **THEN** the Merge Result editor SHALL have no background highlights or gutter glyphs
+- **THEN** the Merge Result editor SHALL have no background highlights
+- **AND** gutter glyphs SHALL remain visible for all diffs that have lines in the merged text
 
 #### Scenario: No highlight for paths without a match in merged text
 - **WHEN** a diff path has no corresponding line in the merged text (e.g., a deeply removed key whose parent was also removed)
 - **THEN** no highlight SHALL be applied for that path and no error SHALL occur
 
-### Requirement: The focused block SHALL display a gutter glyph indicating handled/unhandled state
+### Requirement: All diff blocks SHALL display persistent gutter glyphs indicating handled/unhandled state
 
-When the user hovers over a change item, the Merge Result editor SHALL show a gutter icon on the focused block indicating the handled state and selection direction.
+The Merge Result editor SHALL always show gutter icons for every diff path that has corresponding lines in the merged text. Glyphs are persistent — they do not depend on hover state.
 
-#### Scenario: Left arrow for "Use Left" selection on focused block
-- **WHEN** the user hovers over a handled diff at path `P` with "Use Left" selected and the path is visible in the merged text
-- **THEN** a left-pointing arrow glyph SHALL appear in the editor gutter at the start line of that path
+#### Scenario: Left arrow for "Use Left" selection
+- **WHEN** the user has selected "Use Left" for a diff at path `P` and the path is visible in the merged text
+- **THEN** a left-pointing arrow glyph (blue, ←) SHALL appear in the editor gutter at the start line of that path
 
-#### Scenario: Right arrow for "Use Right" selection on focused block
-- **WHEN** the user hovers over a handled diff at path `P` with "Use Right" selected and the path is visible in the merged text
-- **THEN** a right-pointing arrow glyph SHALL appear in the editor gutter at the start line of that path
+#### Scenario: Right arrow for "Use Right" selection
+- **WHEN** the user has selected "Use Right" for a diff at path `P` and the path is visible in the merged text
+- **THEN** a right-pointing arrow glyph (blue, →) SHALL appear in the editor gutter at the start line of that path
 
-#### Scenario: Warning icon for unhandled focused block
-- **WHEN** the user hovers over an unhandled diff at path `P` and the path is visible in the merged text
-- **THEN** a warning/pending icon SHALL appear in the editor gutter at the start line of that path
+#### Scenario: Warning icon for unhandled diff
+- **WHEN** a diff at path `P` has not been handled and the path is visible in the merged text
+- **THEN** a warning/pending icon (amber, ⚠) SHALL appear in the editor gutter at the start line of that path
+
+#### Scenario: Glyph updates after handling a change
+- **WHEN** the user selects "Use Left" or "Use Right" for a previously unhandled diff
+- **THEN** the gutter glyph SHALL immediately change from warning icon to the corresponding directional arrow
 
 ### Requirement: Clicking a change item in Select Changes SHALL scroll the Merge Result to the corresponding lines
 
