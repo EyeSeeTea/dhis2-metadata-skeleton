@@ -76,4 +76,10 @@ export class ComparatorPage {
     ): Locator {
         return this.mergedEditor.locator(`.${glyphClass}`);
     }
+
+    async getMergedEditorText(): Promise<string> {
+        const text = await this.mergedEditor.locator(".view-lines").innerText();
+        // Monaco may use non-breaking spaces (U+00A0) in rendered text; normalize to ASCII space
+        return text.replace(/\u00a0/g, " ");
+    }
 }
