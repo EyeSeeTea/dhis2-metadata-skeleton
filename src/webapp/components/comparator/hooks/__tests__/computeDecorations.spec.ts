@@ -5,7 +5,7 @@ import { JsonDiff } from "$/webapp/components/comparator/hooks/utils/jsonUtils";
 describe("computeDecorations", () => {
     const makeLineMap = (entries: Record<string, { startLine: number; endLine: number }>) => entries;
 
-    it("should return empty array when focusedPath is undefined", () => {
+    it("should return glyphs for all diffs even when focusedPath is undefined", () => {
         const diffs: JsonDiff[] = [
             { path: "field", leftValue: 1, rightValue: 2, type: "modified" },
         ];
@@ -13,10 +13,12 @@ describe("computeDecorations", () => {
 
         const result = computeDecorations(diffs, lineMap, new Set(), undefined, { field: "left" });
 
-        expect(result).toEqual([]);
+        expect(result).toHaveLength(1);
+        expect(result[0]?.options.className).toBe("");
+        expect(result[0]?.options.glyphMarginClassName).toBe("glyph-warning");
     });
 
-    it("should return empty array when focused diff has no matching line range", () => {
+    it("should skip diffs with no matching line range", () => {
         const diffs: JsonDiff[] = [
             { path: "missing", leftValue: 1, rightValue: 2, type: "modified" },
         ];
@@ -25,7 +27,7 @@ describe("computeDecorations", () => {
         expect(result).toEqual([]);
     });
 
-    it("should return empty array when focusedPath does not match any diff", () => {
+    it("should return glyphs without highlight when focusedPath does not match any diff", () => {
         const diffs: JsonDiff[] = [
             { path: "field", leftValue: 1, rightValue: 2, type: "modified" },
         ];
@@ -33,7 +35,9 @@ describe("computeDecorations", () => {
 
         const result = computeDecorations(diffs, lineMap, new Set(), "other.path", { field: "left" });
 
-        expect(result).toEqual([]);
+        expect(result).toHaveLength(1);
+        expect(result[0]?.options.className).toBe("");
+        expect(result[0]?.options.glyphMarginClassName).toBe("glyph-warning");
     });
 
     it("should produce highlight-added class for focused added diff", () => {
@@ -72,37 +76,37 @@ describe("computeDecorations", () => {
         expect(result[0]?.options.className).toBe("highlight-modified");
     });
 
-    it("should show glyph-warning for unhandled focused diff", () => {
+    it("should show glyph-warning for unhandled diff", () => {
         const diffs: JsonDiff[] = [
             { path: "field", leftValue: 1, rightValue: 2, type: "modified" },
         ];
         const lineMap = makeLineMap({ field: { startLine: 2, endLine: 2 } });
 
-        const result = computeDecorations(diffs, lineMap, new Set(), "field", { field: "left" });
+        const result = computeDecorations(diffs, lineMap, new Set(), undefined, {});
 
         expect(result[0]?.options.glyphMarginClassName).toBe("glyph-warning");
     });
 
-    it("should show glyph-arrow-left for handled focused diff with left selection", () => {
+    it("should show glyph-arrow-left for handled diff with left selection", () => {
         const diffs: JsonDiff[] = [
             { path: "field", leftValue: 1, rightValue: 2, type: "modified" },
         ];
         const lineMap = makeLineMap({ field: { startLine: 2, endLine: 2 } });
         const handledPaths = new Set(["field"]);
 
-        const result = computeDecorations(diffs, lineMap, handledPaths, "field", { field: "left" });
+        const result = computeDecorations(diffs, lineMap, handledPaths, undefined, { field: "left" });
 
         expect(result[0]?.options.glyphMarginClassName).toBe("glyph-arrow-left");
     });
 
-    it("should show glyph-arrow-right for handled focused diff with right selection", () => {
+    it("should show glyph-arrow-right for handled diff with right selection", () => {
         const diffs: JsonDiff[] = [
             { path: "field", leftValue: 1, rightValue: 2, type: "modified" },
         ];
         const lineMap = makeLineMap({ field: { startLine: 2, endLine: 2 } });
         const handledPaths = new Set(["field"]);
 
-        const result = computeDecorations(diffs, lineMap, handledPaths, "field", { field: "right" });
+        const result = computeDecorations(diffs, lineMap, handledPaths, undefined, { field: "right" });
 
         expect(result[0]?.options.glyphMarginClassName).toBe("glyph-arrow-right");
     });
@@ -124,7 +128,7 @@ describe("computeDecorations", () => {
         expect(result[0]?.options.isWholeLine).toBe(true);
     });
 
-    it("should only produce decoration for the focused diff, ignoring others", () => {
+    it("should produce decorations for all diffs but only highlight the focused one", () => {
         const diffs: JsonDiff[] = [
             { path: "name", leftValue: "a", rightValue: "b", type: "modified" },
             { path: "age", leftValue: undefined, rightValue: 30, type: "added" },
@@ -142,8 +146,12 @@ describe("computeDecorations", () => {
             old: "left",
         });
 
-        expect(result).toHaveLength(1);
-        expect(result[0]?.options.className).toBe("highlight-added");
-        expect(result[0]?.range.startLineNumber).toBe(3);
+        expect(result).toHaveLength(3);
+
+        const focused = result.find(d => d.range.startLineNumber === 3);
+        expect(focused?.options.className).toBe("highlight-added");
+
+        const unfocused = result.filter(d => d.range.startLineNumber !== 3);
+        unfocused.forEach(d => expect(d.options.className).toBe(""));
     });
 });

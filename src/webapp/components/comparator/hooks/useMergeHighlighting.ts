@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { OnMount } from "@monaco-editor/react";
 import { JsonDiff } from "$/webapp/components/comparator/hooks/utils/jsonUtils";
 import { buildPathToLineMap } from "$/webapp/components/comparator/hooks/utils/pathToLineMap";
@@ -40,6 +40,7 @@ export function useMergeHighlighting(props: UseMergeHighlightingProps): UseMerge
     const editorRef = useRef<MonacoEditor | null>(null);
     const decorationIdsRef = useRef<string[]>([]);
     const rafRef = useRef<number>(0);
+    const [editorMounted, setEditorMounted] = useState(false);
 
     const diffPaths = useMemo(() => jsonDiffs.map(d => d.path), [jsonDiffs]);
 
@@ -66,11 +67,12 @@ export function useMergeHighlighting(props: UseMergeHighlightingProps): UseMerge
         });
 
         return () => cancelAnimationFrame(rafRef.current);
-    }, [decorations, focusedPath]);
+    }, [decorations, focusedPath, editorMounted]);
 
     const onEditorMount: OnMount = useCallback((editorInstance) => {
         editorRef.current = editorInstance;
         editorInstance.updateOptions({ glyphMargin: true });
+        setEditorMounted(true);
     }, []);
 
     const scrollToPath = useCallback(
@@ -96,27 +98,23 @@ export function computeDecorations(
     focusedPath: Maybe<string>,
     selectedChanges: Record<string, "left" | "right">
 ): Decoration[] {
-    if (!focusedPath) return [];
+    const decorations: Decoration[] = [];
 
-    const diff = jsonDiffs.find(d => d.path === focusedPath);
-    if (!diff) return [];
+    for (const diff of jsonDiffs) {
+        const lineRange = pathToLineMap[diff.path];
+        if (!lineRange) continue;
 
-    const lineRange = pathToLineMap[diff.path];
-    if (!lineRange) return [];
+        const isHandled = handledPaths.has(diff.path);
+        const selection = selectedChanges[diff.path];
+        const isFocused = diff.path === focusedPath;
 
-    const isHandled = handledPaths.has(diff.path);
-    const selection = selectedChanges[diff.path];
+        const glyphClass = isHandled
+            ? selection === "left"
+                ? "glyph-arrow-left"
+                : "glyph-arrow-right"
+            : "glyph-warning";
 
-    const className = getHighlightClass(diff.type);
-
-    const glyphClass = isHandled
-        ? selection === "left"
-            ? "glyph-arrow-left"
-            : "glyph-arrow-right"
-        : "glyph-warning";
-
-    return [
-        {
+        decorations.push({
             range: {
                 startLineNumber: lineRange.startLine,
                 startColumn: 1,
@@ -125,11 +123,13 @@ export function computeDecorations(
             },
             options: {
                 isWholeLine: true,
-                className,
+                className: isFocused ? getHighlightClass(diff.type) : "",
                 glyphMarginClassName: glyphClass,
             },
-        },
-    ];
+        });
+    }
+
+    return decorations;
 }
 
 function getHighlightClass(type: JsonDiff["type"]): string {

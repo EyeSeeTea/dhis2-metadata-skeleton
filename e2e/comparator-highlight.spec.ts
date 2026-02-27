@@ -57,24 +57,17 @@ test.describe("Comparator: Highlight-in-Merge-Panel", () => {
         await expect(comparator.getDirectionIcon(firstItem)).toBeVisible();
     });
 
-    test("should show glyph-warning for unhandled and arrow for handled on hover", async () => {
-        // Use "version" — exists in merged text, so decorations will appear
-        const item = comparator.getChangeItemByPath("version");
-
-        // Hover unhandled item
-        await item.hover();
-        await comparator.page.waitForTimeout(500);
-
+    test("should show persistent glyph-warning for unhandled and arrow for handled", async () => {
+        // Glyphs are persistent — visible without hovering
         const warningGlyphs = comparator.getGlyphElements("glyph-warning");
         await expect(warningGlyphs.first()).toBeVisible({ timeout: 3000 });
 
-        // Handle the item
+        // Handle a change item
+        const item = comparator.getChangeItemByPath("version");
         await comparator.getUseLeftButton(item).click();
-
-        // Hover again
-        await item.hover();
         await comparator.page.waitForTimeout(500);
 
+        // Arrow glyph should be visible without hovering
         const arrowGlyphs = comparator.getGlyphElements("glyph-arrow-left");
         await expect(arrowGlyphs.first()).toBeVisible({ timeout: 3000 });
     });
