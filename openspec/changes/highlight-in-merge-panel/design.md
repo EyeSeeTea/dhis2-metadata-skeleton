@@ -53,25 +53,34 @@ The merge result editor uses Monaco Editor in editable JSON mode with pretty-pri
 ### 4. Use CSS classes injected via Monaco's `defineTheme` or `addCommand` for coloring
 
 **Decision**: Define custom CSS classes for decoration styles:
-- `.highlight-added` — green background (#e6ffec / rgba)
-- `.highlight-removed` — red background (#ffebe9 / rgba)
-- `.highlight-modified` — yellow background (#fff8c5 / rgba)
-- `.highlight-focused` — brighter version of the type color with a subtle border
-- Gutter glyphs for: left arrow, right arrow, warning (unhandled)
+- `.highlight-added` — green background (rgba, 25% opacity)
+- `.highlight-removed` — red background (rgba, 25% opacity)
+- `.highlight-modified` — yellow background (rgba, 25% opacity)
+- Gutter glyphs for: left arrow (handled + "Use Left"), right arrow (handled + "Use Right"), and warning icon (unhandled)
 
-**Rationale**: Monaco decorations reference CSS class names. Defining them once in a stylesheet keeps styling separate from logic.
+Since only one block is highlighted at a time (the focused one), no separate `.highlight-focused` class is needed — the change-type color itself is sufficiently prominent.
+
+**Rationale**: Monaco decorations reference CSS class names. Defining them once in a stylesheet keeps styling separate from logic. With focus-only highlighting, a single color per diff type is clear and unambiguous.
 
 ### 5. Expose `onChangeItemHover` and `onChangeItemClick` event props from DiffSection
 
-**Decision**: Add `onMouseEnter`/`onMouseLeave` handlers on each `ChangeItem` styled component, forwarding the diff path to the `useMergeHighlighting` hook via callbacks.
+**Decision**: Add `onMouseEnter`/`onMouseLeave` handlers on each `ChangeItem` styled component, forwarding the diff path to the `useMergeHighlighting` hook via `focusedPath` state.
 
-Click on a ChangeItem sets `focusedPath` persistently (until another is clicked or user clicks away). Hover temporarily overrides focus for preview.
+Hovering sets `focusedPath` which triggers the single-block decoration. Mouse leave clears it. Click triggers `scrollToPath()` to scroll the editor to the corresponding lines.
+
+### 5b. Show directional chevron icon in ChangeItem cards
+
+**Decision**: When a change has been handled (user selected "Use Left" or "Use Right"), display a `ChevronLeft` or `ChevronRight` Material UI icon next to the diff type badge in the ChangeItem card.
+
+**Rationale**: The Monaco gutter glyphs (unicode arrows) may not render reliably across all environments. Showing the direction indicator directly in the card provides a reliable, always-visible indication of the selection direction without depending on Monaco glyph rendering.
 
 ### 6. Pass diff metadata alongside merged text for annotation computation
 
-**Decision**: The `useMergeHighlighting` hook receives `jsonDiffs`, `selectedChanges`, `handledPaths`, and `mergedText` to compute which lines need which decorations.
+**Decision**: The `useMergeHighlighting` hook receives `jsonDiffs`, `selectedChanges`, `handledPaths`, `focusedPath`, and `mergedText` to compute decorations.
 
-For each diff path found in the merged text:
+Decoration computation is focus-driven: when `focusedPath` is set, the hook finds the matching diff and produces a single decoration for that path's line range. When `focusedPath` is unset, no decorations are produced.
+
+For the focused diff path:
 - Apply the change-type background color (added/removed/modified)
 - If handled: show a left or right arrow glyph based on `selectedChanges[path]`
 - If unhandled: show a warning/pending glyph

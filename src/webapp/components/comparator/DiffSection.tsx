@@ -156,7 +156,18 @@ export default function DiffSection(props: DiffSectionProps) {
                                             {isHandled && <CheckIcon />}
                                             {diff.path}
                                         </PathLabel>
-                                        <ChangeType type={diff.type}>{diff.type}</ChangeType>
+                                        <ChangeInfoRight>
+                                            {isHandled && (
+                                                <DirectionIcon>
+                                                    {selectedChanges[diff.path] === "left" ? (
+                                                        <ChevronLeft fontSize="small" />
+                                                    ) : (
+                                                        <ChevronRight fontSize="small" />
+                                                    )}
+                                                </DirectionIcon>
+                                            )}
+                                            <ChangeType type={diff.type}>{diff.type}</ChangeType>
+                                        </ChangeInfoRight>
                                     </ChangeInfo>
                                     <ValuePreviews>
                                         <ValuePreview>
@@ -353,6 +364,20 @@ const ValueText = styled.span`
     font-family: monospace;
     overflow: hidden;
     text-overflow: ellipsis;
+`;
+
+const ChangeInfoRight = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-shrink: 0;
+`;
+
+const DirectionIcon = styled.span`
+    display: flex;
+    align-items: center;
+    color: ${props => props.theme.palette.text.secondary};
+    font-size: 0.9rem;
 `;
 
 const ChangeType = styled.span<{ type: string }>`

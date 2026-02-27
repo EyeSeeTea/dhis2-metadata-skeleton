@@ -1,20 +1,15 @@
 /* Line highlight classes (Monaco IModelDecorationOptions.className) */
 
 .highlight-added {
-    background: rgba(46, 160, 67, 0.15);
+    background: rgba(46, 160, 67, 0.25);
 }
 
 .highlight-removed {
-    background: rgba(248, 81, 73, 0.15);
+    background: rgba(248, 81, 73, 0.25);
 }
 
 .highlight-modified {
-    background: rgba(210, 153, 34, 0.15);
-}
-
-.highlight-focused {
-    background: rgba(255, 255, 255, 0.08);
-    border-left: 2px solid rgba(255, 255, 255, 0.4);
+    background: rgba(210, 153, 34, 0.25);
 }
 
 /* Gutter glyph classes (Monaco IModelDecorationOptions.glyphMarginClassName) */

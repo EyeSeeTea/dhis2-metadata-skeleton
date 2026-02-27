@@ -9,9 +9,9 @@ Minimum requirements:
 - The change list SHALL visually distinguish between differences the user has explicitly acted on (handled) and those still pending review (unhandled).
 - The change list header area SHALL include a progress indicator showing handled count vs total count.
 - The change list SHALL support filtering by handled status (All, Unhandled, Handled) with "All" as the default.
-- The Merge Result editor SHALL highlight lines affected by detected differences with color-coded backgrounds (green for added, red for removed, yellow for modified).
-- The Merge Result editor SHALL display gutter icons indicating the selection direction (left/right arrow) for handled changes and a warning icon for unhandled changes.
-- Hovering a change item in the Select Changes panel SHALL visually emphasize the corresponding lines in the Merge Result editor.
+- Hovering a change item in the Select Changes panel SHALL highlight only the corresponding block in the Merge Result editor with a color-coded background (green for added, red for removed, yellow for modified). No other blocks SHALL be highlighted.
+- The focused block SHALL display a gutter glyph: a directional arrow (left/right) if handled, or a warning icon if unhandled.
+- Handled change items in the Select Changes panel SHALL display a directional chevron icon (left or right) next to the diff type badge.
 - Clicking a change item in the Select Changes panel SHALL scroll the Merge Result editor to reveal the corresponding lines.
 
 Non-requirements:
@@ -19,15 +19,20 @@ Non-requirements:
 - No requirement for server persistence.
 - No requirement for persisting handled state across browser sessions.
 - No requirement for reverse synchronization (clicking in the Merge Result to highlight a change item).
+- No requirement for always-on highlighting of all diffs — only the focused item is highlighted.
 
-#### Scenario: Merge Result highlights change-affected lines
-- **WHEN** differences exist between the two files and the Merge Result editor is displayed
-- **THEN** lines corresponding to each difference SHALL be highlighted with the appropriate change-type color
-
-#### Scenario: Change item hover synchronizes with Merge Result
+#### Scenario: Merge Result highlights the focused change block
 - **WHEN** the user hovers over a change item in the Select Changes panel
-- **THEN** the corresponding lines in the Merge Result editor SHALL receive an emphasized visual treatment
+- **THEN** only the lines corresponding to that change SHALL be highlighted with the appropriate change-type color
+
+#### Scenario: Change item hover clears previous highlights
+- **WHEN** the user moves hover from one change item to another
+- **THEN** the previous highlight SHALL be removed and only the newly focused block SHALL be highlighted
 
 #### Scenario: Change item click scrolls Merge Result
 - **WHEN** the user clicks a change item in the Select Changes panel
 - **THEN** the Merge Result editor SHALL scroll to reveal the lines corresponding to that change
+
+#### Scenario: Handled change items show directional chevron
+- **WHEN** the user has selected "Use Left" or "Use Right" for a change
+- **THEN** a left or right chevron icon SHALL appear in the ChangeItem card next to the diff type badge

@@ -4,18 +4,19 @@ When reviewing large metadata files with many differences, the Merge Result pane
 
 ## What Changes
 
-- Hovering or clicking a change item in the "Select Changes" panel scrolls to and highlights the corresponding path in the "Merge Result" panel.
-- The Merge Result panel annotates lines affected by changes with color-coded highlighting: green for added, red for removed, yellow for modified.
-- Handled changes in the Merge Result show a directional indicator (arrow) reflecting whether "Use Left" or "Use Right" was chosen.
-- Unhandled changes in the Merge Result show a warning icon so users can spot pending decisions without switching to the Select Changes panel.
+- Hovering a change item in the "Select Changes" panel highlights the corresponding path in the "Merge Result" panel. Only the focused item's block is highlighted — no other diffs are decorated.
+- Clicking a change item scrolls the "Merge Result" editor to the corresponding location.
+- The focused block uses color-coded highlighting by change type: green for added, red for removed, yellow for modified.
+- The focused block shows a gutter glyph: a directional arrow (left/right) if handled, or a warning icon if unhandled.
+- Handled changes in the "Select Changes" panel show a directional chevron icon (left or right) next to the diff type badge, indicating which file's value was chosen.
 
 ## Capabilities
 
 ### New Capabilities
-- `merge-result-highlighting`: Visual highlighting and annotation of change-affected sections in the Merge Result panel, including color-coded backgrounds, direction arrows, unhandled icons, and hover/click synchronization with the Select Changes panel.
+- `merge-result-highlighting`: Focus-driven highlighting and annotation of change-affected sections in the Merge Result panel — only the hovered change item's block is highlighted with a color-coded background and gutter glyph, synchronized via hover/click from the Select Changes panel.
 
 ### Modified Capabilities
-- `comparator-ui`: The Merge Result panel gains new visual behaviors (highlighting, scroll-to-path, inline annotations) that extend the existing comparison & merge UX requirements.
+- `comparator-ui`: The Merge Result panel gains focus-driven highlighting and scroll-to-path synchronization. The Select Changes panel gains directional chevron icons on handled change items indicating which file was chosen.
 
 ## Impact
 

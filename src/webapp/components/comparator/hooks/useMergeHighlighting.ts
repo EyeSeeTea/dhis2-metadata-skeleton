@@ -96,28 +96,27 @@ export function computeDecorations(
     focusedPath: Maybe<string>,
     selectedChanges: Record<string, "left" | "right">
 ): Decoration[] {
-    const result: Decoration[] = [];
+    if (!focusedPath) return [];
 
-    for (const diff of jsonDiffs) {
-        const lineRange = pathToLineMap[diff.path];
-        if (!lineRange) continue;
+    const diff = jsonDiffs.find(d => d.path === focusedPath);
+    if (!diff) return [];
 
-        const isHandled = handledPaths.has(diff.path);
-        const isFocused = focusedPath === diff.path;
-        const selection = selectedChanges[diff.path];
+    const lineRange = pathToLineMap[diff.path];
+    if (!lineRange) return [];
 
-        const highlightClass = getHighlightClass(diff.type);
-        const className = isFocused
-            ? `${highlightClass} highlight-focused`
-            : highlightClass;
+    const isHandled = handledPaths.has(diff.path);
+    const selection = selectedChanges[diff.path];
 
-        const glyphClass = isHandled
-            ? selection === "left"
-                ? "glyph-arrow-left"
-                : "glyph-arrow-right"
-            : "glyph-warning";
+    const className = getHighlightClass(diff.type);
 
-        result.push({
+    const glyphClass = isHandled
+        ? selection === "left"
+            ? "glyph-arrow-left"
+            : "glyph-arrow-right"
+        : "glyph-warning";
+
+    return [
+        {
             range: {
                 startLineNumber: lineRange.startLine,
                 startColumn: 1,
@@ -129,10 +128,8 @@ export function computeDecorations(
                 className,
                 glyphMarginClassName: glyphClass,
             },
-        });
-    }
-
-    return result;
+        },
+    ];
 }
 
 function getHighlightClass(type: JsonDiff["type"]): string {
