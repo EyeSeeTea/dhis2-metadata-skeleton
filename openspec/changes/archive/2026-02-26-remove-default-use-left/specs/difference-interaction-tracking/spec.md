@@ -1,14 +1,4 @@
-# Spec: Difference Interaction Tracking
-
-## Scope
-
-This spec defines the behavior of tracking user interactions with individual differences in the comparator UI's change list, including visual indicators, progress tracking, and filtering.
-
-Out of scope:
-- Merge logic and side selection (see `comparator-ui/spec.md`)
-- Persistence across browser sessions
-
----
+## MODIFIED Requirements
 
 ### Requirement: Differences SHALL be tracked as handled when the user makes an explicit selection
 
@@ -45,46 +35,14 @@ The change list SHALL render handled and unhandled items with different visual t
 
 A progress indicator SHALL show the count of handled differences relative to the total number of differences.
 
-#### Scenario: Progress display with some handled differences
-- **WHEN** the user has handled 10 out of 25 differences
-- **THEN** the UI SHALL display a progress indicator showing "10 / 25 handled" (or equivalent fraction format)
-
 #### Scenario: Progress display with no handled differences
 - **WHEN** no differences have been handled (initial load state)
 - **THEN** the UI SHALL display "0 / N handled" where N is the total difference count
 
+#### Scenario: Progress display with some handled differences
+- **WHEN** the user has handled 10 out of 25 differences
+- **THEN** the UI SHALL display a progress indicator showing "10 / 25 handled" (or equivalent fraction format)
+
 #### Scenario: All differences handled
 - **WHEN** all differences have been handled
 - **THEN** the UI SHALL display "N / N handled" where N is the total difference count
-
-### Requirement: The user SHALL be able to filter the change list by handled status
-
-A filter control SHALL allow the user to view all differences, only unhandled differences, or only handled differences.
-
-#### Scenario: Default filter state
-- **WHEN** the comparator loads with differences
-- **THEN** the filter SHALL default to "All" showing every difference
-
-#### Scenario: Filter to unhandled only
-- **WHEN** the user selects the "Unhandled" filter
-- **THEN** the change list SHALL display only differences that have not been handled
-
-#### Scenario: Filter to handled only
-- **WHEN** the user selects the "Handled" filter
-- **THEN** the change list SHALL display only differences that have been handled
-
-### Requirement: Handled state SHALL be session-scoped
-
-The handled state SHALL persist for the duration of the current page session and SHALL reset when files change.
-
-#### Scenario: State persists during session
-- **WHEN** the user scrolls away from a handled difference and returns
-- **THEN** the difference SHALL still appear as handled
-
-#### Scenario: State resets on new file upload
-- **WHEN** the user uploads new left or right files for comparison
-- **THEN** all handled state SHALL be cleared and the new differences SHALL start as unhandled
-
-#### Scenario: State resets on page reload
-- **WHEN** the user reloads the browser page
-- **THEN** all handled state SHALL be cleared
