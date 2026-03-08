@@ -98,11 +98,9 @@ export function computeDecorations(
     focusedPath: Maybe<string>,
     selectedChanges: Record<string, "left" | "right">
 ): Decoration[] {
-    const decorations: Decoration[] = [];
-
-    for (const diff of jsonDiffs) {
+    return jsonDiffs.flatMap(diff => {
         const lineRange = pathToLineMap[diff.path];
-        if (!lineRange) continue;
+        if (!lineRange) return [];
 
         const isHandled = handledPaths.has(diff.path);
         const selection = selectedChanges[diff.path];
@@ -114,7 +112,7 @@ export function computeDecorations(
                 : "glyph-arrow-right"
             : "glyph-warning";
 
-        decorations.push({
+        return [{
             range: {
                 startLineNumber: lineRange.startLine,
                 startColumn: 1,
@@ -126,10 +124,8 @@ export function computeDecorations(
                 className: isFocused ? getHighlightClass(diff.type) : "",
                 glyphMarginClassName: glyphClass,
             },
-        });
-    }
-
-    return decorations;
+        }];
+    });
 }
 
 function getHighlightClass(type: JsonDiff["type"]): string {

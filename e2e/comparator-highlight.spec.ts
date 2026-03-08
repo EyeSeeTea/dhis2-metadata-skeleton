@@ -24,14 +24,12 @@ test.describe("Comparator: Highlight-in-Merge-Panel", () => {
         const item = comparator.getChangeItemByPath("version");
 
         await item.hover();
-        await comparator.page.waitForTimeout(500);
 
         const highlighted = comparator.getHighlightedLines("highlight-modified");
-        await expect(highlighted.first()).toBeVisible({ timeout: 3000 });
+        await expect(highlighted).toHaveCount(1, { timeout: 3000 });
 
         // Move mouse away to clear highlights
-        await comparator.progressText.hover();
-        await comparator.page.waitForTimeout(500);
+        await comparator.getProgressText().hover();
 
         for (const cls of ["highlight-added", "highlight-removed", "highlight-modified"] as const) {
             await expect(comparator.getHighlightedLines(cls)).toHaveCount(0);
@@ -46,7 +44,6 @@ test.describe("Comparator: Highlight-in-Merge-Panel", () => {
         await comparator.getUseLeftButton(firstItem).click();
 
         await expect(comparator.getDirectionIcon(firstItem)).toBeVisible();
-        await expect(comparator.getDirectionIcon(firstItem).locator("svg")).toBeVisible();
     });
 
     test("should show direction chevron after clicking Use Right", async () => {
@@ -60,16 +57,15 @@ test.describe("Comparator: Highlight-in-Merge-Panel", () => {
     test("should show persistent glyph-warning for unhandled and arrow for handled", async () => {
         // Glyphs are persistent — visible without hovering
         const warningGlyphs = comparator.getGlyphElements("glyph-warning");
-        await expect(warningGlyphs.first()).toBeVisible({ timeout: 3000 });
+        await expect(warningGlyphs.first()).toBeVisible();
 
         // Handle a change item
         const item = comparator.getChangeItemByPath("version");
         await comparator.getUseLeftButton(item).click();
-        await comparator.page.waitForTimeout(500);
 
         // Arrow glyph should be visible without hovering
         const arrowGlyphs = comparator.getGlyphElements("glyph-arrow-left");
-        await expect(arrowGlyphs.first()).toBeVisible({ timeout: 3000 });
+        await expect(arrowGlyphs).toHaveCount(1, { timeout: 3000 });
     });
 
     test("should scroll editor to block when clicking a change item", async () => {
@@ -78,13 +74,10 @@ test.describe("Comparator: Highlight-in-Merge-Panel", () => {
         const item = comparator.getChangeItemByPath("removedField");
 
         await item.click();
-        await comparator.page.waitForTimeout(500);
-
-        // Hover to trigger highlight
         await item.hover();
-        await comparator.page.waitForTimeout(500);
 
         const highlighted = comparator.getHighlightedLines("highlight-removed");
+        await expect(highlighted).toHaveCount(1, { timeout: 3000 });
         await expect(highlighted.first()).toBeInViewport();
     });
 
@@ -97,25 +90,23 @@ test.describe("Comparator: Highlight-in-Merge-Panel", () => {
 
         // Filter: Handled
         await comparator.getFilterButton("handled").click();
-        expect(await comparator.getChangeItems().count()).toBe(1);
+        await expect(comparator.getChangeItems()).toHaveCount(1);
 
         // Filter: Unhandled
         await comparator.getFilterButton("unhandled").click();
-        expect(await comparator.getChangeItems().count()).toBe(totalCount - 1);
+        await expect(comparator.getChangeItems()).toHaveCount(totalCount - 1);
 
         // Filter: All
         await comparator.getFilterButton("all").click();
-        expect(await comparator.getChangeItems().count()).toBe(totalCount);
+        await expect(comparator.getChangeItems()).toHaveCount(totalCount);
     });
 
     test("should update progress text when handling changes", async () => {
-        const totalText = await comparator.progressText.textContent();
-        expect(totalText).toMatch(/0\s*\/\s*\d+\s*handled/);
+        await expect(comparator.getProgressText()).toHaveText(/0\s*\/\s*\d+\s*handled/);
 
         const firstItem = comparator.getChangeItems().first();
         await comparator.getUseLeftButton(firstItem).click();
 
-        const updatedText = await comparator.progressText.textContent();
-        expect(updatedText).toMatch(/1\s*\/\s*\d+\s*handled/);
+        await expect(comparator.getProgressText()).toHaveText(/1\s*\/\s*\d+\s*handled/);
     });
 });

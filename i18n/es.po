@@ -41,6 +41,21 @@ msgstr ""
 msgid "Handled"
 msgstr ""
 
+msgid "Left"
+msgstr ""
+
+msgid "Right"
+msgstr ""
+
+msgid "Use Left"
+msgstr ""
+
+msgid "Use Right"
+msgstr ""
+
+msgid "Direction"
+msgstr ""
+
 msgid "Select File"
 msgstr ""
 

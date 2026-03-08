@@ -117,7 +117,8 @@ function buildFullPathMap(text: string): Map<string, LineRange> {
             }
         } else if (parentFrame && isArrayContainer(parentFrame)) {
             // Array element (no key, just a value inside an array)
-            const arrayIndex = incrementArrayIndex(parentFrame);
+            const arrayIndex = nextArrayIndex(parentFrame);
+            parentFrame.arrayIndex = arrayIndex;
 
             if (trimmed === "{") {
                 // Object element inside an array
@@ -199,10 +200,8 @@ function isArrayContainer(frame: StackFrame): boolean {
     return frame.containerType === "array";
 }
 
-function incrementArrayIndex(frame: StackFrame): number {
-    const next = (frame.arrayIndex ?? -1) + 1;
-    frame.arrayIndex = next;
-    return next;
+function nextArrayIndex(frame: StackFrame): number {
+    return (frame.arrayIndex ?? -1) + 1;
 }
 
 function buildPath(parentFrame: Maybe<StackFrame>, key: string): string {
@@ -251,12 +250,13 @@ function updateArrayElementId(
 
         elementFrame.path = newPrefix;
 
-        // Also update any child frames on the stack that reference the old prefix
-        for (const frame of stack) {
-            if (frame !== elementFrame && frame.path.startsWith(oldPrefix)) {
-                frame.path = newPrefix + frame.path.slice(oldPrefix.length);
-            }
-        }
+        // Update child frames on the stack that reference the old prefix
+        const updatedFrames = stack.map(frame =>
+            frame !== elementFrame && frame.path.startsWith(oldPrefix)
+                ? { ...frame, path: newPrefix + frame.path.slice(oldPrefix.length) }
+                : frame
+        );
+        stack.splice(0, stack.length, ...updatedFrames);
     }
 }
 
@@ -289,18 +289,11 @@ function resolvePathRange(
     diffPath: string,
     allPathRanges: Map<string, LineRange>
 ): Maybe<LineRange> {
-    // Try exact match first
     const exact = allPathRanges.get(diffPath);
     if (exact) return exact;
 
-    // Walk up through parent paths
-    const parentPaths = getParentPaths(diffPath);
-    for (const parent of parentPaths) {
-        const parentRange = allPathRanges.get(parent);
-        if (parentRange) return parentRange;
-    }
-
-    return undefined;
+    const matchingParent = getParentPaths(diffPath).find(p => allPathRanges.has(p));
+    return matchingParent ? allPathRanges.get(matchingParent) : undefined;
 }
 
 /**
@@ -311,24 +304,11 @@ function resolvePathRange(
  *   "a[0].b.c" -> ["a[0].b", "a[0]", "a"]
  */
 function getParentPaths(path: string): string[] {
-    const parents: string[] = [];
-    let current = path;
+    const lastDot = path.lastIndexOf(".");
+    const lastBracket = path.lastIndexOf("[");
 
-    while (current.length > 0) {
-        // Try removing the last segment
-        // Last segment can be: ".key", "[id:value]", or "[index]"
-        const lastDot = current.lastIndexOf(".");
-        const lastBracket = current.lastIndexOf("[");
+    if (lastDot === -1 && lastBracket === -1) return [];
 
-        if (lastDot === -1 && lastBracket === -1) break;
-
-        const splitAt = Math.max(lastDot, lastBracket);
-        current = current.slice(0, splitAt);
-
-        if (current.length > 0) {
-            parents.push(current);
-        }
-    }
-
-    return parents;
+    const parent = path.slice(0, Math.max(lastDot, lastBracket));
+    return parent.length > 0 ? [parent, ...getParentPaths(parent)] : [];
 }

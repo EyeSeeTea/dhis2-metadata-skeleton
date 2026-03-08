@@ -29,13 +29,12 @@ test.describe("Comparator: No Default Pre-Selection", () => {
     });
 
     test("should show no direction icons on initial load", async () => {
-        const allDirectionIcons = comparator.changeList.locator("[data-testid='direction-icon']");
+        const allDirectionIcons = comparator.changeList.getByLabel("Direction");
         await expect(allDirectionIcons).toHaveCount(0);
     });
 
     test("should show 0 handled on initial load", async () => {
-        const text = await comparator.progressText.textContent();
-        expect(text).toMatch(/0\s*\/\s*\d+\s*handled/);
+        await expect(comparator.getProgressText()).toHaveText(/0\s*\/\s*\d+\s*handled/);
     });
 
     test("should show no items under Handled filter on initial load", async () => {
@@ -64,14 +63,14 @@ test.describe("Comparator: No Default Pre-Selection", () => {
 
         // Before: no direction icon, 0 handled
         await expect(comparator.getDirectionIcon(item)).toHaveCount(0);
-        expect(await comparator.progressText.textContent()).toMatch(/0\s*\/\s*\d+\s*handled/);
+        await expect(comparator.getProgressText()).toHaveText(/0\s*\/\s*\d+\s*handled/);
 
         // Click Use Right
         await comparator.getUseRightButton(item).click();
 
         // After: direction icon appears, progress increments
         await expect(comparator.getDirectionIcon(item)).toBeVisible();
-        expect(await comparator.progressText.textContent()).toMatch(/1\s*\/\s*\d+\s*handled/);
+        await expect(comparator.getProgressText()).toHaveText(/1\s*\/\s*\d+\s*handled/);
     });
 
     test("should keep item handled when changing selection", async () => {
@@ -79,10 +78,10 @@ test.describe("Comparator: No Default Pre-Selection", () => {
 
         // Select Use Left
         await comparator.getUseLeftButton(item).click();
-        expect(await comparator.progressText.textContent()).toMatch(/1\s*\/\s*\d+\s*handled/);
+        await expect(comparator.getProgressText()).toHaveText(/1\s*\/\s*\d+\s*handled/);
 
         // Switch to Use Right — should still be 1 handled, not 2
         await comparator.getUseRightButton(item).click();
-        expect(await comparator.progressText.textContent()).toMatch(/1\s*\/\s*\d+\s*handled/);
+        await expect(comparator.getProgressText()).toHaveText(/1\s*\/\s*\d+\s*handled/);
     });
 });

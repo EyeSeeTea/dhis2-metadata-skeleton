@@ -7,16 +7,14 @@ export class ComparatorPage {
     readonly uploadFile1: Locator;
     readonly uploadFile2: Locator;
     readonly changeList: Locator;
-    readonly progressText: Locator;
     readonly mergedEditor: Locator;
 
     constructor(page: Page) {
         this.page = page;
         this.uploadFile1 = page.locator("#upload-file-1");
         this.uploadFile2 = page.locator("#upload-file-2");
-        this.changeList = page.locator("[data-testid='change-list']");
-        this.progressText = page.locator("[data-testid='progress-text']");
-        this.mergedEditor = page.locator("[data-testid='merged-editor']");
+        this.changeList = page.getByRole("list", { name: "Select Changes" });
+        this.mergedEditor = page.getByLabel("Merged Result");
     }
 
     async goto() {
@@ -30,6 +28,7 @@ export class ComparatorPage {
     }
 
     async waitForEditorReady() {
+        // Monaco editor uses .view-lines internally — no accessible alternative
         await this.mergedEditor.locator(".view-lines").waitFor({ state: "visible", timeout: 15000 });
     }
 
@@ -38,39 +37,42 @@ export class ComparatorPage {
     }
 
     getChangeItems(): Locator {
-        return this.changeList.locator("[data-testid^='change-item-']");
+        return this.changeList.getByRole("listitem");
     }
 
     getChangeItemByPath(diffPath: string): Locator {
-        return this.page.locator(`[data-testid='change-item-${diffPath}']`);
+        return this.changeList.getByRole("listitem", { name: diffPath });
     }
 
     getFilterButton(status: "all" | "unhandled" | "handled"): Locator {
-        return this.page.locator(`[data-testid='filter-${status}']`);
+        const labels: Record<string, string> = { all: "All", unhandled: "Unhandled", handled: "Handled" };
+        return this.page.getByRole("button", { name: labels[status], exact: true });
     }
 
     getUseLeftButton(item: Locator): Locator {
-        return item.locator("[data-testid='use-left']");
+        return item.getByRole("button", { name: /Use Left/ });
     }
 
     getUseRightButton(item: Locator): Locator {
-        return item.locator("[data-testid='use-right']");
+        return item.getByRole("button", { name: /Use Right/ });
     }
 
     getDirectionIcon(item: Locator): Locator {
-        return item.locator("[data-testid='direction-icon']");
+        return item.getByLabel("Direction");
     }
 
-    getChangeType(item: Locator): Locator {
-        return item.locator("[data-testid='change-type']");
+    getProgressText(): Locator {
+        return this.page.getByText(/\d+\s*\/\s*\d+\s*handled/);
     }
 
+    // Monaco decoration classes — CSS selectors required (no accessible alternative)
     getHighlightedLines(
         className: "highlight-added" | "highlight-removed" | "highlight-modified"
     ): Locator {
         return this.mergedEditor.locator(`.${className}`);
     }
 
+    // Monaco glyph classes — CSS selectors required (no accessible alternative)
     getGlyphElements(
         glyphClass: "glyph-arrow-left" | "glyph-arrow-right" | "glyph-warning"
     ): Locator {

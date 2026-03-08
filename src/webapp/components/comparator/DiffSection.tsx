@@ -96,7 +96,7 @@ export default function DiffSection(props: DiffSectionProps) {
             </DownloadButton>
 
             <DiffWithControls>
-                <MergedEditorWrapper data-testid="merged-editor">
+                <MergedEditorWrapper aria-label={i18n.t("Merged Result")}>
                     <EditorPane label={i18n.t("Merged Result")}>
                         <Editor
                             width={"100%"}
@@ -122,7 +122,7 @@ export default function DiffSection(props: DiffSectionProps) {
                         <ChangeControlsTitle>
                             {i18n.t("Select Changes")} ({totalCount})
                         </ChangeControlsTitle>
-                        <ProgressText data-testid="progress-text">
+                        <ProgressText>
                             {handledCount} / {totalCount} {i18n.t("handled")}
                         </ProgressText>
                     </ChangeControlsHeader>
@@ -130,7 +130,6 @@ export default function DiffSection(props: DiffSectionProps) {
                         {(["all", "unhandled", "handled"] as FilterStatus[]).map(status => (
                             <FilterButton
                                 key={status}
-                                data-testid={`filter-${status}`}
                                 active={filterStatus === status}
                                 onClick={() => setFilterStatus(status)}
                             >
@@ -142,27 +141,28 @@ export default function DiffSection(props: DiffSectionProps) {
                             </FilterButton>
                         ))}
                     </FilterToggle>
-                    <ChangeList data-testid="change-list">
+                    <ChangeList role="list" aria-label={i18n.t("Select Changes")}>
                         {filteredDiffs.map(diff => {
                             const { leftPreview, rightPreview } = getChangePreview(diff);
                             const isHandled = handledPaths.has(diff.path);
                             return (
                                 <ChangeItem
                                     key={diff.path}
-                                    data-testid={`change-item-${diff.path}`}
+                                    role="listitem"
+                                    aria-label={diff.path}
                                     isHandled={isHandled}
                                     onMouseEnter={() => setFocusedPath(diff.path)}
                                     onMouseLeave={() => setFocusedPath(undefined)}
                                     onClick={() => scrollToPath(diff.path)}
                                 >
                                     <ChangeInfo>
-                                        <PathLabel data-testid="change-path">
+                                        <PathLabel>
                                             {isHandled && <CheckIcon />}
                                             {diff.path}
                                         </PathLabel>
                                         <ChangeInfoRight>
                                             {isHandled && (
-                                                <DirectionIcon data-testid="direction-icon">
+                                                <DirectionIcon aria-label={i18n.t("Direction")}>
                                                     {selectedChanges[diff.path] === "left" ? (
                                                         <ChevronLeft fontSize="small" />
                                                     ) : (
@@ -170,37 +170,35 @@ export default function DiffSection(props: DiffSectionProps) {
                                                     )}
                                                 </DirectionIcon>
                                             )}
-                                            <ChangeType data-testid="change-type" type={diff.type}>
+                                            <ChangeType type={diff.type}>
                                                 {diff.type}
                                             </ChangeType>
                                         </ChangeInfoRight>
                                     </ChangeInfo>
                                     <ValuePreviews>
                                         <ValuePreview>
-                                            <ValueLabel>Left:</ValueLabel>
+                                            <ValueLabel>{i18n.t("Left")}:</ValueLabel>
                                             <ValueText>{leftPreview}</ValueText>
                                         </ValuePreview>
                                         <ValuePreview>
-                                            <ValueLabel>Right:</ValueLabel>
+                                            <ValueLabel>{i18n.t("Right")}:</ValueLabel>
                                             <ValueText>{rightPreview}</ValueText>
                                         </ValuePreview>
                                     </ValuePreviews>
                                     <ChangeButtons>
                                         <SelectButton
-                                            data-testid="use-left"
                                             active={selectedChanges[diff.path] === "left"}
                                             onClick={() => handleChangeSelection(diff.path, "left")}
                                         >
-                                            ← Use Left
+                                            ← {i18n.t("Use Left")}
                                         </SelectButton>
                                         <SelectButton
-                                            data-testid="use-right"
                                             active={selectedChanges[diff.path] === "right"}
                                             onClick={() =>
                                                 handleChangeSelection(diff.path, "right")
                                             }
                                         >
-                                            Use Right →
+                                            {i18n.t("Use Right")} →
                                         </SelectButton>
                                     </ChangeButtons>
                                 </ChangeItem>
