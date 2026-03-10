@@ -5,7 +5,7 @@ import i18n from "$/utils/i18n";
 import { Check, ChevronLeft, ChevronRight, CloudDownload } from "@material-ui/icons";
 import { useDownloadJSON } from "$/webapp/components/comparator/hooks/useDownloadJSON";
 import {
-    FilterStatus,
+    filterStatusList,
     useJsonDiffSelector,
 } from "$/webapp/components/comparator/hooks/useJsonDiffSelector";
 import { ComparatorState } from "$/webapp/components/comparator/hooks/useComparator";
@@ -109,7 +109,7 @@ export default function DiffSection(props: DiffSectionProps) {
                         </ProgressText>
                     </ChangeControlsHeader>
                     <FilterToggle>
-                        {(["all", "unhandled", "handled"] as FilterStatus[]).map(status => (
+                        {filterStatusList.map(status => (
                             <FilterButton
                                 key={status}
                                 active={filterStatus === status}
