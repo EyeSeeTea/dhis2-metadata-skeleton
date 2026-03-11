@@ -118,8 +118,8 @@ export default function DiffSection(props: DiffSectionProps) {
                                 {status === "all"
                                     ? i18n.t("All")
                                     : status === "unhandled"
-                                      ? i18n.t("Unhandled")
-                                      : i18n.t("Handled")}
+                                    ? i18n.t("Unhandled")
+                                    : i18n.t("Handled")}
                             </FilterButton>
                         ))}
                     </FilterToggle>
@@ -249,8 +249,7 @@ const FilterButton = styled.button<{ active: boolean }>`
     font-size: 0.7rem;
     border: none;
     cursor: pointer;
-    background-color: ${props =>
-        props.active ? props.theme.palette.primary.main : "transparent"};
+    background-color: ${props => (props.active ? props.theme.palette.primary.main : "transparent")};
     color: ${props =>
         props.active ? props.theme.palette.common.white : props.theme.palette.text.secondary};
     transition: all 0.2s;

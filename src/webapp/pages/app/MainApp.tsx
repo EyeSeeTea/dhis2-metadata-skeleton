@@ -16,7 +16,6 @@ export function MainApp(_props: {}) {
     }, []);
 
     return !compositionRootState ? null : <App compositionRoot={compositionRootState} />;
-   
 }
 
 function getCompositionRoot(): CompositionRoot {
