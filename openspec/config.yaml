@@ -133,6 +133,7 @@ rules:
     - Treat the filesystem contract as the primary interface; any changes to folder names, ignore rules, or output paths require spec updates.
     - Do not introduce backend APIs or databases unless explicitly proposed as a major change.
     - Follow code conventions: TypeScript strict, functional composition, correct naming (camelCase/PascalCase/kebab-case).
+    - "Always run `yarn prettify` before committing any code changes to ensure consistent formatting."
     - New code goes in the correct src/ subdirectory: domain logic in domain/, React components in components/, UI routes in pages/, state in state/.
     - "Do NOT: silently change folder names, change output filenames without spec + proposal, modify CLI flags without documenting a migration path, or assume schema validation beyond `id` unless specified in specs."
     - "Definition of Done: a change is complete when specs are updated, code aligns with specs, tests pass, and no breaking contract surfaces are altered without a proposal."

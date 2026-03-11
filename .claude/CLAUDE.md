@@ -30,6 +30,10 @@
 - When creating a PR, always search ClickUp for the related tasks first to get the URLs.
 
 
+## Code Formatting
+
+- Always run `yarn prettify` before committing any code changes. This ensures consistent formatting across the project.
+
 ## Code Style
 
 ### Functional Programming
