@@ -132,10 +132,24 @@ Then:
 
 ## Development
 
-### Run Tests
+### Run Unit Tests
 
 ```sh
 yarn test
+```
+
+### Run E2E Tests (Playwright)
+
+One-time setup — install Playwright browsers:
+
+```sh
+npx playwright install chromium
+```
+
+Run e2e tests (the Vite dev server starts automatically via the configured `webServer`):
+
+```sh
+yarn test-e2e
 ```
 
 ### Build for Production

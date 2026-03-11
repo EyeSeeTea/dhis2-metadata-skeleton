@@ -153,7 +153,6 @@ export default function DiffSection(props: DiffSectionProps) {
                                 <ChangeItem
                                     key={diff.path}
                                     role="listitem"
-                                    aria-label={diff.path}
                                     isHandled={isHandled}
                                     onMouseEnter={() => setFocusedPath(diff.path)}
                                     onMouseLeave={() => setFocusedPath(undefined)}
@@ -190,12 +189,14 @@ export default function DiffSection(props: DiffSectionProps) {
                                     <ChangeButtons>
                                         <SelectButton
                                             active={selectedChanges[diff.path] === "left"}
+                                            aria-pressed={selectedChanges[diff.path] === "left"}
                                             onClick={() => handleChangeSelection(diff.path, "left")}
                                         >
                                             ← {i18n.t("Use Left")}
                                         </SelectButton>
                                         <SelectButton
                                             active={selectedChanges[diff.path] === "right"}
+                                            aria-pressed={selectedChanges[diff.path] === "right"}
                                             onClick={() =>
                                                 handleChangeSelection(diff.path, "right")
                                             }

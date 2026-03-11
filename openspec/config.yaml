@@ -116,10 +116,11 @@ context: |
 
   Testing strategy:
   - Unit tests (Vitest) for deduplication logic, domain combine use cases, CLI command behavior
-  - No end-to-end browser tests currently required
-  - Comparator UI validated manually during development
-  - Playwright tests go in e2e/ or tests/e2e/ directory
+  - Playwright e2e tests for comparator UI behavior; go in e2e/ directory
   - Playwright tests run against the Vite dev server (yarn start-comparator)
+  - E2E tests must use accessibility-based locators; ARIA attributes must reflect real UI semantics, not be invented for tests
+  - E2E tests must never assert on computed styles; use semantic state (aria-pressed, aria-selected, visible text)
+  - CI pull_request trigger must not restrict branches — run on all PRs
 
   ClickUp project structure:
   - Projects are stored under space "Projects" in ClickUp

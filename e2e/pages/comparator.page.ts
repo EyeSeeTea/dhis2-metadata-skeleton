@@ -43,7 +43,7 @@ export class ComparatorPage {
     }
 
     getChangeItemByPath(diffPath: string): Locator {
-        return this.changeList.getByRole("listitem", { name: diffPath });
+        return this.changeList.getByRole("listitem").filter({ hasText: diffPath });
     }
 
     getFilterButton(status: "all" | "unhandled" | "handled"): Locator {

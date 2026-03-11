@@ -57,7 +57,8 @@ test.describe("Comparator: Highlight-in-Merge-Panel", () => {
     test("should show persistent glyph-warning for unhandled and arrow for handled", async () => {
         // Glyphs are persistent — visible without hovering
         const warningGlyphs = comparator.getGlyphElements("glyph-warning");
-        await expect(warningGlyphs.first()).toBeVisible();
+        const initialCount = await warningGlyphs.count();
+        expect(initialCount).toBeGreaterThan(0);
 
         // Handle a change item
         const item = comparator.getChangeItemByPath("version");

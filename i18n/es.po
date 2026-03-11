@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: i18next-conv\n"
-"POT-Creation-Date: 2026-02-27T11:59:58.687Z\n"
+"POT-Creation-Date: 2026-03-11T18:03:02.817Z\n"
 "PO-Revision-Date: 2018-10-25T09:02:35.143Z\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -41,6 +41,9 @@ msgstr ""
 msgid "Handled"
 msgstr ""
 
+msgid "Direction"
+msgstr ""
+
 msgid "Left"
 msgstr ""
 
@@ -51,9 +54,6 @@ msgid "Use Left"
 msgstr ""
 
 msgid "Use Right"
-msgstr ""
-
-msgid "Direction"
 msgstr ""
 
 msgid "Select File"

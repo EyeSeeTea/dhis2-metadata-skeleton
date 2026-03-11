@@ -21,10 +21,9 @@ test.describe("Comparator: No Default Pre-Selection", () => {
             const useLeft = comparator.getUseLeftButton(item);
             const useRight = comparator.getUseRightButton(item);
 
-            // Both buttons should have the same background color (both inactive)
-            const leftBg = await useLeft.evaluate(el => getComputedStyle(el).backgroundColor);
-            const rightBg = await useRight.evaluate(el => getComputedStyle(el).backgroundColor);
-            expect(leftBg).toBe(rightBg);
+            // Both buttons should be unpressed (no selection)
+            await expect(useLeft).toHaveAttribute("aria-pressed", "false");
+            await expect(useRight).toHaveAttribute("aria-pressed", "false");
         }
     });
 

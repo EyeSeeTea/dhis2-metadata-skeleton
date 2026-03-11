@@ -2,9 +2,8 @@ name: "Shared Master Workflow"
 
 on:
     push:
-      branches: ["master", "development", "feature/**"]
+      branches: ["master", "development"]
     pull_request:
-      branches: ["master", "development", "feature/**"]
     workflow_dispatch:
 
 jobs:

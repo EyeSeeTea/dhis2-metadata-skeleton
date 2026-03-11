@@ -62,8 +62,10 @@ This project favours functional code and immutability:
 
 - Use accessibility-based locators (`getByRole`, `getByLabelText`, `getByText`) instead of CSS class selectors.
 - Avoid `data-testid` attributes in production code. Prefer role- and label-based selectors; use `data-testid` only when no accessible selector is feasible.
+- ARIA attributes must reflect real UI semantics, not be invented for tests. Do not add `aria-label` to make a test selector work unless the label genuinely improves accessibility. Prefer locating elements via their visible text content (e.g., `filter({ hasText })` or `getByText`).
 - Never use `waitForTimeout`. Wait for observable conditions (element visible/hidden, text present, etc.).
 - Avoid `.first()` with long timeouts — assert on specific, identifiable elements.
+- Never assert on computed styles (e.g., `getComputedStyle`). Assert on semantic state (`aria-pressed`, `aria-selected`, visible text changes, element count) instead of CSS property values.
 
 
 ## Unit Testing
@@ -77,5 +79,5 @@ This project favours functional code and immutability:
 
 ## CI
 
-- PRs must target branches covered by CI, or CI workflows must be extended to cover the PR branch.
+- The `pull_request` trigger in CI workflows must not restrict branches — CI should run on all pull requests regardless of target branch. The `push` trigger can remain limited to stable branches (master, development).
 - E2E tests must run in CI alongside unit tests.
