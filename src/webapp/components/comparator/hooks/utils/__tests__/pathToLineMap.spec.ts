@@ -111,17 +111,13 @@ describe("buildPathToLineMap", () => {
             categories: [
                 {
                     id: "cat1",
-                    items: [
-                        { id: "item1", name: "Item 1" },
-                    ],
+                    items: [{ id: "item1", name: "Item 1" }],
                 },
             ],
         };
         const text = JSON.stringify(obj, null, 2);
 
-        const result = buildPathToLineMap(text, [
-            "categories[id:cat1].items[id:item1].name",
-        ]);
+        const result = buildPathToLineMap(text, ["categories[id:cat1].items[id:item1].name"]);
 
         expect(result["categories[id:cat1].items[id:item1].name"]).toBeDefined();
         const range = result["categories[id:cat1].items[id:item1].name"];
@@ -241,7 +237,7 @@ describe("buildPathToLineMap", () => {
     });
 
     it("should handle string values with special characters", () => {
-        const obj = { description: "A \"quoted\" value" };
+        const obj = { description: 'A "quoted" value' };
         const text = JSON.stringify(obj, null, 2);
 
         const result = buildPathToLineMap(text, ["description"]);

@@ -30,7 +30,9 @@ export class ComparatorPage {
     }
 
     async waitForEditorReady() {
-        await this.mergedEditor.locator(".view-lines").waitFor({ state: "visible", timeout: 15000 });
+        await this.mergedEditor
+            .locator(".view-lines")
+            .waitFor({ state: "visible", timeout: 15000 });
     }
 
     async waitForChangeItems() {

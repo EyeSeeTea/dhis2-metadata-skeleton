@@ -19,6 +19,26 @@ type DiffSectionProps = Omit<
     "uploadLeft" | "uploadRight" | "hideLeftButton" | "hideRightButton"
 >;
 
+const diffEditorOptions = {
+    enableSplitViewResizing: true,
+    minimap: { enabled: true },
+    fontSize: 12,
+    wordWrap: "on" as const,
+    formatOnPaste: true,
+    formatOnType: true,
+};
+
+const mergedEditorOptions = {
+    readOnly: false,
+    minimap: { enabled: true },
+    glyphMargin: true,
+    scrollBeyondLastLine: false,
+    fontSize: 12,
+    wordWrap: "on" as const,
+    formatOnPaste: true,
+    formatOnType: true,
+};
+
 export default function DiffSection(props: DiffSectionProps) {
     const {
         leftText,
@@ -62,14 +82,7 @@ export default function DiffSection(props: DiffSectionProps) {
                     language="json"
                     original={leftText}
                     modified={rightText}
-                    options={{
-                        enableSplitViewResizing: true,
-                        minimap: { enabled: true },
-                        fontSize: 12,
-                        wordWrap: "on",
-                        formatOnPaste: true,
-                        formatOnType: true,
-                    }}
+                    options={diffEditorOptions}
                 />
             </DiffEditorPane>
 
@@ -104,16 +117,7 @@ export default function DiffSection(props: DiffSectionProps) {
                             value={mergedText}
                             onChange={handleMergedChange}
                             onMount={onEditorMount}
-                            options={{
-                                readOnly: false,
-                                minimap: { enabled: true },
-                                glyphMargin: true,
-                                scrollBeyondLastLine: false,
-                                fontSize: 12,
-                                wordWrap: "on",
-                                formatOnPaste: true,
-                                formatOnType: true,
-                            }}
+                            options={mergedEditorOptions}
                         />
                     </EditorPane>
                 </MergedEditorWrapper>

@@ -3,7 +3,8 @@ import { computeDecorations } from "$/webapp/components/comparator/hooks/useMerg
 import { JsonDiff } from "$/webapp/components/comparator/hooks/utils/jsonUtils";
 
 describe("computeDecorations", () => {
-    const makeLineMap = (entries: Record<string, { startLine: number; endLine: number }>) => entries;
+    const makeLineMap = (entries: Record<string, { startLine: number; endLine: number }>) =>
+        entries;
 
     it("should return glyphs for all diffs even when focusedPath is undefined", () => {
         const diffs: JsonDiff[] = [
@@ -33,7 +34,9 @@ describe("computeDecorations", () => {
         ];
         const lineMap = makeLineMap({ field: { startLine: 2, endLine: 2 } });
 
-        const result = computeDecorations(diffs, lineMap, new Set(), "other.path", { field: "left" });
+        const result = computeDecorations(diffs, lineMap, new Set(), "other.path", {
+            field: "left",
+        });
 
         expect(result).toHaveLength(1);
         expect(result[0]?.options.className).toBe("");
@@ -46,7 +49,9 @@ describe("computeDecorations", () => {
         ];
         const lineMap = makeLineMap({ newField: { startLine: 3, endLine: 3 } });
 
-        const result = computeDecorations(diffs, lineMap, new Set(), "newField", { newField: "left" });
+        const result = computeDecorations(diffs, lineMap, new Set(), "newField", {
+            newField: "left",
+        });
 
         expect(result).toHaveLength(1);
         expect(result[0]?.options.className).toBe("highlight-added");
@@ -58,7 +63,9 @@ describe("computeDecorations", () => {
         ];
         const lineMap = makeLineMap({ oldField: { startLine: 5, endLine: 5 } });
 
-        const result = computeDecorations(diffs, lineMap, new Set(), "oldField", { oldField: "left" });
+        const result = computeDecorations(diffs, lineMap, new Set(), "oldField", {
+            oldField: "left",
+        });
 
         expect(result).toHaveLength(1);
         expect(result[0]?.options.className).toBe("highlight-removed");
@@ -94,7 +101,9 @@ describe("computeDecorations", () => {
         const lineMap = makeLineMap({ field: { startLine: 2, endLine: 2 } });
         const handledPaths = new Set(["field"]);
 
-        const result = computeDecorations(diffs, lineMap, handledPaths, undefined, { field: "left" });
+        const result = computeDecorations(diffs, lineMap, handledPaths, undefined, {
+            field: "left",
+        });
 
         expect(result[0]?.options.glyphMarginClassName).toBe("glyph-arrow-left");
     });
@@ -106,7 +115,9 @@ describe("computeDecorations", () => {
         const lineMap = makeLineMap({ field: { startLine: 2, endLine: 2 } });
         const handledPaths = new Set(["field"]);
 
-        const result = computeDecorations(diffs, lineMap, handledPaths, undefined, { field: "right" });
+        const result = computeDecorations(diffs, lineMap, handledPaths, undefined, {
+            field: "right",
+        });
 
         expect(result[0]?.options.glyphMarginClassName).toBe("glyph-arrow-right");
     });

@@ -49,6 +49,10 @@ This project favours functional code and immutability:
 
 - When defining a union type that also needs runtime values (e.g., for iteration, validation, or dropdowns), derive the type from a `const` array (`as const`) rather than using an unsafe `as Type[]` assertion. Use `UnionFromValues` from ts-utils or `typeof arr[number]`.
 
+### React
+
+- Static objects used as component props (e.g., editor options) must be defined as constants outside the component. This improves readability and reference stability (making React.memo more effective). Use `useMemo` only when the object depends on props/state.
+
 ### i18n
 
 - All user-facing strings must use `i18n.t()`. Never hardcode labels.

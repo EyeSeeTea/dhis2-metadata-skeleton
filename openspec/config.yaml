@@ -60,6 +60,7 @@ context: |
   - Functional programming practices (immutable data, pure functions/classes)
   - Composition over inheritance when structuring modules and behavior
   - When defining a union type that also needs runtime values (e.g., for iteration, validation, or dropdowns), derive the type from a const array (as const) rather than using an unsafe `as Type[]` assertion. Use UnionFromValues from ts-utils or typeof arr[number].
+  - Static objects used as React component props must be defined as constants outside the component (use useMemo only when the object depends on props/state)
   - Use-case driven domain functions
   - Naming: camelCase variables/functions, PascalCase React components, kebab-case CLI commands
 
