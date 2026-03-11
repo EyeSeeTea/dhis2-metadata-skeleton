@@ -8,7 +8,9 @@ import {
     JsonDiff,
 } from "$/webapp/components/comparator/hooks/utils/jsonUtils";
 
-export type FilterStatus = "all" | "unhandled" | "handled";
+export const filterStatusList = ["all", "unhandled", "handled"] as const;
+
+export type FilterStatus = (typeof filterStatusList)[number];
 
 type JsonDiffSelectorState = {
     jsonDiffs: JsonDiff[];

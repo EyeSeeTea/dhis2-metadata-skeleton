@@ -6,7 +6,7 @@ import i18n from "$/utils/i18n";
 import { Check, ChevronLeft, ChevronRight, CloudDownload } from "@material-ui/icons";
 import { useDownloadJSON } from "$/webapp/components/comparator/hooks/useDownloadJSON";
 import {
-    FilterStatus,
+    filterStatusList,
     useJsonDiffSelector,
 } from "$/webapp/components/comparator/hooks/useJsonDiffSelector";
 import { ComparatorState } from "$/webapp/components/comparator/hooks/useComparator";
@@ -127,7 +127,7 @@ export default function DiffSection(props: DiffSectionProps) {
                         </ProgressText>
                     </ChangeControlsHeader>
                     <FilterToggle>
-                        {(["all", "unhandled", "handled"] as FilterStatus[]).map(status => (
+                        {filterStatusList.map(status => (
                             <FilterButton
                                 key={status}
                                 data-testid={`filter-${status}`}
@@ -137,8 +137,8 @@ export default function DiffSection(props: DiffSectionProps) {
                                 {status === "all"
                                     ? i18n.t("All")
                                     : status === "unhandled"
-                                      ? i18n.t("Unhandled")
-                                      : i18n.t("Handled")}
+                                    ? i18n.t("Unhandled")
+                                    : i18n.t("Handled")}
                             </FilterButton>
                         ))}
                     </FilterToggle>
@@ -295,8 +295,7 @@ const FilterButton = styled.button<{ active: boolean }>`
     font-size: 0.7rem;
     border: none;
     cursor: pointer;
-    background-color: ${props =>
-        props.active ? props.theme.palette.primary.main : "transparent"};
+    background-color: ${props => (props.active ? props.theme.palette.primary.main : "transparent")};
     color: ${props =>
         props.active ? props.theme.palette.common.white : props.theme.palette.text.secondary};
     transition: all 0.2s;

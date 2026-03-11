@@ -11,4 +11,3 @@ global.console = {
 // Polyfill for encoding which isn't present globally in jsdom
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
-    
