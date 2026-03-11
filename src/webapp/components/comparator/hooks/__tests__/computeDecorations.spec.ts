@@ -70,17 +70,32 @@ describe("computeDecorations", () => {
 
     describe("highlight class by diff type", () => {
         it("added → highlight-added", () => {
-            const result = runOneDiff({ path: "newField", type: "added", focusedPath: "newField", selection: "left" });
+            const result = runOneDiff({
+                path: "newField",
+                type: "added",
+                focusedPath: "newField",
+                selection: "left",
+            });
             expect(result[0]?.options.className).toBe(HIGHLIGHT_ADDED);
         });
 
         it("removed → highlight-removed", () => {
-            const result = runOneDiff({ path: "oldField", type: "removed", focusedPath: "oldField", selection: "left" });
+            const result = runOneDiff({
+                path: "oldField",
+                type: "removed",
+                focusedPath: "oldField",
+                selection: "left",
+            });
             expect(result[0]?.options.className).toBe(HIGHLIGHT_REMOVED);
         });
 
         it("modified → highlight-modified", () => {
-            const result = runOneDiff({ path: "name", type: "modified", focusedPath: "name", selection: "left" });
+            const result = runOneDiff({
+                path: "name",
+                type: "modified",
+                focusedPath: "name",
+                selection: "left",
+            });
             expect(result[0]?.options.className).toBe(HIGHLIGHT_MODIFIED);
         });
     });
@@ -95,7 +110,13 @@ describe("computeDecorations", () => {
         });
 
         it("should set correct line range in decoration", () => {
-            const result = runOneDiff({ path: "config", line: 5, endLine: 10, focusedPath: "config", selection: "left" });
+            const result = runOneDiff({
+                path: "config",
+                line: 5,
+                endLine: 10,
+                focusedPath: "config",
+                selection: "left",
+            });
             expect(result[0]?.range).toEqual({
                 startLineNumber: 5,
                 startColumn: 1,

@@ -29,7 +29,9 @@ export class ComparatorPage {
 
     async waitForEditorReady() {
         // Monaco editor uses .view-lines internally — no accessible alternative
-        await this.mergedEditor.locator(".view-lines").waitFor({ state: "visible", timeout: 15000 });
+        await this.mergedEditor
+            .locator(".view-lines")
+            .waitFor({ state: "visible", timeout: 15000 });
     }
 
     async waitForChangeItems() {
@@ -45,7 +47,11 @@ export class ComparatorPage {
     }
 
     getFilterButton(status: "all" | "unhandled" | "handled"): Locator {
-        const labels: Record<string, string> = { all: "All", unhandled: "Unhandled", handled: "Handled" };
+        const labels: Record<string, string> = {
+            all: "All",
+            unhandled: "Unhandled",
+            handled: "Handled",
+        };
         return this.page.getByRole("button", { name: labels[status], exact: true });
     }
 

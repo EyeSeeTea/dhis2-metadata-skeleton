@@ -264,11 +264,7 @@ function updateArrayElementId(
  * When a frame is popped off the stack, record (or update) its line range
  * in the path map.
  */
-function finalizeFrame(
-    frame: StackFrame,
-    endLine: number,
-    pathMap: Map<string, LineRange>
-): void {
+function finalizeFrame(frame: StackFrame, endLine: number, pathMap: Map<string, LineRange>): void {
     // Skip the root-level container (empty path)
     if (frame.path === "") return;
 

@@ -50,7 +50,14 @@ export function useMergeHighlighting(props: UseMergeHighlightingProps): UseMerge
     );
 
     const decorations = useMemo(
-        () => computeDecorations(jsonDiffs, pathToLineMap, handledPaths, focusedPath, selectedChanges),
+        () =>
+            computeDecorations(
+                jsonDiffs,
+                pathToLineMap,
+                handledPaths,
+                focusedPath,
+                selectedChanges
+            ),
         [jsonDiffs, pathToLineMap, handledPaths, focusedPath, selectedChanges]
     );
 
@@ -69,7 +76,7 @@ export function useMergeHighlighting(props: UseMergeHighlightingProps): UseMerge
         return () => cancelAnimationFrame(rafRef.current);
     }, [decorations, focusedPath, editorMounted]);
 
-    const onEditorMount: OnMount = useCallback((editorInstance) => {
+    const onEditorMount: OnMount = useCallback(editorInstance => {
         editorRef.current = editorInstance;
         editorInstance.updateOptions({ glyphMargin: true });
         setEditorMounted(true);
@@ -112,19 +119,21 @@ export function computeDecorations(
                 : "glyph-arrow-right"
             : "glyph-warning";
 
-        return [{
-            range: {
-                startLineNumber: lineRange.startLine,
-                startColumn: 1,
-                endLineNumber: lineRange.endLine,
-                endColumn: 1,
+        return [
+            {
+                range: {
+                    startLineNumber: lineRange.startLine,
+                    startColumn: 1,
+                    endLineNumber: lineRange.endLine,
+                    endColumn: 1,
+                },
+                options: {
+                    isWholeLine: true,
+                    className: isFocused ? getHighlightClass(diff.type) : "",
+                    glyphMarginClassName: glyphClass,
+                },
             },
-            options: {
-                isWholeLine: true,
-                className: isFocused ? getHighlightClass(diff.type) : "",
-                glyphMarginClassName: glyphClass,
-            },
-        }];
+        ];
     });
 }
 

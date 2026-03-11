@@ -6,7 +6,7 @@ import i18n from "$/utils/i18n";
 import { Check, ChevronLeft, ChevronRight, CloudDownload } from "@material-ui/icons";
 import { useDownloadJSON } from "$/webapp/components/comparator/hooks/useDownloadJSON";
 import {
-    FilterStatus,
+    filterStatusList,
     useJsonDiffSelector,
 } from "$/webapp/components/comparator/hooks/useJsonDiffSelector";
 import { ComparatorState } from "$/webapp/components/comparator/hooks/useComparator";
@@ -18,6 +18,26 @@ type DiffSectionProps = Omit<
     ComparatorState,
     "uploadLeft" | "uploadRight" | "hideLeftButton" | "hideRightButton"
 >;
+
+const diffEditorOptions = {
+    enableSplitViewResizing: true,
+    minimap: { enabled: true },
+    fontSize: 12,
+    wordWrap: "on" as const,
+    formatOnPaste: true,
+    formatOnType: true,
+};
+
+const mergedEditorOptions = {
+    readOnly: false,
+    minimap: { enabled: true },
+    glyphMargin: true,
+    scrollBeyondLastLine: false,
+    fontSize: 12,
+    wordWrap: "on" as const,
+    formatOnPaste: true,
+    formatOnType: true,
+};
 
 export default function DiffSection(props: DiffSectionProps) {
     const {
@@ -62,14 +82,7 @@ export default function DiffSection(props: DiffSectionProps) {
                     language="json"
                     original={leftText}
                     modified={rightText}
-                    options={{
-                        enableSplitViewResizing: true,
-                        minimap: { enabled: true },
-                        fontSize: 12,
-                        wordWrap: "on",
-                        formatOnPaste: true,
-                        formatOnType: true,
-                    }}
+                    options={diffEditorOptions}
                 />
             </DiffEditorPane>
 
@@ -104,16 +117,7 @@ export default function DiffSection(props: DiffSectionProps) {
                             value={mergedText}
                             onChange={handleMergedChange}
                             onMount={onEditorMount}
-                            options={{
-                                readOnly: false,
-                                minimap: { enabled: true },
-                                glyphMargin: true,
-                                scrollBeyondLastLine: false,
-                                fontSize: 12,
-                                wordWrap: "on",
-                                formatOnPaste: true,
-                                formatOnType: true,
-                            }}
+                            options={mergedEditorOptions}
                         />
                     </EditorPane>
                 </MergedEditorWrapper>
@@ -127,7 +131,7 @@ export default function DiffSection(props: DiffSectionProps) {
                         </ProgressText>
                     </ChangeControlsHeader>
                     <FilterToggle>
-                        {(["all", "unhandled", "handled"] as FilterStatus[]).map(status => (
+                        {filterStatusList.map(status => (
                             <FilterButton
                                 key={status}
                                 active={filterStatus === status}
@@ -136,8 +140,8 @@ export default function DiffSection(props: DiffSectionProps) {
                                 {status === "all"
                                     ? i18n.t("All")
                                     : status === "unhandled"
-                                      ? i18n.t("Unhandled")
-                                      : i18n.t("Handled")}
+                                    ? i18n.t("Unhandled")
+                                    : i18n.t("Handled")}
                             </FilterButton>
                         ))}
                     </FilterToggle>
@@ -170,9 +174,7 @@ export default function DiffSection(props: DiffSectionProps) {
                                                     )}
                                                 </DirectionIcon>
                                             )}
-                                            <ChangeType type={diff.type}>
-                                                {diff.type}
-                                            </ChangeType>
+                                            <ChangeType type={diff.type}>{diff.type}</ChangeType>
                                         </ChangeInfoRight>
                                     </ChangeInfo>
                                     <ValuePreviews>
@@ -293,8 +295,7 @@ const FilterButton = styled.button<{ active: boolean }>`
     font-size: 0.7rem;
     border: none;
     cursor: pointer;
-    background-color: ${props =>
-        props.active ? props.theme.palette.primary.main : "transparent"};
+    background-color: ${props => (props.active ? props.theme.palette.primary.main : "transparent")};
     color: ${props =>
         props.active ? props.theme.palette.common.white : props.theme.palette.text.secondary};
     transition: all 0.2s;

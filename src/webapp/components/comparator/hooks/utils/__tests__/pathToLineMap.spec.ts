@@ -43,10 +43,11 @@ describe("buildPathToLineMap", () => {
         });
 
         it("should handle boolean and null values", () => {
-            const result = buildMapFromObj(
-                { active: true, deleted: false, ref: null },
-                ["active", "deleted", "ref"]
-            );
+            const result = buildMapFromObj({ active: true, deleted: false, ref: null }, [
+                "active",
+                "deleted",
+                "ref",
+            ]);
             expectRanges(result, {
                 active: { startLine: 2, endLine: 2 },
                 deleted: { startLine: 3, endLine: 3 },
@@ -55,20 +56,18 @@ describe("buildPathToLineMap", () => {
         });
 
         it("should handle string values with special characters", () => {
-            const result = buildMapFromObj(
-                { description: 'A "quoted" value' },
-                ["description"]
-            );
+            const result = buildMapFromObj({ description: 'A "quoted" value' }, ["description"]);
             expect(result["description"]).toEqual({ startLine: 2, endLine: 2 });
         });
     });
 
     describe("nested objects", () => {
         it("should map nested object keys with dot notation", () => {
-            const result = buildMapFromObj(
-                { person: { age: 30, name: "John" } },
-                ["person.name", "person.age", "person"]
-            );
+            const result = buildMapFromObj({ person: { age: 30, name: "John" } }, [
+                "person.name",
+                "person.age",
+                "person",
+            ]);
             expectRanges(result, {
                 "person.name": { startLine: 4, endLine: 4 },
                 "person.age": { startLine: 3, endLine: 3 },
@@ -104,7 +103,10 @@ describe("buildPathToLineMap", () => {
         });
 
         it("should handle empty arrays and objects as single-line values", () => {
-            const result = buildMapFromObj({ emptyArr: [], emptyObj: {} }, ["emptyArr", "emptyObj"]);
+            const result = buildMapFromObj({ emptyArr: [], emptyObj: {} }, [
+                "emptyArr",
+                "emptyObj",
+            ]);
             expectRanges(result, {
                 emptyArr: { startLine: 2, endLine: 2 },
                 emptyObj: { startLine: 3, endLine: 3 },
@@ -135,7 +137,11 @@ describe("buildPathToLineMap", () => {
         });
 
         it("should map array elements without id using index-based paths", () => {
-            const result = buildMapFromObj({ values: [10, 20, 30] }, ["values[0]", "values[1]", "values[2]"]);
+            const result = buildMapFromObj({ values: [10, 20, 30] }, [
+                "values[0]",
+                "values[1]",
+                "values[2]",
+            ]);
             expectRanges(result, {
                 "values[0]": { startLine: 3, endLine: 3 },
                 "values[1]": { startLine: 4, endLine: 4 },
