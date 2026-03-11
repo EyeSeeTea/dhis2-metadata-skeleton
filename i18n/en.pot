@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2025-11-03T13:47:37.397Z\n"
-"PO-Revision-Date: 2025-11-03T13:47:37.397Z\n"
+"POT-Creation-Date: 2026-03-11T18:03:02.817Z\n"
+"PO-Revision-Date: 2026-03-11T18:03:02.817Z\n"
 
 msgid "Upload File 1"
 msgstr ""
@@ -27,6 +27,33 @@ msgid "Merged Result"
 msgstr ""
 
 msgid "Select Changes"
+msgstr ""
+
+msgid "handled"
+msgstr ""
+
+msgid "All"
+msgstr ""
+
+msgid "Unhandled"
+msgstr ""
+
+msgid "Handled"
+msgstr ""
+
+msgid "Direction"
+msgstr ""
+
+msgid "Left"
+msgstr ""
+
+msgid "Right"
+msgstr ""
+
+msgid "Use Left"
+msgstr ""
+
+msgid "Use Right"
 msgstr ""
 
 msgid "Select File"

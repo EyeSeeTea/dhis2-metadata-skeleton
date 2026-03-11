@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: i18next-conv\n"
-"POT-Creation-Date: 2025-11-03T13:47:37.397Z\n"
+"POT-Creation-Date: 2026-03-11T18:03:02.817Z\n"
 "PO-Revision-Date: 2018-10-25T09:02:35.143Z\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -27,6 +27,33 @@ msgid "Merged Result"
 msgstr ""
 
 msgid "Select Changes"
+msgstr ""
+
+msgid "handled"
+msgstr ""
+
+msgid "All"
+msgstr ""
+
+msgid "Unhandled"
+msgstr ""
+
+msgid "Handled"
+msgstr ""
+
+msgid "Direction"
+msgstr ""
+
+msgid "Left"
+msgstr ""
+
+msgid "Right"
+msgstr ""
+
+msgid "Use Left"
+msgstr ""
+
+msgid "Use Right"
 msgstr ""
 
 msgid "Select File"

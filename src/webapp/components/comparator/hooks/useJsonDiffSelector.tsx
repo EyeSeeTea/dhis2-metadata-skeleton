@@ -28,41 +28,37 @@ type JsonDiffSelectorState = {
     };
 };
 
+type ParseState = { parts: string[]; current: string; inBracket: boolean };
+
 const parsePath = (path: string): string[] => {
-    const parts: string[] = [];
-    let current = "";
-    let inBracket = false;
-
-    for (let i = 0; i < path.length; i++) {
-        const char = path[i];
-
-        if (char === "[") {
-            if (current) {
-                parts.push(current);
-                current = "";
+    const { parts, current } = Array.from(path).reduce<ParseState>(
+        (state, char) => {
+            if (char === "[") {
+                return {
+                    parts: state.current ? [...state.parts, state.current] : state.parts,
+                    current: char,
+                    inBracket: true,
+                };
             }
-            inBracket = true;
-            current = char;
-        } else if (char === "]") {
-            current += char;
-            parts.push(current);
-            current = "";
-            inBracket = false;
-        } else if (char === "." && !inBracket) {
-            if (current) {
-                parts.push(current);
-                current = "";
+            if (char === "]") {
+                return {
+                    parts: [...state.parts, state.current + char],
+                    current: "",
+                    inBracket: false,
+                };
             }
-        } else {
-            current += char;
-        }
-    }
-
-    if (current) {
-        parts.push(current);
-    }
-
-    return parts;
+            if (char === "." && !state.inBracket) {
+                return {
+                    parts: state.current ? [...state.parts, state.current] : state.parts,
+                    current: "",
+                    inBracket: state.inBracket,
+                };
+            }
+            return { ...state, current: state.current + char };
+        },
+        { parts: [], current: "", inBracket: false }
+    );
+    return current ? [...parts, current] : parts;
 };
 
 const setNestedValue = (
@@ -199,11 +195,7 @@ export function useJsonDiffSelector(
     }, [leftText, rightText]);
 
     useEffect(() => {
-        const initial = jsonDiffs.reduce(
-            (acc, diff) => ({ ...acc, [diff.path]: "left" as const }),
-            {} as Record<string, "left" | "right">
-        );
-        setSelectedChanges(initial);
+        setSelectedChanges({});
         setHandledPaths(new Set());
         setFilterStatus("all");
     }, [jsonDiffs]);

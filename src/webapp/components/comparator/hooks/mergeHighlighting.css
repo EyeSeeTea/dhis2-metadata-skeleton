@@ -1,0 +1,48 @@
+/* Line highlight classes (Monaco IModelDecorationOptions.className) */
+
+.highlight-added {
+    background: rgba(46, 160, 67, 0.25);
+}
+
+.highlight-removed {
+    background: rgba(248, 81, 73, 0.25);
+}
+
+.highlight-modified {
+    background: rgba(210, 153, 34, 0.25);
+}
+
+/* Gutter glyph classes (Monaco IModelDecorationOptions.glyphMarginClassName) */
+
+.glyph-arrow-left::before {
+    content: "\2190";
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: #1565c0;
+    font-size: 14px;
+}
+
+.glyph-arrow-right::before {
+    content: "\2192";
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: #1565c0;
+    font-size: 14px;
+}
+
+.glyph-warning::before {
+    content: "\26A0";
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: rgba(210, 153, 34, 1);
+    font-size: 14px;
+}

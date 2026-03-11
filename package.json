@@ -35,12 +35,16 @@
         "compare-metadata": "ts-node ./src/scripts/index.ts metadata compare",
         "validate": "ts-node ./src/validateSchema.ts",
         "prettify": "prettier \"./**/*.{js,jsx,json,css,ts,tsx}\" --write",
-        "metadata-build": "ts-node ./src/scripts/index.ts metadata build"
+        "metadata-build": "ts-node ./src/scripts/index.ts metadata build",
+        "test-e2e": "playwright test",
+        "test-e2e-ui": "playwright test --ui",
+        "test-e2e-headed": "playwright test --headed"
     },
     "devDependencies": {
         "@babel/core": "^7.0.0-0",
         "@babel/plugin-syntax-flow": "^7.14.5",
         "@babel/plugin-transform-react-jsx": "^7.14.9",
+        "@playwright/test": "^1.58.2",
         "@testing-library/jest-dom": "^5.16.5",
         "@testing-library/react": "^14.0.0",
         "@types/classnames": "2.3.1",
