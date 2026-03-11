@@ -38,6 +38,12 @@ cypress/screenshots/
 cypress/videos/
 cypress/fixtures/
 
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
 # IntelliJ
 .idea/*
 docs/
