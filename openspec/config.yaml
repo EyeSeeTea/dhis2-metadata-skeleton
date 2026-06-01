@@ -4,6 +4,9 @@ context: |
   Project: DHIS2 Metadata Skeleton
 
   What it is:
+  - A skeleton replicated into per-client metadata-<client> repos that store DHIS2 metadata
+    as versioned JSON in a fixed folder structure; the comparator/merge UI helps resolve
+    incremental PRs against those metadata repos.
   - Dual-mode TypeScript toolset:
     1) CLI offline metadata processor (filesystem-driven)
     2) Vite + React comparator/merge UI
@@ -148,6 +151,7 @@ rules:
   design:
     - Must describe: input discovery, merge order assumptions, dedup rule, and output writing behavior.
     - For comparator-related changes, describe how the UI reads inputs (public/.tmp vs upload) and how comparator-only mode is preserved. Comparator-only mode must work without DHIS2 auth and must not accept -f/-s flags.
+    - "UI design gate: when a change includes user-facing UI, the design phase SHOULD produce wireframes or mockups in Pencil (.pen files) before implementation begins. Designs are stored in openspec/designs/ and exported to openspec/designs/exports/."
     - Note known constraints (large file performance, structural-only merge) when relevant.
 
   tasks:
