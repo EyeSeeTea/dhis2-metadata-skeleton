@@ -30,6 +30,41 @@
 - When creating a PR, always search ClickUp for the related tasks first to get the URLs.
 
 
+## Boy Scout Rule
+
+Leave every file you touch cleaner than you found it. When working on a task, if you encounter code in the files you are already modifying that violates the conventions in this document (imperative loops that should be functional, tests with weak assertions, missing `describe` groups, mutable state that should be immutable, etc.), fix it as part of the same change. Keep the scope reasonable — refactor what you touch, don't go hunting across the entire codebase.
+
+
+## Architecture
+
+This project follows Clean Architecture with strict layered dependency rules (Presentation → Domain → Data). Source lives under `src/`:
+
+```
+domain/      entities, repository interfaces, use cases — zero framework/infrastructure deps
+    ^
+    | depends on
+    |
+data/        concrete repository implementations (filesystem repositories)
+    ^
+    | wired via
+    |
+scripts/  +  components/, pages/, state/   CLI commands and React comparator UI
+                                           (presentation → use cases → repositories)
+```
+
+Supporting folders: `helpers/` (filesystem utilities), `locales/` (generated i18n).
+
+### Hard Rules
+
+- **Dependency Rule**: outer layers depend on inner layers, never the reverse. `domain/` has zero framework/infrastructure dependencies and must not import from `data/`, `scripts/`, or any UI/web global.
+- **Repository pattern**: all external access (filesystem JSON, etc.) goes through repository interfaces in `domain/`, implemented in `data/`. Repositories return domain entities and contain no business logic.
+- **Presentation is wiring only.** CLI commands and React components/pages parse input, call use cases, and render/return results. Graphical components contain **zero** business logic — they render state and forward events; logic lives in use cases / state managers.
+- **No duplicated logic across components.** If two components share identical behavior, extract it into a shared utility immediately — not in a follow-up.
+
+> Full per-layer review checklist: `.est_ai/review/checklist.md` — consult it before marking any task done.
+> Detailed project context (filesystem contract, dedup rule, canonical commands): `openspec/config.yaml`.
+
+
 ## Code Formatting
 
 - Always run `yarn prettify` before committing any code changes. This ensures consistent formatting across the project.
@@ -75,3 +110,40 @@ This project favours functional code and immutability:
 
 - PRs must target branches covered by CI, or CI workflows must be extended to cover the PR branch.
 - E2E tests must run in CI alongside unit tests.
+
+
+## UI Design Workflow
+
+When a feature includes user-facing UI (the comparator webapp views, forms, panels):
+
+1. **Design before implementation.** Wireframes/mockups are created in Pencil (`.pen` files via MCP tools) and approved before any `[FE]` or `[GD]` implementation tasks begin.
+2. **Design artifacts** live in `openspec/designs/`:
+   - `.pen` files in `openspec/designs/wireframes/` or `openspec/designs/mockups/`
+   - PNG exports in `openspec/designs/exports/` (naming: `[feature]-[screen]-[state].png`)
+3. **Design is part of the proposal.** The change's `design.md` references the wireframes/exports; approving the proposal approves the design.
+4. **Always commit the `.pen` source file** — it is the source of truth; PNG exports are derived artifacts.
+
+
+## After Every Feature Change
+
+After implementing any feature addition, modification, or bug fix, update **all** of the following before considering the work done:
+
+1. **README.md** — Update command docs, examples, and feature list if user-facing behavior changed.
+2. **PR description** — If an open PR exists on the branch (`gh pr view`), update its summary and test plan (`gh pr edit`).
+3. **OpenSpec specs** — If the change relates to a spec in `openspec/specs/`, update the requirements/scenarios (and any archived copy in `openspec/changes/archive/`).
+4. **UI designs** — If comparator UI components changed, create/update the `.pen` files in Pencil and re-export PNGs.
+5. **Translations** — If user-facing strings changed, run `yarn update-po` so the `.po` / generated locale files stay in sync.
+6. **Prettify** — Run `yarn prettify` before committing.
+
+
+## Pre-Commit Self-Review
+
+Before every commit, verify the following against the changed files. Do not commit until all items pass:
+
+1. **Architecture** — Does the code respect the dependency rule? Any direct I/O bypassing the proper layers? Any business logic leaking into components?
+2. **Patterns** — Does new code follow existing patterns in the same layer? (Check at least one sibling file.)
+3. **Functional style** — Any `for` loops with mutable accumulators that should be `map`/`flatMap`/`filter`/`reduce`?
+4. **Test assertions** — Are all assertions concrete values (`toEqual`, `toBe`)? No `toBeDefined`/`toBeTruthy` when an exact value is knowable?
+5. **No duplication** — Is any logic copy-pasted between files? Extract it.
+6. **i18n** — Are all new user-facing strings wrapped in `i18n.t()`?
+7. **Boy Scout Rule** — In the files you touched, fix any pre-existing violations of these rules.
